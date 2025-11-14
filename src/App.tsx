@@ -54,6 +54,8 @@ type Particle = {
   size: number
   timestamp: number
   lifetime: number
+  shape: 'circle' | 'star' | 'square' | 'triangle' | 'diamond' | 'snowflake' | 'spark'
+  rotation: number
 }
 type Explosion = {
   id: string
@@ -370,6 +372,7 @@ function App() {
               x: particle.velocity.x * 0.98,
               y: particle.velocity.y + 0.002,
             },
+            rotation: particle.rotation + 0.1,
           }
         }).filter(Boolean) as Particle[]
       })
@@ -539,6 +542,15 @@ function App() {
                   
                   const particleCount = tower.type === 'area' || tower.type === 'bomb' ? 20 : 12
                   const newParticles: Particle[] = []
+                  
+                  let particleShape: Particle['shape'] = 'circle'
+                  if (tower.type === 'fast') particleShape = 'star'
+                  else if (tower.type === 'strong') particleShape = 'square'
+                  else if (tower.type === 'area') particleShape = 'triangle'
+                  else if (tower.type === 'sniper') particleShape = 'diamond'
+                  else if (tower.type === 'freeze') particleShape = 'snowflake'
+                  else if (tower.type === 'bomb') particleShape = 'spark'
+                  
                   for (let i = 0; i < particleCount; i++) {
                     const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5
                     const speed = 0.02 + Math.random() * 0.03
@@ -553,6 +565,8 @@ function App() {
                       size: tower.type === 'bomb' || tower.type === 'area' ? 8 : 5,
                       timestamp: Date.now(),
                       lifetime: 800 + Math.random() * 400,
+                      shape: particleShape,
+                      rotation: Math.random() * Math.PI * 2,
                     })
                   }
                   setParticles(prev => [...prev, ...newParticles])
@@ -1411,28 +1425,93 @@ function App() {
                         )
                       })}
                       
-                      {particles.map(particle => {
-                        const age = Date.now() - particle.timestamp
-                        const opacity = Math.max(0, 1 - age / particle.lifetime)
-                        
-                        return (
-                          <div
-                            key={particle.id}
-                            className="absolute pointer-events-none rounded-full"
-                            style={{
-                              left: particle.position.x * CELL_SIZE + CELL_SIZE / 2,
-                              top: particle.position.y * CELL_SIZE + CELL_SIZE / 2,
-                              width: particle.size,
-                              height: particle.size,
-                              backgroundColor: particle.color,
-                              opacity: opacity,
-                              transform: 'translate(-50%, -50%)',
-                              zIndex: 9,
-                              boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
-                            }}
-                          />
-                        )
-                      })}
+                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 9, width: GRID_SIZE * CELL_SIZE, height: GRID_SIZE * CELL_SIZE, overflow: 'visible' }}>
+                        {particles.map(particle => {
+                          const age = Date.now() - particle.timestamp
+                          const opacity = Math.max(0, 1 - age / particle.lifetime)
+                          const x = particle.position.x * CELL_SIZE + CELL_SIZE / 2
+                          const y = particle.position.y * CELL_SIZE + CELL_SIZE / 2
+                          const size = particle.size
+                          
+                          return (
+                            <g key={particle.id} opacity={opacity}>
+                              <filter id={`particle-glow-${particle.id}`}>
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                <feMerge>
+                                  <feMergeNode in="coloredBlur"/>
+                                  <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                              </filter>
+                              
+                              {particle.shape === 'circle' && (
+                                <circle
+                                  cx={x}
+                                  cy={y}
+                                  r={size / 2}
+                                  fill={particle.color}
+                                  filter={`url(#particle-glow-${particle.id})`}
+                                />
+                              )}
+                              
+                              {particle.shape === 'star' && (
+                                <path
+                                  d={`M ${x} ${y - size} L ${x + size * 0.3} ${y - size * 0.3} L ${x + size} ${y} L ${x + size * 0.3} ${y + size * 0.3} L ${x} ${y + size} L ${x - size * 0.3} ${y + size * 0.3} L ${x - size} ${y} L ${x - size * 0.3} ${y - size * 0.3} Z`}
+                                  fill={particle.color}
+                                  transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
+                                  filter={`url(#particle-glow-${particle.id})`}
+                                />
+                              )}
+                              
+                              {particle.shape === 'square' && (
+                                <rect
+                                  x={x - size / 2}
+                                  y={y - size / 2}
+                                  width={size}
+                                  height={size}
+                                  fill={particle.color}
+                                  transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
+                                  filter={`url(#particle-glow-${particle.id})`}
+                                />
+                              )}
+                              
+                              {particle.shape === 'triangle' && (
+                                <path
+                                  d={`M ${x} ${y - size} L ${x + size} ${y + size / 2} L ${x - size} ${y + size / 2} Z`}
+                                  fill={particle.color}
+                                  transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
+                                  filter={`url(#particle-glow-${particle.id})`}
+                                />
+                              )}
+                              
+                              {particle.shape === 'diamond' && (
+                                <path
+                                  d={`M ${x} ${y - size} L ${x + size} ${y} L ${x} ${y + size} L ${x - size} ${y} Z`}
+                                  fill={particle.color}
+                                  transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
+                                  filter={`url(#particle-glow-${particle.id})`}
+                                />
+                              )}
+                              
+                              {particle.shape === 'snowflake' && (
+                                <g transform={`translate(${x} ${y}) rotate(${particle.rotation * 180 / Math.PI})`}>
+                                  <line x1={-size} y1="0" x2={size} y2="0" stroke={particle.color} strokeWidth="1.5" />
+                                  <line x1="0" y1={-size} x2="0" y2={size} stroke={particle.color} strokeWidth="1.5" />
+                                  <line x1={-size * 0.7} y1={-size * 0.7} x2={size * 0.7} y2={size * 0.7} stroke={particle.color} strokeWidth="1.5" />
+                                  <line x1={-size * 0.7} y1={size * 0.7} x2={size * 0.7} y2={-size * 0.7} stroke={particle.color} strokeWidth="1.5" />
+                                </g>
+                              )}
+                              
+                              {particle.shape === 'spark' && (
+                                <g transform={`translate(${x} ${y}) rotate(${particle.rotation * 180 / Math.PI})`}>
+                                  <line x1="0" y1={-size} x2="0" y2={size} stroke={particle.color} strokeWidth="2.5" strokeLinecap="round" filter={`url(#particle-glow-${particle.id})`} />
+                                  <line x1={-size} y1="0" x2={size} y2="0" stroke={particle.color} strokeWidth="2.5" strokeLinecap="round" filter={`url(#particle-glow-${particle.id})`} />
+                                  <circle cx="0" cy="0" r={size / 3} fill={particle.color} filter={`url(#particle-glow-${particle.id})`} />
+                                </g>
+                              )}
+                            </g>
+                          )
+                        })}
+                      </svg>
                       
                       {explosions.map(exp => {
                         const age = Date.now() - exp.timestamp
