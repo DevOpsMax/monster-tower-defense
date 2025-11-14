@@ -1958,36 +1958,112 @@ function App() {
                   </div>
                 </Card>
 
-                <div className="flex flex-wrap gap-1.5 justify-center items-center shrink-0">
-                  {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
-                    const config = TOWER_TYPES[type]
-                    const Icon = config.icon
-                    const affordable = canAfford(type)
-                    const selected = selectedTowerType === type
+                <Card className="p-4 bg-gradient-to-r from-slate-900 to-slate-800 border-slate-700 shadow-2xl shrink-0">
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-white mb-1 tracking-wide" style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}>
+                        🗼 DEFENDERS
+                      </h3>
+                      <p className="text-xs text-slate-400 font-medium">Select a defender to place on the battlefield</p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 justify-center items-stretch">
+                      {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
+                        const config = TOWER_TYPES[type]
+                        const Icon = config.icon
+                        const affordable = canAfford(type)
+                        const selected = selectedTowerType === type
 
-                    return (
-                      <Button
-                        key={type}
-                        variant={selected ? 'default' : 'outline'}
-                        className="h-auto py-1.5 px-2 flex items-center gap-1.5"
-                        onClick={() => setSelectedTowerType(selected ? null : type)}
-                        disabled={!affordable}
-                      >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
-                          style={{ backgroundColor: config.color }}
-                        >
-                          <Icon size={14} weight="fill" color="white" />
-                        </div>
-                        <div className="font-semibold text-xs">{config.name}</div>
-                        <Badge variant={affordable ? 'secondary' : 'outline'} className="text-xs px-1 py-0">
-                          <Coin size={10} weight="fill" className="mr-0.5" />
-                          {config.cost}
-                        </Badge>
-                      </Button>
-                    )
-                  })}
-                </div>
+                        return (
+                          <motion.div
+                            key={type}
+                            whileHover={affordable ? { scale: 1.05, y: -4 } : {}}
+                            whileTap={affordable ? { scale: 0.95 } : {}}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <Button
+                              variant="outline"
+                              className={`h-auto py-4 px-5 flex flex-col items-center gap-3 relative overflow-hidden transition-all duration-300 min-w-[140px] ${
+                                selected 
+                                  ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/50' 
+                                  : affordable
+                                    ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 hover:border-slate-500 hover:shadow-lg'
+                                    : 'bg-slate-900 border-slate-800 opacity-50 cursor-not-allowed'
+                              }`}
+                              onClick={() => setSelectedTowerType(selected ? null : type)}
+                              disabled={!affordable}
+                            >
+                              {selected && (
+                                <motion.div
+                                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                  animate={{ x: ['-100%', '200%'] }}
+                                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
+                                />
+                              )}
+                              
+                              <div className="relative">
+                                <motion.div
+                                  className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg relative"
+                                  style={{ 
+                                    backgroundColor: config.color,
+                                    boxShadow: selected ? `0 0 30px ${config.color}` : `0 4px 12px rgba(0,0,0,0.4)`
+                                  }}
+                                  animate={selected ? { 
+                                    boxShadow: [
+                                      `0 0 30px ${config.color}`,
+                                      `0 0 50px ${config.color}`,
+                                      `0 0 30px ${config.color}`
+                                    ]
+                                  } : {}}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                  <Icon size={32} weight="fill" color="white" />
+                                </motion.div>
+                                {selected && (
+                                  <motion.div
+                                    className="absolute -top-2 -right-2 bg-yellow-400 rounded-full w-7 h-7 flex items-center justify-center shadow-lg"
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                                  >
+                                    <span className="text-sm">✓</span>
+                                  </motion.div>
+                                )}
+                              </div>
+                              
+                              <div className="flex flex-col items-center gap-1.5 w-full">
+                                <div className="font-bold text-sm text-white tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
+                                  {config.name.toUpperCase()}
+                                </div>
+                                <div className="text-xs text-slate-300 leading-tight text-center h-8 flex items-center">
+                                  {config.desc}
+                                </div>
+                              </div>
+                              
+                              <Badge 
+                                className={`text-sm px-3 py-1.5 font-bold shadow-md ${
+                                  affordable 
+                                    ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600' 
+                                    : 'bg-slate-700 text-slate-400 border-slate-600'
+                                }`}
+                              >
+                                <Coin size={14} weight="fill" className="mr-1.5" />
+                                {config.cost}
+                              </Badge>
+                              
+                              {!affordable && (
+                                <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
+                                  <span className="text-red-400 font-bold text-xs bg-red-950/80 px-3 py-1.5 rounded-full border border-red-800">
+                                    🔒 LOCKED
+                                  </span>
+                                </div>
+                              )}
+                            </Button>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </Card>
             </div>
           </div>
         )}
