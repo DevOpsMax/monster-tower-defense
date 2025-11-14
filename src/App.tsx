@@ -434,8 +434,8 @@ function App() {
             setTimeout(() => {
               setMonsters(prev => prev.map(m => {
                 if (m.id === target.id) {
-                  const armorReduction = m.armor ? config.damage * m.armor : 0
-                  const actualDamage = config.damage - armorReduction
+                  const armorReduction = m.armor && m.armor > 0 ? config.damage * m.armor : 0
+                  const actualDamage = Math.max(1, config.damage - armorReduction)
                   const newHealth = m.health - actualDamage
                   
                   const damageNum: DamageNumber = {
@@ -448,7 +448,7 @@ function App() {
                   
                   setTimeout(() => {
                     setDamageNumbers(prev => prev.filter(d => d.id !== damageNum.id))
-                  }, 1000)
+                  }, 1500)
                   
                   if (newHealth <= 0) {
                     setCoins(c => c + m.reward)
@@ -849,25 +849,41 @@ function App() {
                         
                         {damageNumbers.map(dmg => {
                           const age = Date.now() - dmg.timestamp
-                          const opacity = Math.max(0, 1 - age / 1000)
-                          const yOffset = (age / 1000) * 30
+                          const opacity = Math.max(0, 1 - age / 1500)
+                          const yOffset = (age / 1500) * 40
+                          const scale = Math.min(1.5, 1 + (age / 300))
+                          const xJitter = Math.sin(age / 100) * 5
                           
                           return (
-                            <text
-                              key={dmg.id}
-                              x={dmg.position.x * CELL_SIZE + CELL_SIZE / 2}
-                              y={dmg.position.y * CELL_SIZE + CELL_SIZE / 2 - yOffset}
-                              fill="oklch(0.60 0.22 20)"
-                              fontSize="18"
-                              fontWeight="bold"
-                              textAnchor="middle"
-                              opacity={opacity}
-                              stroke="oklch(0.99 0 0)"
-                              strokeWidth="3"
-                              paintOrder="stroke"
-                            >
-                              -{dmg.damage}
-                            </text>
+                            <g key={dmg.id}>
+                              <text
+                                x={dmg.position.x * CELL_SIZE + CELL_SIZE / 2 + xJitter}
+                                y={dmg.position.y * CELL_SIZE + CELL_SIZE / 2 - yOffset}
+                                fill="oklch(0.99 0 0)"
+                                fontSize={`${20 * scale}px`}
+                                fontWeight="900"
+                                textAnchor="middle"
+                                opacity={opacity}
+                                strokeWidth="4"
+                                stroke="oklch(0.15 0 0)"
+                                paintOrder="stroke"
+                                fontFamily="var(--font-heading)"
+                              >
+                                -{dmg.damage}
+                              </text>
+                              <text
+                                x={dmg.position.x * CELL_SIZE + CELL_SIZE / 2 + xJitter}
+                                y={dmg.position.y * CELL_SIZE + CELL_SIZE / 2 - yOffset}
+                                fill="oklch(0.65 0.28 25)"
+                                fontSize={`${20 * scale}px`}
+                                fontWeight="900"
+                                textAnchor="middle"
+                                opacity={opacity * 0.9}
+                                fontFamily="var(--font-heading)"
+                              >
+                                -{dmg.damage}
+                              </text>
+                            </g>
                           )
                         })}
                       </svg>
