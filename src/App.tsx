@@ -1257,7 +1257,7 @@ function App() {
             </Card>
 
             <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-auto border-border">
+                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border">
                   <div className="relative flex items-center justify-center h-full">
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
