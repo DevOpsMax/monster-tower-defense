@@ -1540,7 +1540,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="12"
+                                    strokeWidth="14"
                                     strokeLinecap="round"
                                     opacity="0.9"
                                     filter="url(#glow)"
@@ -1551,21 +1551,21 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="white"
-                                    strokeWidth="6"
+                                    strokeWidth="7"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={12}
+                                    r={14}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={7}
+                                    r={8}
                                     fill="white"
                                     opacity="1"
                                   />
@@ -1580,7 +1580,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="16"
+                                    strokeWidth="18"
                                     strokeLinecap="round"
                                     opacity="0.95"
                                     filter="url(#strong-glow)"
@@ -1591,21 +1591,21 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="white"
-                                    strokeWidth="8"
+                                    strokeWidth="10"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={14}
+                                    r={16}
                                     fill={color}
                                     filter="url(#strong-glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={8}
+                                    r={9}
                                     fill="white"
                                     opacity="1"
                                   />
@@ -1620,7 +1620,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="14"
+                                    strokeWidth="16"
                                     strokeLinecap="round"
                                     opacity="0.85"
                                     filter="url(#glow)"
@@ -1631,7 +1631,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="white"
-                                    strokeWidth="7"
+                                    strokeWidth="8"
                                     strokeLinecap="round"
                                     opacity="0.9"
                                   />
@@ -1640,7 +1640,7 @@ function App() {
                                       key={i}
                                       cx={p.x * CELL_SIZE}
                                       cy={p.y * CELL_SIZE}
-                                      r={10 - i * 0.8}
+                                      r={12 - i * 0.9}
                                       fill={color}
                                       opacity={0.5 + (i / 10) * 0.5}
                                       filter="url(#glow)"
@@ -1649,14 +1649,14 @@ function App() {
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={15}
+                                    r={17}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={9}
+                                    r={10}
                                     fill="white"
                                     opacity="0.9"
                                   />
@@ -1671,7 +1671,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="8"
+                                    strokeWidth="10"
                                     strokeLinecap="round"
                                     opacity="1"
                                     filter="url(#glow)"
@@ -1682,7 +1682,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="white"
-                                    strokeWidth="4"
+                                    strokeWidth="5"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
@@ -1699,14 +1699,14 @@ function App() {
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={10}
+                                    r={12}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={5}
+                                    r={6}
                                     fill="white"
                                     opacity="1"
                                   />
@@ -1721,7 +1721,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="12"
+                                    strokeWidth="14"
                                     strokeLinecap="round"
                                     opacity="0.9"
                                     filter="url(#glow)"
@@ -1732,7 +1732,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="#a0d0ff"
-                                    strokeWidth="7"
+                                    strokeWidth="8"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
@@ -1741,7 +1741,7 @@ function App() {
                                       <circle
                                         cx={p.x * CELL_SIZE}
                                         cy={p.y * CELL_SIZE}
-                                        r={8}
+                                        r={9}
                                         fill={color}
                                         opacity={0.6 + (i / 8) * 0.4}
                                         filter="url(#glow)"
@@ -1749,10 +1749,10 @@ function App() {
                                       {i % 2 === 0 && (
                                         <text
                                           x={p.x * CELL_SIZE}
-                                          y={p.y * CELL_SIZE + 1}
+                                          y={p.y * CELL_SIZE + 2}
                                           textAnchor="middle"
                                           dominantBaseline="middle"
-                                          fontSize="12"
+                                          fontSize="14"
                                           opacity={0.8}
                                         >
                                           ❄️
@@ -1763,14 +1763,14 @@ function App() {
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={12}
+                                    r={14}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={8}
+                                    r={9}
                                     fill="white"
                                     opacity="0.9"
                                   />
@@ -1785,9 +1785,9 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="14"
+                                    strokeWidth="16"
                                     strokeLinecap="round"
-                                    strokeDasharray="16,8"
+                                    strokeDasharray="18,9"
                                     opacity="0.9"
                                     filter="url(#glow)"
                                   />
@@ -1797,9 +1797,9 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="oklch(0.85 0.25 50)"
-                                    strokeWidth="8"
+                                    strokeWidth="9"
                                     strokeLinecap="round"
-                                    strokeDasharray="16,8"
+                                    strokeDasharray="18,9"
                                     opacity="1"
                                   />
                                   {proj.trail.slice(-8).map((p, i) => (
@@ -1808,7 +1808,7 @@ function App() {
                                         key={i}
                                         cx={p.x * CELL_SIZE}
                                         cy={p.y * CELL_SIZE}
-                                        r={7}
+                                        r={8}
                                         fill="oklch(0.85 0.25 50)"
                                         opacity={0.7 + (i / 8) * 0.3}
                                         filter="url(#glow)"
@@ -1818,14 +1818,14 @@ function App() {
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={15}
+                                    r={17}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={10}
+                                    r={11}
                                     fill="oklch(0.85 0.25 50)"
                                     opacity="1"
                                   />
@@ -1840,7 +1840,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="12"
+                                    strokeWidth="14"
                                     strokeLinecap="round"
                                     opacity="0.95"
                                     filter="url(#strong-glow)"
@@ -1851,21 +1851,21 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="oklch(0.30 0.20 290)"
-                                    strokeWidth="7"
+                                    strokeWidth="8"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={13}
+                                    r={15}
                                     fill={color}
                                     filter="url(#strong-glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={6}
+                                    r={7}
                                     fill="oklch(0.20 0.15 290)"
                                     opacity="1"
                                   />
@@ -1879,7 +1879,7 @@ function App() {
                                       key={i}
                                       cx={p.x * CELL_SIZE}
                                       cy={p.y * CELL_SIZE}
-                                      r={12 - i * 0.7}
+                                      r={14 - i * 0.8}
                                       fill={color}
                                       opacity={0.4 + (i / 12) * 0.6}
                                       filter="url(#glow)"
@@ -1891,7 +1891,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="14"
+                                    strokeWidth="16"
                                     strokeLinecap="round"
                                     opacity="0.9"
                                     filter="url(#glow)"
@@ -1902,21 +1902,21 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="oklch(0.85 0.30 110)"
-                                    strokeWidth="8"
+                                    strokeWidth="9"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={15}
+                                    r={17}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={9}
+                                    r={10}
                                     fill="oklch(0.85 0.30 110)"
                                     opacity="1"
                                   />
@@ -1928,31 +1928,33 @@ function App() {
                       </svg>
 
                       <div
-                        className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
+                        className="absolute flex items-center justify-center text-4xl bg-gradient-to-br from-green-400 to-green-600 rounded-full shadow-2xl border-4 border-green-300 animate-pulse"
                         style={{
                           left: `${PATH[0].x * CELL_SIZE}px`,
                           top: `${PATH[0].y * CELL_SIZE}px`,
-                          width: `${CELL_SIZE * 0.5}px`,
-                          height: `${CELL_SIZE * 0.5}px`,
+                          width: `${CELL_SIZE * 0.7}px`,
+                          height: `${CELL_SIZE * 0.7}px`,
                           transform: 'translate(50%, 50%)',
                           zIndex: 2,
+                          boxShadow: '0 0 30px rgba(34, 197, 94, 0.8), 0 8px 25px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.4)',
                         }}
                       >
-                        ▶️
+                        <div style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.6))' }}>▶️</div>
                       </div>
 
                       <div
-                        className="absolute flex items-center justify-center text-3xl bg-red-500 rounded-full shadow-lg border-4 border-red-600"
+                        className="absolute flex items-center justify-center text-4xl bg-gradient-to-br from-red-500 to-red-700 rounded-full shadow-2xl border-4 border-red-300"
                         style={{
                           left: `${PATH[PATH.length - 1].x * CELL_SIZE}px`,
                           top: `${PATH[PATH.length - 1].y * CELL_SIZE}px`,
-                          width: `${CELL_SIZE * 0.5}px`,
-                          height: `${CELL_SIZE * 0.5}px`,
+                          width: `${CELL_SIZE * 0.7}px`,
+                          height: `${CELL_SIZE * 0.7}px`,
                           transform: 'translate(50%, 50%)',
                           zIndex: 2,
+                          boxShadow: '0 0 30px rgba(239, 68, 68, 0.8), 0 8px 25px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.4)',
                         }}
                       >
-                        🏠
+                        <div style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.6))' }}>🏠</div>
                       </div>
 
                       {Array.from({ length: GRID_HEIGHT }).map((_, y) =>
@@ -2003,8 +2005,9 @@ function App() {
                         const stats = getTowerStats(tower)
                         const towerLevel = tower.level
                         
-                        const baseTowerSize = CELL_SIZE * 0.5
-                        const finalTowerSize = baseTowerSize
+                        const baseTowerSize = CELL_SIZE * 0.68
+                        const levelScale = Math.min(1.3, 1 + (towerLevel - 1) * 0.03)
+                        const finalTowerSize = baseTowerSize * levelScale
                         const glowIntensity = Math.min(50, 10 + towerLevel * 2)
                         
                         const expNeeded = getExpNeededForLevel(towerLevel + 1)
@@ -2014,9 +2017,9 @@ function App() {
                         const towerCenterX = tower.position.x * CELL_SIZE + CELL_SIZE / 2
                         const towerCenterY = tower.position.y * CELL_SIZE + CELL_SIZE / 2
                         
-                        const expBarWidth = 32
-                        const expBarHeight = 12
-                        const levelCircleSize = 20
+                        const expBarWidth = 24
+                        const expBarHeight = 10
+                        const levelCircleSize = 18
                         
                         return (
                           <div key={tower.id}>
@@ -2077,28 +2080,60 @@ function App() {
                               </>
                             )}
                             <div
-                              className="absolute flex items-center justify-center rounded-full shadow-lg cursor-pointer"
+                              className="absolute flex items-center justify-center rounded-full shadow-2xl cursor-pointer border-4 transition-all duration-300"
                               style={{
                                 left: `${towerCenterX}px`,
                                 top: `${towerCenterY}px`,
                                 width: `${finalTowerSize}px`,
                                 height: `${finalTowerSize}px`,
-                                transform: 'translate(-50%, -50%)',
+                                transform: `translate(-50%, -50%) ${isHovered ? 'scale(1.1)' : 'scale(1)'}`,
                                 backgroundColor: config.color,
+                                borderColor: towerLevel >= 5 
+                                  ? '#FFD700' 
+                                  : towerLevel >= 3 
+                                    ? '#C0C0C0'
+                                    : `color-mix(in oklch, ${config.color} 80%, white 20%)`,
                                 zIndex: 4,
-                                boxShadow: `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
+                                boxShadow: `
+                                  0 0 ${glowIntensity}px ${config.color}, 
+                                  0 4px 20px rgba(0,0,0,0.5),
+                                  inset 0 2px 8px rgba(255,255,255,0.3),
+                                  inset 0 -2px 8px rgba(0,0,0,0.3)
+                                `,
                               }}
                               onMouseEnter={() => setHoveredTower(tower.id)}
                               onMouseLeave={() => setHoveredTower(null)}
                             >
-                              <Icon size={Math.floor(finalTowerSize * 0.6)} weight="fill" color="white" />
+                              {towerLevel >= 5 && (
+                                <div
+                                  className="absolute inset-0 rounded-full animate-pulse"
+                                  style={{
+                                    background: `radial-gradient(circle, ${config.color}60 0%, transparent 70%)`,
+                                    transform: 'scale(1.3)',
+                                    zIndex: -1,
+                                  }}
+                                />
+                              )}
+                              <div 
+                                className="absolute inset-0 rounded-full"
+                                style={{
+                                  background: `linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)`,
+                                  mixBlendMode: 'overlay',
+                                }}
+                              />
+                              <Icon size={Math.floor(finalTowerSize * 0.55)} weight="fill" color="white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+                              {towerLevel >= 10 && (
+                                <div className="absolute -top-2 -right-2 animate-pulse">
+                                  <div className="text-2xl" style={{ filter: 'drop-shadow(0 2px 6px rgba(255,215,0,0.8))' }}>⭐</div>
+                                </div>
+                              )}
                             </div>
                             
                             <div
                               className="absolute pointer-events-none flex items-center"
                               style={{
                                 left: `${towerCenterX}px`,
-                                top: `${towerCenterY + finalTowerSize / 2 + 6}px`,
+                                top: `${towerCenterY + finalTowerSize / 2 + 8}px`,
                                 transform: 'translate(-50%, 0)',
                                 zIndex: 5,
                                 height: `${expBarHeight}px`,
@@ -2107,7 +2142,7 @@ function App() {
                               <motion.div 
                                 className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white font-bold rounded-full flex items-center justify-center border-2 border-amber-500/80 shadow-lg shrink-0"
                                 style={{ 
-                                  fontSize: towerLevel >= 10 ? '8px' : '9px',
+                                  fontSize: towerLevel >= 10 ? '7px' : '8px',
                                   width: `${levelCircleSize}px`,
                                   height: `${levelCircleSize}px`,
                                   fontFamily: 'var(--font-heading)',
@@ -2144,44 +2179,133 @@ function App() {
                         )
                       })}
 
-                      {monsters.map(monster => (
-                        <div
-                          key={monster.id}
-                          className="absolute transition-all duration-75"
-                          style={{
-                            left: `${monster.position.x * CELL_SIZE}px`,
-                            top: `${monster.position.y * CELL_SIZE}px`,
-                            width: `${CELL_SIZE * 0.5}px`,
-                            height: `${CELL_SIZE * 0.5}px`,
-                            transform: 'translate(50%, 50%)',
-                            zIndex: 5,
-                          }}
-                        >
+                      {monsters.map(monster => {
+                        const isBoss = monster.isBoss
+                        const monsterSize = isBoss ? CELL_SIZE * 0.95 : CELL_SIZE * 0.70
+                        const emojiSize = isBoss ? '48px' : '32px'
+                        
+                        return (
                           <div
-                            className="w-full h-full rounded-full flex items-center justify-center text-2xl shadow-lg animate-in zoom-in duration-300 relative"
-                            style={{ 
-                              backgroundColor: monster.color,
-                              transform: monster.isBoss ? 'scale(1.5)' : 'scale(1)',
+                            key={monster.id}
+                            className="absolute transition-all duration-75"
+                            style={{
+                              left: `${monster.position.x * CELL_SIZE}px`,
+                              top: `${monster.position.y * CELL_SIZE}px`,
+                              width: `${monsterSize}px`,
+                              height: `${monsterSize}px`,
+                              transform: 'translate(50%, 50%)',
+                              zIndex: isBoss ? 6 : 5,
                             }}
                           >
-                            {monster.emoji}
-                            {monster.isBoss && (
-                              <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-                                <Crown size={24} weight="fill" color="gold" />
+                            {isBoss && (
+                              <>
+                                <div
+                                  className="absolute inset-0 rounded-full animate-pulse"
+                                  style={{
+                                    background: `radial-gradient(circle, ${monster.color}80 0%, transparent 70%)`,
+                                    transform: 'scale(1.4)',
+                                    zIndex: -2,
+                                  }}
+                                />
+                                <div
+                                  className="absolute inset-0 rounded-full"
+                                  style={{
+                                    border: `3px solid ${monster.color}`,
+                                    boxShadow: `0 0 30px ${monster.color}, inset 0 0 20px ${monster.color}40`,
+                                    transform: 'scale(1.15)',
+                                    animation: 'pulse 2s infinite',
+                                    zIndex: -1,
+                                  }}
+                                />
+                              </>
+                            )}
+                            <div
+                              className="w-full h-full rounded-full flex items-center justify-center shadow-2xl animate-in zoom-in duration-300 relative border-4"
+                              style={{ 
+                                backgroundColor: monster.color,
+                                borderColor: isBoss ? '#FFD700' : `color-mix(in oklch, ${monster.color} 70%, white 30%)`,
+                                boxShadow: isBoss 
+                                  ? `0 0 40px ${monster.color}, 0 8px 30px rgba(0,0,0,0.6), inset 0 4px 12px rgba(255,255,255,0.3)`
+                                  : `0 0 15px ${monster.color}50, 0 4px 15px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2)`,
+                                fontSize: emojiSize,
+                              }}
+                            >
+                              {monster.emoji}
+                              {isBoss && (
+                                <>
+                                  <div className="absolute -top-3 -right-3 animate-bounce" style={{ animationDuration: '1s' }}>
+                                    <div className="relative">
+                                      <div className="absolute inset-0 blur-md bg-yellow-400 rounded-full" />
+                                      <Crown size={32} weight="fill" color="#FFD700" className="relative drop-shadow-lg" />
+                                    </div>
+                                  </div>
+                                  <div className="absolute -top-3 -left-3 animate-bounce" style={{ animationDuration: '1s', animationDelay: '0.5s' }}>
+                                    <div className="relative">
+                                      <div className="absolute inset-0 blur-md bg-yellow-400 rounded-full" />
+                                      <Crown size={32} weight="fill" color="#FFD700" className="relative drop-shadow-lg" />
+                                    </div>
+                                  </div>
+                                  <div 
+                                    className="absolute inset-0 rounded-full"
+                                    style={{
+                                      background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(255,215,0,0.2) 100%)',
+                                      mixBlendMode: 'overlay',
+                                    }}
+                                  />
+                                </>
+                              )}
+                              {monster.armor !== undefined && monster.armor > 0 && (
+                                <div className="absolute -bottom-2 -right-2 text-xl drop-shadow-lg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }}>
+                                  🛡️
+                                </div>
+                              )}
+                            </div>
+                            <div 
+                              className="absolute left-0 right-0 bg-slate-900/90 rounded-full overflow-hidden border-2 border-slate-700 shadow-lg"
+                              style={{
+                                top: isBoss ? '-6px' : '-4px',
+                                height: isBoss ? '8px' : '6px',
+                              }}
+                            >
+                              <div
+                                className="h-full transition-all duration-150 relative overflow-hidden"
+                                style={{ 
+                                  width: `${(monster.health / monster.maxHealth) * 100}%`,
+                                  background: isBoss
+                                    ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'
+                                    : 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)',
+                                  boxShadow: isBoss ? '0 0 10px #ef4444' : 'none',
+                                }}
+                              >
+                                {isBoss && (
+                                  <div 
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                                    style={{
+                                      animation: 'shimmer 1.5s infinite linear',
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                            {isBoss && (
+                              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                                <div 
+                                  className="text-xs font-bold px-2 py-0.5 rounded-full border-2 border-red-500"
+                                  style={{
+                                    background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)',
+                                    color: '#FFD700',
+                                    textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.5)',
+                                    boxShadow: '0 0 15px rgba(239, 68, 68, 0.6)',
+                                    fontFamily: 'var(--font-heading)',
+                                  }}
+                                >
+                                  👹 BOSS 👹
+                                </div>
                               </div>
                             )}
-                            {monster.armor !== undefined && monster.armor > 0 && (
-                              <div className="absolute -bottom-1 -right-1 text-xs">🛡️</div>
-                            )}
                           </div>
-                          <div className="absolute -top-2 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-destructive transition-all duration-150"
-                              style={{ width: `${(monster.health / monster.maxHealth) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                       
                       {damageNumbers.map(dmg => {
                         const age = Date.now() - dmg.timestamp
