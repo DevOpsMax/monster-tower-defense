@@ -405,7 +405,6 @@ function App() {
   const [helpModalOpen, setHelpModalOpen] = useState(false)
   const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
   const [hoveredTower, setHoveredTower] = useState<string | null>(null)
-  const [screenShake, setScreenShake] = useState(0)
   const [comboCount, setComboCount] = useState(0)
   const [lastKillTime, setLastKillTime] = useState(0)
   const gameContainerRef = useRef<HTMLDivElement>(null)
@@ -486,8 +485,6 @@ function App() {
     
     if (forceBoss) {
       setBossSpawned(true)
-      setScreenShake(20)
-      setTimeout(() => setScreenShake(0), 500)
       toast(`Boss incoming! 👹`, { description: 'Defeat the boss to complete the wave!' })
     }
   }, [wave, weather, PATH])
@@ -746,11 +743,6 @@ function App() {
                   const baseDamage = Math.max(1, stats.damage - armorReduction)
                   const actualDamage = baseDamage * critMultiplier
                   const newHealth = m.health - actualDamage
-                  
-                  if (isCritical) {
-                    setScreenShake(8)
-                    setTimeout(() => setScreenShake(0), 150)
-                  }
                   
                   const damageNum: DamageNumber = {
                     id: `dmg-${Date.now()}-${Math.random()}`,
@@ -1667,14 +1659,7 @@ function App() {
 
             <div className="flex-1 flex flex-col gap-2 overflow-hidden">
                 <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border">
-                  <div 
-                    className="relative flex items-center justify-center h-full transition-transform duration-75"
-                    style={{
-                      transform: screenShake > 0 
-                        ? `translate(${(Math.random() - 0.5) * screenShake}px, ${(Math.random() - 0.5) * screenShake}px)` 
-                        : 'none'
-                    }}
-                  >
+                  <div className="relative flex items-center justify-center h-full">
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
                       style={{
