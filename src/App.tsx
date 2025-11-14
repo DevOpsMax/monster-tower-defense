@@ -246,127 +246,127 @@ const MAPS: Record<string, MapConfig> = {
 const CELL_SIZE = 56
 
 const MONSTER_TYPES = {
-  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
-  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.6, speedMult: 1.8, rewardMult: 1.2, armorMult: 0 },
-  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 2.5, speedMult: 0.6, rewardMult: 1.5, armorMult: 0 },
-  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 10, speedMult: 0.3, rewardMult: 5, armorMult: 0.4 },
-  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.8, speedMult: 1.5, rewardMult: 1.4, armorMult: 0 },
-  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 1.8, speedMult: 0.8, rewardMult: 2, armorMult: 0.3 },
-  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.4, speedMult: 1.4, rewardMult: 0.8, armorMult: 0 },
+  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1.4, speedMult: 1.1, rewardMult: 1, armorMult: 0 },
+  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.75, speedMult: 2.2, rewardMult: 1.3, armorMult: 0 },
+  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 3.8, speedMult: 0.65, rewardMult: 1.8, armorMult: 0.15 },
+  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 18, speedMult: 0.35, rewardMult: 6, armorMult: 0.5 },
+  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.9, speedMult: 2.0, rewardMult: 1.5, armorMult: 0 },
+  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 2.6, speedMult: 0.85, rewardMult: 2.2, armorMult: 0.4 },
+  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.5, speedMult: 1.6, rewardMult: 0.9, armorMult: 0 },
 }
 
 const TOWER_TYPES = {
   spark: { 
     cost: 150, 
-    damage: 15, 
-    range: 2.2, 
-    fireRate: 450, 
+    damage: 12, 
+    range: 2.0, 
+    fireRate: 500, 
     color: 'oklch(0.60 0.25 265)', 
     icon: Lightning, 
     name: 'Arc Spark', 
     desc: 'Chain lightning',
     specialty: 'Chains to 2 nearby targets',
-    damagePerLevel: 4,
-    rangePerLevel: 0.10,
-    fireRatePerLevel: -12,
+    damagePerLevel: 3,
+    rangePerLevel: 0.08,
+    fireRatePerLevel: -14,
   },
   cannon: { 
     cost: 250, 
-    damage: 45, 
-    range: 2.8, 
-    fireRate: 1300, 
+    damage: 35, 
+    range: 2.6, 
+    fireRate: 1400, 
     color: 'oklch(0.55 0.20 35)', 
     icon: Crosshair, 
     name: 'Rail Cannon', 
     desc: 'Armor piercing',
     specialty: 'Ignores 50% armor, high single-target',
-    damagePerLevel: 10,
-    rangePerLevel: 0.14,
-    fireRatePerLevel: -35,
+    damagePerLevel: 8,
+    rangePerLevel: 0.12,
+    fireRatePerLevel: -38,
   },
   frost: { 
     cost: 320, 
-    damage: 10, 
-    range: 2.4, 
-    fireRate: 550, 
+    damage: 8, 
+    range: 2.2, 
+    fireRate: 600, 
     color: 'oklch(0.65 0.20 220)', 
     icon: Snowflake, 
     name: 'Frost Shard', 
     desc: 'Slows enemies',
     specialty: 'Slows by 30%, splash damage',
-    damagePerLevel: 3,
-    rangePerLevel: 0.12,
-    fireRatePerLevel: -18,
+    damagePerLevel: 2,
+    rangePerLevel: 0.10,
+    fireRatePerLevel: -20,
   },
   inferno: { 
     cost: 450, 
-    damage: 22, 
-    range: 2.3, 
-    fireRate: 750, 
+    damage: 18, 
+    range: 2.1, 
+    fireRate: 850, 
     color: 'oklch(0.58 0.25 15)', 
     icon: Fire, 
     name: 'Flame Caster', 
     desc: 'Burning DOT',
     specialty: 'Burns for 5 DPS over 3 seconds',
-    damagePerLevel: 5,
-    rangePerLevel: 0.11,
-    fireRatePerLevel: -22,
+    damagePerLevel: 4,
+    rangePerLevel: 0.09,
+    fireRatePerLevel: -24,
   },
   vortex: { 
     cost: 600, 
-    damage: 8, 
-    range: 3.0, 
-    fireRate: 280, 
+    damage: 6, 
+    range: 2.8, 
+    fireRate: 320, 
     color: 'oklch(0.55 0.22 300)', 
     icon: Tornado, 
     name: 'Void Vortex', 
     desc: 'Area control',
     specialty: 'Pulls & damages all in range',
-    damagePerLevel: 2,
-    rangePerLevel: 0.16,
-    fireRatePerLevel: -8,
+    damagePerLevel: 1.5,
+    rangePerLevel: 0.14,
+    fireRatePerLevel: -9,
   },
   laser: { 
     cost: 750, 
-    damage: 5, 
-    range: 3.8, 
-    fireRate: 75, 
+    damage: 4, 
+    range: 3.5, 
+    fireRate: 85, 
     color: 'oklch(0.62 0.24 340)', 
     icon: Eye, 
     name: 'Beam Laser', 
     desc: 'Rapid continuous',
     specialty: 'Locks on, damage ramps up over time',
-    damagePerLevel: 1,
-    rangePerLevel: 0.14,
+    damagePerLevel: 0.8,
+    rangePerLevel: 0.12,
     fireRatePerLevel: -2,
   },
   void: { 
     cost: 950, 
-    damage: 65, 
-    range: 2.5, 
-    fireRate: 1900, 
+    damage: 55, 
+    range: 2.3, 
+    fireRate: 2100, 
     color: 'oklch(0.35 0.18 285)', 
     icon: Spiral, 
     name: 'Void Reaper', 
     desc: 'Pure damage',
     specialty: 'True damage ignores all defenses',
-    damagePerLevel: 14,
-    rangePerLevel: 0.12,
-    fireRatePerLevel: -45,
+    damagePerLevel: 12,
+    rangePerLevel: 0.10,
+    fireRatePerLevel: -50,
   },
   storm: { 
     cost: 1250, 
-    damage: 38, 
-    range: 3.4, 
-    fireRate: 1500, 
+    damage: 32, 
+    range: 3.2, 
+    fireRate: 1650, 
     color: 'oklch(0.60 0.20 150)', 
     icon: Atom, 
     name: 'Storm Caller', 
     desc: 'Area strikes',
     specialty: 'Hits 3 enemies in range simultaneously',
-    damagePerLevel: 8,
-    rangePerLevel: 0.16,
-    fireRatePerLevel: -40,
+    damagePerLevel: 7,
+    rangePerLevel: 0.14,
+    fireRatePerLevel: -42,
   },
 }
 
@@ -422,7 +422,7 @@ function App() {
   const distance = (p1: Position, p2: Position) => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
 
   const getExpNeededForLevel = (level: number): number => {
-    return Math.floor(5 * Math.pow(1.5, level - 1))
+    return Math.floor(6 * Math.pow(1.6, level - 1))
   }
 
   const getTowerStats = (tower: Tower) => {
@@ -447,18 +447,18 @@ function App() {
     const type = forceBoss ? 'boss' : getRandomMonsterType()
     const monsterConfig = MONSTER_TYPES[type]
     
-    const difficultyMultiplier = Math.pow(1.2, wave - 1)
-    const baseHealth = 30 * difficultyMultiplier
-    const baseSpeed = 0.012 + (wave - 1) * 0.0008
-    const baseReward = 25 + wave * 8
+    const difficultyMultiplier = Math.pow(1.35, wave - 1)
+    const baseHealth = 40 * difficultyMultiplier
+    const baseSpeed = 0.014 + (wave - 1) * 0.0012
+    const baseReward = 20 + wave * 6
     
     const weatherMult = WEATHER_EFFECTS[weather].speedMult
     
-    const speedVariation = 0.8 + Math.random() * 0.4
+    const speedVariation = 0.85 + Math.random() * 0.3
     
     const newMonster: Monster = {
       id,
-      position: { ...PATH[0] },
+      position: { x: PATH[0].x + 0.5, y: PATH[0].y + 0.5 },
       health: baseHealth * monsterConfig.healthMult,
       maxHealth: baseHealth * monsterConfig.healthMult,
       speed: baseSpeed * monsterConfig.speedMult * weatherMult * speedVariation,
@@ -486,7 +486,7 @@ function App() {
     setTowers([])
     setProjectiles([])
     setHealth(10)
-    setCoins(500)
+    setCoins(450)
     setScore(0)
     setWave(1)
     setMonstersSpawnedThisWave(0)
@@ -499,7 +499,7 @@ function App() {
     setParticles([])
     setExplosions([])
     setLevelUpEffects([])
-    setDisplayCoins(500)
+    setDisplayCoins(450)
     setDisplayScore(0)
     setPrevHealth(10)
     setPrevMonsterCount(0)
@@ -594,12 +594,12 @@ function App() {
 
     const coinInterval = setInterval(() => {
       setCoins(prev => prev + 1)
-    }, 1000)
+    }, 1500)
 
     return () => clearInterval(coinInterval)
   }, [gameState])
 
-  const getMonstersPerWave = (waveNum: number) => 10 + waveNum * 5
+  const getMonstersPerWave = (waveNum: number) => 12 + waveNum * 6
 
   useEffect(() => {
     if (gameState !== 'playing' || wave > 10) return
@@ -614,8 +614,8 @@ function App() {
       return () => clearTimeout(timer)
     }
 
-    const baseSpawnRate = 1200
-    const waveSpeedMultiplier = Math.max(0.3, 1 - (wave * 0.07))
+    const baseSpawnRate = 1000
+    const waveSpeedMultiplier = Math.max(0.25, 1 - (wave * 0.08))
     const spawnRate = Math.floor(baseSpawnRate * waveSpeedMultiplier)
 
     const spawnInterval = setInterval(() => {
@@ -672,13 +672,14 @@ function App() {
             return null
           }
 
-          const target = PATH[monster.pathIndex + 1]
+          const targetNode = PATH[monster.pathIndex + 1]
+          const target = { x: targetNode.x + 0.5, y: targetNode.y + 0.5 }
           const current = monster.position
           const dx = target.x - current.x
           const dy = target.y - current.y
           const dist = Math.sqrt(dx * dx + dy * dy)
 
-          if (dist < 0.1) {
+          if (dist < 0.05) {
             return { ...monster, pathIndex: monster.pathIndex + 1, position: target }
           }
 
@@ -2215,8 +2216,8 @@ function App() {
                             key={monster.id}
                             className="absolute transition-all duration-75"
                             style={{
-                              left: `${monster.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
-                              top: `${monster.position.y * CELL_SIZE + CELL_SIZE / 2}px`,
+                              left: `${monster.position.x * CELL_SIZE}px`,
+                              top: `${monster.position.y * CELL_SIZE}px`,
                               width: `${monsterSize}px`,
                               height: `${monsterSize}px`,
                               transform: 'translate(-50%, -50%)',
@@ -2364,8 +2365,8 @@ function App() {
                         {particles.map(particle => {
                           const age = Date.now() - particle.timestamp
                           const opacity = Math.max(0, 1 - age / particle.lifetime)
-                          const x = particle.position.x * CELL_SIZE + CELL_SIZE / 2
-                          const y = particle.position.y * CELL_SIZE + CELL_SIZE / 2
+                          const x = particle.position.x * CELL_SIZE
+                          const y = particle.position.y * CELL_SIZE
                           const size = particle.size
                           
                           return (
