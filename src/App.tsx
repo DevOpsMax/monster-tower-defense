@@ -250,123 +250,123 @@ const MONSTER_TYPES = {
 
 const TOWER_TYPES = {
   spark: { 
-    cost: 120, 
-    damage: 8, 
-    range: 1.8, 
-    fireRate: 400, 
-    color: 'oklch(0.80 0.25 200)', 
+    cost: 100, 
+    damage: 12, 
+    range: 2.0, 
+    fireRate: 500, 
+    color: 'oklch(0.75 0.28 200)', 
     icon: Lightning, 
     name: 'Arc Spark', 
     desc: 'Chain lightning',
-    specialty: 'Chains to nearby enemies',
+    specialty: 'Chains to 2 nearby targets',
     upgrades: [
-      { level: 2, expNeeded: 15, damageBonus: 3, rangeBonusPercent: 10, name: 'Charged Spark', newAbility: 'Chains to 2 targets' },
-      { level: 3, expNeeded: 40, damageBonus: 5, rangeBonusPercent: 20, name: 'Tesla Coil', newAbility: 'Chains to 3 targets, stuns briefly' },
+      { level: 2, expNeeded: 12, damageBonus: 6, rangeBonusPercent: 15, fireRateBonus: -50, name: 'Charged Coil', newAbility: 'Chains to 3 targets, 25% stun chance' },
+      { level: 3, expNeeded: 30, damageBonus: 12, rangeBonusPercent: 25, fireRateBonus: -100, name: 'Tesla Storm', newAbility: 'Chains to 5 targets, arc jumps back' },
     ]
   },
   cannon: { 
-    cost: 200, 
-    damage: 35, 
-    range: 2.2, 
-    fireRate: 1200, 
+    cost: 150, 
+    damage: 40, 
+    range: 2.5, 
+    fireRate: 1400, 
     color: 'oklch(0.65 0.28 25)', 
     icon: Crosshair, 
-    name: 'Heavy Cannon', 
-    desc: 'Piercing shots',
-    specialty: 'Penetrates through enemies',
+    name: 'Rail Cannon', 
+    desc: 'Armor piercing',
+    specialty: 'Ignores 50% armor, high single-target',
     upgrades: [
-      { level: 2, expNeeded: 20, damageBonus: 15, rangeBonusPercent: 15, name: 'Rail Cannon', newAbility: 'Pierces 2 enemies' },
-      { level: 3, expNeeded: 50, damageBonus: 30, rangeBonusPercent: 25, name: 'Hypervelocity Cannon', newAbility: 'Pierces all enemies in line' },
-    ]
-  },
-  vortex: { 
-    cost: 380, 
-    damage: 12, 
-    range: 2.8, 
-    fireRate: 900, 
-    color: 'oklch(0.70 0.30 280)', 
-    icon: CloudRain, 
-    name: 'Void Vortex', 
-    desc: 'Pulls & damages',
-    specialty: 'Slows enemies in area',
-    upgrades: [
-      { level: 2, expNeeded: 25, damageBonus: 8, rangeBonusPercent: 20, name: 'Gravity Well', newAbility: 'Pulls enemies toward center' },
-      { level: 3, expNeeded: 60, damageBonus: 15, rangeBonusPercent: 35, name: 'Black Hole', newAbility: 'Immobilizes enemies briefly' },
-    ]
-  },
-  laser: { 
-    cost: 520, 
-    damage: 6, 
-    range: 3.5, 
-    fireRate: 100, 
-    color: 'oklch(0.75 0.30 340)', 
-    icon: Target, 
-    name: 'Beam Laser', 
-    desc: 'Continuous beam',
-    specialty: 'Constant damage stream',
-    upgrades: [
-      { level: 2, expNeeded: 30, damageBonus: 4, rangeBonusPercent: 20, name: 'Fusion Laser', newAbility: 'Burns through armor faster' },
-      { level: 3, expNeeded: 70, damageBonus: 8, rangeBonusPercent: 30, name: 'Plasma Beam', newAbility: 'Melts armor, bonus vs tanks' },
+      { level: 2, expNeeded: 15, damageBonus: 20, rangeBonusPercent: 20, fireRateBonus: -200, name: 'Siege Cannon', newAbility: 'Ignores 75% armor, 2x vs bosses' },
+      { level: 3, expNeeded: 40, damageBonus: 45, rangeBonusPercent: 30, fireRateBonus: -300, name: 'Obliterator', newAbility: 'Full armor pierce, pierces enemies' },
     ]
   },
   frost: { 
-    cost: 300, 
-    damage: 10, 
-    range: 2.0, 
-    fireRate: 700, 
-    color: 'oklch(0.75 0.20 230)', 
+    cost: 180, 
+    damage: 8, 
+    range: 2.2, 
+    fireRate: 600, 
+    color: 'oklch(0.72 0.22 230)', 
     icon: Snowflake, 
     name: 'Frost Shard', 
     desc: 'Slows enemies',
-    specialty: 'Reduces enemy speed',
+    specialty: 'Slows by 30%, splash damage',
     upgrades: [
-      { level: 2, expNeeded: 20, damageBonus: 6, rangeBonusPercent: 15, name: 'Glacial Spike', newAbility: 'Slows 40%, small splash' },
-      { level: 3, expNeeded: 50, damageBonus: 12, rangeBonusPercent: 25, name: 'Absolute Zero', newAbility: 'Freezes enemies for 1s' },
+      { level: 2, expNeeded: 18, damageBonus: 8, rangeBonusPercent: 18, fireRateBonus: -50, name: 'Glacial Spear', newAbility: 'Slows 50%, freezes on crit' },
+      { level: 3, expNeeded: 45, damageBonus: 18, rangeBonusPercent: 30, fireRateBonus: -100, name: 'Absolute Zero', newAbility: 'Slows 70%, freeze AOE on hit' },
     ]
   },
   inferno: { 
-    cost: 650, 
-    damage: 60, 
-    range: 2.3, 
-    fireRate: 2400, 
+    cost: 220, 
+    damage: 18, 
+    range: 2.0, 
+    fireRate: 800, 
     color: 'oklch(0.68 0.32 35)', 
     icon: Fire, 
-    name: 'Inferno Blast', 
-    desc: 'Burning damage',
-    specialty: 'Damage over time effect',
+    name: 'Flame Caster', 
+    desc: 'Burning DOT',
+    specialty: 'Burns for 5 DPS over 3 seconds',
     upgrades: [
-      { level: 2, expNeeded: 35, damageBonus: 25, rangeBonusPercent: 20, name: 'Pyroclasm', newAbility: 'Spreads fire to nearby enemies' },
-      { level: 3, expNeeded: 80, damageBonus: 50, rangeBonusPercent: 35, name: 'Solar Flare', newAbility: 'Massive AoE explosion' },
+      { level: 2, expNeeded: 20, damageBonus: 12, rangeBonusPercent: 15, fireRateBonus: -100, name: 'Pyroclasm', newAbility: 'Burns spread to nearby enemies' },
+      { level: 3, expNeeded: 50, damageBonus: 25, rangeBonusPercent: 25, fireRateBonus: -150, name: 'Solar Inferno', newAbility: 'Melts armor, 10 DPS burn, chain fire' },
+    ]
+  },
+  vortex: { 
+    cost: 280, 
+    damage: 6, 
+    range: 2.8, 
+    fireRate: 300, 
+    color: 'oklch(0.70 0.30 280)', 
+    icon: CloudRain, 
+    name: 'Void Vortex', 
+    desc: 'Area control',
+    specialty: 'Pulls & damages all in range',
+    upgrades: [
+      { level: 2, expNeeded: 22, damageBonus: 8, rangeBonusPercent: 20, fireRateBonus: 0, name: 'Gravity Well', newAbility: 'Stronger pull, groups enemies' },
+      { level: 3, expNeeded: 55, damageBonus: 16, rangeBonusPercent: 35, fireRateBonus: -50, name: 'Black Hole', newAbility: 'Massive pull, stuns in center' },
+    ]
+  },
+  laser: { 
+    cost: 350, 
+    damage: 4, 
+    range: 3.5, 
+    fireRate: 80, 
+    color: 'oklch(0.75 0.30 340)', 
+    icon: Target, 
+    name: 'Beam Laser', 
+    desc: 'Rapid continuous',
+    specialty: 'Locks on, damage ramps up over time',
+    upgrades: [
+      { level: 2, expNeeded: 25, damageBonus: 3, rangeBonusPercent: 20, fireRateBonus: -20, name: 'Fusion Beam', newAbility: 'Damage ramps 50% faster' },
+      { level: 3, expNeeded: 60, damageBonus: 6, rangeBonusPercent: 30, fireRateBonus: -30, name: 'Disintegrator', newAbility: 'Max ramp melts all armor types' },
     ]
   },
   void: { 
-    cost: 450, 
-    damage: 20, 
-    range: 2.5, 
-    fireRate: 1500, 
+    cost: 420, 
+    damage: 55, 
+    range: 2.3, 
+    fireRate: 2000, 
     color: 'oklch(0.45 0.25 290)', 
     icon: Skull, 
-    name: 'Void Strike', 
-    desc: 'Ignores armor',
-    specialty: 'Pure damage, bypasses armor',
+    name: 'Void Reaper', 
+    desc: 'Pure damage',
+    specialty: 'True damage ignores all defenses',
     upgrades: [
-      { level: 2, expNeeded: 28, damageBonus: 12, rangeBonusPercent: 18, name: 'Entropy Bolt', newAbility: 'Steals life, heals base' },
-      { level: 3, expNeeded: 65, damageBonus: 25, rangeBonusPercent: 30, name: 'Annihilation', newAbility: 'Instant kill chance on weak enemies' },
+      { level: 2, expNeeded: 28, damageBonus: 35, rangeBonusPercent: 18, fireRateBonus: -300, name: 'Entropy Strike', newAbility: 'Heals 1 HP per kill' },
+      { level: 3, expNeeded: 65, damageBonus: 75, rangeBonusPercent: 30, fireRateBonus: -500, name: 'Oblivion', newAbility: '15% instant kill on hit' },
     ]
   },
   storm: { 
-    cost: 780, 
-    damage: 45, 
-    range: 3.0, 
-    fireRate: 1800, 
+    cost: 500, 
+    damage: 32, 
+    range: 3.2, 
+    fireRate: 1600, 
     color: 'oklch(0.72 0.28 120)', 
     icon: CloudRain, 
     name: 'Storm Caller', 
-    desc: 'AoE strikes',
-    specialty: 'Hits multiple enemies',
+    desc: 'Area strikes',
+    specialty: 'Hits 3 enemies in range simultaneously',
     upgrades: [
-      { level: 2, expNeeded: 40, damageBonus: 20, rangeBonusPercent: 25, name: 'Tempest', newAbility: 'Lightning strikes random enemies' },
-      { level: 3, expNeeded: 90, damageBonus: 40, rangeBonusPercent: 40, name: 'Maelstrom', newAbility: 'Continuous area storm' },
+      { level: 2, expNeeded: 35, damageBonus: 20, rangeBonusPercent: 25, fireRateBonus: -200, name: 'Thunderlord', newAbility: 'Hits 5 enemies, 20% chain strike' },
+      { level: 3, expNeeded: 80, damageBonus: 45, rangeBonusPercent: 40, fireRateBonus: -400, name: 'Tempest God', newAbility: 'Hits all in range, calls lightning storm' },
     ]
   },
 }
@@ -402,6 +402,7 @@ function App() {
   const [explosions, setExplosions] = useState<Explosion[]>([])
   const [helpModalOpen, setHelpModalOpen] = useState(false)
   const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
+  const [hoveredTower, setHoveredTower] = useState<string | null>(null)
   const gameContainerRef = useRef<HTMLDivElement>(null)
   
   const [displayCoins, setDisplayCoins] = useState(coins)
@@ -670,11 +671,27 @@ function App() {
       setTowers(prev => {
         return prev.map(tower => {
           const config = TOWER_TYPES[tower.type]
-          if (now - tower.lastShot < config.fireRate) return tower
+          
+          let effectiveRange = config.range
+          let effectiveDamage = config.damage
+          let effectiveFireRate = config.fireRate
+          
+          if (tower.level > 1) {
+            for (let i = 0; i < tower.level - 1; i++) {
+              const upgrade = config.upgrades[i]
+              if (upgrade) {
+                effectiveDamage += upgrade.damageBonus
+                effectiveRange *= (1 + upgrade.rangeBonusPercent / 100)
+                effectiveFireRate += (upgrade.fireRateBonus || 0)
+              }
+            }
+          }
+          
+          if (now - tower.lastShot < effectiveFireRate) return tower
 
           const target = monsters.find(m => {
             const d = distance(tower.position, m.position)
-            return d <= config.range && m.health > 0
+            return d <= effectiveRange && m.health > 0
           })
 
           if (target) {
@@ -683,7 +700,7 @@ function App() {
               start: { ...tower.position },
               target: { ...target.position },
               towerId: tower.id,
-              damage: config.damage,
+              damage: effectiveDamage,
               towerType: tower.type,
               progress: 0,
               trail: [],
@@ -693,8 +710,8 @@ function App() {
             setTimeout(() => {
               setMonsters(prev => prev.map(m => {
                 if (m.id === target.id) {
-                  const armorReduction = m.armor && m.armor > 0 ? config.damage * m.armor : 0
-                  const actualDamage = Math.max(1, config.damage - armorReduction)
+                  const armorReduction = m.armor && m.armor > 0 && tower.type !== 'void' ? effectiveDamage * m.armor : 0
+                  const actualDamage = Math.max(1, effectiveDamage - armorReduction)
                   const newHealth = m.health - actualDamage
                   
                   const damageNum: DamageNumber = {
@@ -1279,11 +1296,22 @@ function App() {
                                       </Badge>
                                     </div>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mb-1">{config.desc}</p>
-                                  <div className="text-xs space-y-0.5 text-muted-foreground">
-                                    <div>Damage: {config.damage}</div>
-                                    <div>Range: {config.range} cells</div>
-                                    <div>Fire Rate: {config.fireRate}ms</div>
+                                  <p className="text-xs text-muted-foreground mb-2">{config.specialty}</p>
+                                  <div className="text-xs space-y-0.5 text-muted-foreground mb-2">
+                                    <div>💥 Damage: {config.damage}</div>
+                                    <div>🎯 Range: {config.range} cells</div>
+                                    <div>⚡ Fire Rate: {config.fireRate}ms</div>
+                                  </div>
+                                  <Separator className="my-2" />
+                                  <div className="text-xs space-y-1">
+                                    <div className="font-semibold text-amber-400">⭐ Evolution Path:</div>
+                                    {config.upgrades.map((upgrade, idx) => (
+                                      <div key={idx} className="text-[10px] text-slate-300 ml-2">
+                                        <span className="font-bold text-yellow-400">Lvl {idx + 2}:</span> {upgrade.name}
+                                        <br />
+                                        <span className="text-slate-400 italic">→ {upgrade.newAbility}</span>
+                                      </div>
+                                    ))}
                                   </div>
                                 </Card>
                               )
@@ -1301,39 +1329,47 @@ function App() {
                             <ul className="text-sm space-y-2 text-muted-foreground">
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Defeat the boss</strong> at the end of each wave to advance</span>
+                                <span><strong>Towers evolve as they fight!</strong> Each kill gives experience - bosses give 10x XP</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Complete all 10 waves</strong> to win the adventure</span>
+                                <span><strong>Hover over towers</strong> to see their upgraded range and stats</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Place towers at curves</strong> in the path for maximum coverage</span>
+                                <span><strong>Early game:</strong> Arc Sparks chain lightning to multiple enemies efficiently</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Sniper towers</strong> have the longest range but slowest fire rate</span>
+                                <span><strong>Against armor:</strong> Rail Cannons and Void Reapers pierce defenses</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Bomber towers</strong> deal massive area damage, great for groups</span>
+                                <span><strong>Crowd control:</strong> Frost Shards slow enemies, Void Vortex pulls them together</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Weather changes</strong> affect enemy movement speed</span>
+                                <span><strong>Beam Lasers</strong> deal continuous damage that ramps up the longer they focus</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Armored enemies</strong> reduce damage, use high-damage towers</span>
+                                <span><strong>Storm Callers</strong> hit multiple enemies at once - excellent for swarms</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Fast enemies</strong> are best countered with rapid-fire towers</span>
+                                <span><strong>Flame Casters</strong> apply burning damage over time that can spread</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Earn coins passively</strong> over time, plus rewards for kills</span>
+                                <span><strong>Place towers at curves</strong> in the path for maximum time on target</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Weather changes</strong> affect enemy speed - snow slows, volcano speeds up</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Defeat the boss</strong> at the end of each wave to advance to the next level</span>
                               </li>
                             </ul>
                           </Card>
@@ -1924,42 +1960,77 @@ function App() {
                         const config = TOWER_TYPES[tower.type]
                         const Icon = config.icon
                         const towerLevel = tower.level || 1
-                        const currentUpgrade = config.upgrades[towerLevel - 1]
-                        const towerName = currentUpgrade?.name || config.name
+                        
+                        let displayName = config.name
+                        if (towerLevel > 1) {
+                          const upgradeIndex = towerLevel - 2
+                          if (config.upgrades[upgradeIndex]) {
+                            displayName = config.upgrades[upgradeIndex].name
+                          }
+                        }
+                        
                         const sizeMultiplier = 1 + (towerLevel - 1) * 0.15
                         
+                        let effectiveRange = config.range
+                        if (towerLevel > 1) {
+                          for (let i = 0; i < towerLevel - 1; i++) {
+                            const upgrade = config.upgrades[i]
+                            if (upgrade) {
+                              effectiveRange *= (1 + upgrade.rangeBonusPercent / 100)
+                            }
+                          }
+                        }
+                        
+                        const isHovered = hoveredTower === tower.id
+                        
                         return (
-                          <div
-                            key={tower.id}
-                            className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300"
-                            style={{
-                              left: `${tower.position.x * CELL_SIZE}px`,
-                              top: `${tower.position.y * CELL_SIZE}px`,
-                              width: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
-                              height: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
-                              transform: 'translate(50%, 50%)',
-                              backgroundColor: config.color,
-                              zIndex: 4,
-                              boxShadow: towerLevel > 1 ? `0 0 ${10 * towerLevel}px ${config.color}` : undefined,
-                            }}
-                          >
-                            <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
-                            {towerLevel > 1 && (
-                              <div 
-                                className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-lg"
-                                style={{ fontSize: '10px' }}
-                              >
-                                {towerLevel}
-                              </div>
+                          <div key={tower.id}>
+                            {isHovered && (
+                              <div
+                                className="absolute rounded-full border-2 border-primary/50 bg-primary/10 pointer-events-none"
+                                style={{
+                                  left: `${(tower.position.x + 0.5 - effectiveRange) * CELL_SIZE}px`,
+                                  top: `${(tower.position.y + 0.5 - effectiveRange) * CELL_SIZE}px`,
+                                  width: `${effectiveRange * 2 * CELL_SIZE}px`,
+                                  height: `${effectiveRange * 2 * CELL_SIZE}px`,
+                                  zIndex: 3,
+                                }}
+                              />
                             )}
-                            {tower.experience > 0 && currentUpgrade && (
-                              <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gray-700 rounded-full overflow-hidden border border-gray-900">
-                                <div
-                                  className="h-full bg-gradient-to-r from-yellow-500 to-yellow-300 transition-all duration-300"
-                                  style={{ width: `${(tower.experience / currentUpgrade.expNeeded) * 100}%` }}
-                                />
-                              </div>
-                            )}
+                            <div
+                              className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300 cursor-pointer hover:scale-110 transition-transform"
+                              style={{
+                                left: `${tower.position.x * CELL_SIZE}px`,
+                                top: `${tower.position.y * CELL_SIZE}px`,
+                                width: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
+                                height: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
+                                transform: 'translate(50%, 50%)',
+                                backgroundColor: config.color,
+                                zIndex: 4,
+                                boxShadow: towerLevel > 1 ? `0 0 ${10 * towerLevel}px ${config.color}` : undefined,
+                              }}
+                              onMouseEnter={() => setHoveredTower(tower.id)}
+                              onMouseLeave={() => setHoveredTower(null)}
+                              title={`${displayName} (Lvl ${towerLevel})\nKills: ${tower.kills}\nExp: ${tower.experience}/${towerLevel <= config.upgrades.length ? config.upgrades[towerLevel - 1].expNeeded : 'MAX'}`}
+                            >
+                              <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
+                              {towerLevel > 1 && (
+                                <div 
+                                  className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-lg"
+                                  style={{ fontSize: '10px' }}
+                                >
+                                  {towerLevel}
+                                </div>
+                              )}
+                              {tower.experience > 0 && towerLevel <= config.upgrades.length && (
+                                <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gray-700 rounded-full overflow-hidden border border-gray-900">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-yellow-500 to-yellow-300 transition-all duration-300"
+                                    style={{ width: `${(tower.experience / config.upgrades[towerLevel - 1].expNeeded) * 100}%` }}
+                                  />
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )
                       })}
