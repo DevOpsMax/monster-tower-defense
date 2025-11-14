@@ -2567,6 +2567,10 @@ function App() {
                               <div className="text-xs text-slate-400 font-semibold mt-1" style={{ fontFamily: 'var(--font-heading)' }}>
                                 {config.name}
                               </div>
+                              <div className="flex items-center gap-1 mt-1 bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700">
+                                <Coin size={14} weight="fill" className="text-amber-500" />
+                                <span className="text-sm font-bold text-amber-400">{config.cost}</span>
+                              </div>
                             </div>
                           )}
                         </Button>
