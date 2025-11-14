@@ -1631,7 +1631,7 @@ function App() {
                 ref={gameContainerRef}
                 className="h-full overflow-auto relative flex items-center justify-center"
                 style={{ 
-                  backgroundColor: WEATHER_EFFECTS[weather].color,
+                  backgroundColor: 'oklch(0.15 0.02 260)',
                 }}
               >
                 <div
