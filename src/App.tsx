@@ -405,6 +405,7 @@ function App() {
   const [helpModalOpen, setHelpModalOpen] = useState(false)
   const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
   const [hoveredTower, setHoveredTower] = useState<string | null>(null)
+  const [hoveredTowerType, setHoveredTowerType] = useState<keyof typeof TOWER_TYPES | null>(null)
   const [comboCount, setComboCount] = useState(0)
   const [lastKillTime, setLastKillTime] = useState(0)
   const gameContainerRef = useRef<HTMLDivElement>(null)
@@ -3162,6 +3163,7 @@ function App() {
                     const Icon = config.icon
                     const affordable = canAfford(type)
                     const selected = selectedTowerType === type
+                    const isHovered = hoveredTowerType === type
 
                     return (
                       <motion.div
@@ -3169,7 +3171,92 @@ function App() {
                         whileHover={affordable ? { scale: 1.08, y: -4 } : { scale: 1.02 }}
                         whileTap={affordable ? { scale: 0.92 } : {}}
                         transition={{ duration: 0.2 }}
+                        className="relative"
                       >
+                        {isHovered && (
+                          <div
+                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/98 rounded-lg px-4 py-3 pointer-events-none shadow-2xl border-2 border-primary/60 backdrop-blur-sm z-[200] min-w-[280px]"
+                          >
+                            <div className="space-y-2">
+                              <div className="text-center">
+                                <div className="font-bold text-lg text-primary mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                                  {config.name}
+                                </div>
+                                <div className="text-xs text-slate-400 italic mb-2">
+                                  {config.desc}
+                                </div>
+                              </div>
+                              
+                              <div className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+                              
+                              <div className="space-y-1.5">
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-400">Cost:</span>
+                                  <span className="text-amber-400 font-bold flex items-center gap-1">
+                                    <Coin size={12} weight="fill" />
+                                    {config.cost}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-400">Base Damage:</span>
+                                  <span className="text-green-400 font-bold">{config.damage}</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-400">Range:</span>
+                                  <span className="text-blue-400 font-bold">{config.range} cells</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-400">Fire Rate:</span>
+                                  <span className="text-purple-400 font-bold">{config.fireRate}ms</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-400">Attacks/Sec:</span>
+                                  <span className="text-cyan-400 font-bold">{(1000 / config.fireRate).toFixed(2)}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+                              
+                              <div className="bg-slate-800/60 rounded-md p-2 border border-slate-700">
+                                <div className="text-[10px] text-slate-300 font-semibold mb-1">✨ Specialty:</div>
+                                <div className="text-xs text-slate-200">{config.specialty}</div>
+                              </div>
+                              
+                              <div className="h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+                              
+                              <div className="space-y-1">
+                                <div className="text-[10px] font-semibold text-amber-400">⚡ Level Scaling:</div>
+                                <div className="grid grid-cols-3 gap-2 text-[10px]">
+                                  <div className="bg-green-900/30 rounded px-1.5 py-1 border border-green-700/50">
+                                    <div className="text-green-400 font-bold">+{config.damagePerLevel}</div>
+                                    <div className="text-slate-400">DMG/lvl</div>
+                                  </div>
+                                  <div className="bg-blue-900/30 rounded px-1.5 py-1 border border-blue-700/50">
+                                    <div className="text-blue-400 font-bold">+{config.rangePerLevel.toFixed(2)}</div>
+                                    <div className="text-slate-400">RNG/lvl</div>
+                                  </div>
+                                  <div className="bg-purple-900/30 rounded px-1.5 py-1 border border-purple-700/50">
+                                    <div className="text-purple-400 font-bold">{config.fireRatePerLevel}ms</div>
+                                    <div className="text-slate-400">Rate/lvl</div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {!affordable && (
+                                <div className="bg-red-900/30 border border-red-700/50 rounded-md px-2 py-1.5 mt-2">
+                                  <div className="text-xs text-red-300 text-center font-semibold">
+                                    🔒 Need {config.cost - coins} more coins
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div 
+                              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900 border-r-2 border-b-2 border-primary/60"
+                            />
+                          </div>
+                        )}
+                        
                         <Button
                           variant="outline"
                           className={`h-auto p-0 flex flex-col items-center relative overflow-hidden transition-all duration-300 min-w-[90px] w-[90px] border-2 ${
@@ -3195,6 +3282,8 @@ function App() {
                                 : 'none'
                           }}
                           onClick={() => affordable && setSelectedTowerType(selected ? null : type)}
+                          onMouseEnter={() => setHoveredTowerType(type)}
+                          onMouseLeave={() => setHoveredTowerType(null)}
                           disabled={!affordable}
                         >
                           {affordable && selected && (
