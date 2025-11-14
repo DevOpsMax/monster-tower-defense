@@ -831,101 +831,13 @@ function App() {
             <div className="flex-1 flex gap-2 overflow-hidden">
               <div className="flex-1 flex flex-col gap-2 min-w-0">
                 <Card className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-hidden">
-                  {weather === 'rain' && (
-                    <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                      {Array.from({ length: 50 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-0.5 h-8 bg-blue-400/40"
-                          style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `-10%`,
-                            animation: `fall ${0.5 + Math.random() * 0.5}s linear infinite`,
-                            animationDelay: `${Math.random() * 2}s`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  {weather === 'snow' && (
-                    <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                      {Array.from({ length: 40 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute text-white text-xl opacity-80"
-                          style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `-10%`,
-                            animation: `fall ${2 + Math.random()}s linear infinite`,
-                            animationDelay: `${Math.random() * 3}s`,
-                          }}
-                        >
-                          ❄️
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {weather === 'storm' && (
-                    <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                      <div className="absolute inset-0 bg-gray-700/20" />
-                      {Array.from({ length: 8 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute text-yellow-400 text-3xl animate-pulse"
-                          style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDuration: `${0.3 + Math.random() * 0.3}s`,
-                            animationDelay: `${Math.random() * 2}s`,
-                          }}
-                        >
-                          ⚡
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {weather === 'volcano' && (
-                    <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                      <div className="absolute inset-0 bg-orange-500/10" />
-                      {Array.from({ length: 20 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-2 h-2 rounded-full bg-orange-500"
-                          style={{
-                            left: `${Math.random() * 100}%`,
-                            bottom: `-5%`,
-                            animation: `rise ${1 + Math.random()}s ease-out infinite`,
-                            animationDelay: `${Math.random() * 2}s`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  
-                  <style>
-                    {`
-                      @keyframes fall {
-                        to { transform: translateY(${GRID_SIZE * CELL_SIZE + 100}px); }
-                      }
-                      @keyframes rise {
-                        to { transform: translateY(-${GRID_SIZE * CELL_SIZE + 100}px); opacity: 0; }
-                      }
-                    `}
-                  </style>
-                  
                   <div
-                    className="relative mx-auto bg-card rounded-lg shadow-inner h-full flex items-center justify-center"
+                    className="relative mx-auto bg-card rounded-lg shadow-inner h-full w-full flex items-center justify-center"
                   >
                     <div 
-                      className="relative"
-                      style={{
-                        width: GRID_SIZE * CELL_SIZE,
-                        height: GRID_SIZE * CELL_SIZE,
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                      }}
+                      className="relative w-full h-full"
                     >
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1, width: GRID_SIZE * CELL_SIZE, height: GRID_SIZE * CELL_SIZE }}>
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
                         <path
                           d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
                           stroke="oklch(0.85 0.02 90)"
@@ -936,7 +848,7 @@ function App() {
                         />
                       </svg>
                       
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 100, width: GRID_SIZE * CELL_SIZE, height: GRID_SIZE * CELL_SIZE, overflow: 'visible' }}>
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
                         <defs>
                           <filter id="glow">
                             <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
@@ -1274,10 +1186,11 @@ function App() {
                       <div
                         className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
                         style={{
-                          left: PATH[0].x * CELL_SIZE + CELL_SIZE / 4,
-                          top: PATH[0].y * CELL_SIZE + CELL_SIZE / 4,
-                          width: CELL_SIZE / 2,
-                          height: CELL_SIZE / 2,
+                          left: `${(PATH[0].x / GRID_SIZE) * 100}%`,
+                          top: `${(PATH[0].y / GRID_SIZE) * 100}%`,
+                          width: `${(0.5 / GRID_SIZE) * 100}%`,
+                          height: `${(0.5 / GRID_SIZE) * 100}%`,
+                          transform: 'translate(50%, 50%)',
                           zIndex: 2,
                         }}
                       >
@@ -1287,10 +1200,11 @@ function App() {
                       <div
                         className="absolute flex items-center justify-center text-3xl bg-red-500 rounded-full shadow-lg border-4 border-red-600"
                         style={{
-                          left: PATH[PATH.length - 1].x * CELL_SIZE + CELL_SIZE / 4,
-                          top: PATH[PATH.length - 1].y * CELL_SIZE + CELL_SIZE / 4,
-                          width: CELL_SIZE / 2,
-                          height: CELL_SIZE / 2,
+                          left: `${(PATH[PATH.length - 1].x / GRID_SIZE) * 100}%`,
+                          top: `${(PATH[PATH.length - 1].y / GRID_SIZE) * 100}%`,
+                          width: `${(0.5 / GRID_SIZE) * 100}%`,
+                          height: `${(0.5 / GRID_SIZE) * 100}%`,
+                          transform: 'translate(50%, 50%)',
                           zIndex: 2,
                         }}
                       >
@@ -1312,10 +1226,10 @@ function App() {
                                 canPlace ? 'cursor-pointer hover:bg-primary/10' : ''
                               }`}
                               style={{
-                                left: x * CELL_SIZE,
-                                top: y * CELL_SIZE,
-                                width: CELL_SIZE,
-                                height: CELL_SIZE,
+                                left: `${(x / GRID_SIZE) * 100}%`,
+                                top: `${(y / GRID_SIZE) * 100}%`,
+                                width: `${(1 / GRID_SIZE) * 100}%`,
+                                height: `${(1 / GRID_SIZE) * 100}%`,
                                 zIndex: 2,
                               }}
                               onMouseEnter={() => setHoveredCell({ x, y })}
@@ -1330,10 +1244,10 @@ function App() {
                         <div
                           className="absolute rounded-full border-2 border-primary/30 bg-primary/5 pointer-events-none"
                           style={{
-                            left: (hoveredCell.x + 0.5) * CELL_SIZE - TOWER_TYPES[selectedTowerType].range * CELL_SIZE,
-                            top: (hoveredCell.y + 0.5) * CELL_SIZE - TOWER_TYPES[selectedTowerType].range * CELL_SIZE,
-                            width: TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE,
-                            height: TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE,
+                            left: `${((hoveredCell.x + 0.5 - TOWER_TYPES[selectedTowerType].range) / GRID_SIZE) * 100}%`,
+                            top: `${((hoveredCell.y + 0.5 - TOWER_TYPES[selectedTowerType].range) / GRID_SIZE) * 100}%`,
+                            width: `${((TOWER_TYPES[selectedTowerType].range * 2) / GRID_SIZE) * 100}%`,
+                            height: `${((TOWER_TYPES[selectedTowerType].range * 2) / GRID_SIZE) * 100}%`,
                             zIndex: 3,
                           }}
                         />
@@ -1347,10 +1261,11 @@ function App() {
                             key={tower.id}
                             className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300"
                             style={{
-                              left: tower.position.x * CELL_SIZE + CELL_SIZE / 4,
-                              top: tower.position.y * CELL_SIZE + CELL_SIZE / 4,
-                              width: CELL_SIZE / 2,
-                              height: CELL_SIZE / 2,
+                              left: `${(tower.position.x / GRID_SIZE) * 100}%`,
+                              top: `${(tower.position.y / GRID_SIZE) * 100}%`,
+                              width: `${(0.5 / GRID_SIZE) * 100}%`,
+                              height: `${(0.5 / GRID_SIZE) * 100}%`,
+                              transform: 'translate(50%, 50%)',
                               backgroundColor: config.color,
                               zIndex: 4,
                             }}
@@ -1365,10 +1280,11 @@ function App() {
                           key={monster.id}
                           className="absolute transition-all duration-75"
                           style={{
-                            left: monster.position.x * CELL_SIZE + CELL_SIZE / 4,
-                            top: monster.position.y * CELL_SIZE + CELL_SIZE / 4,
-                            width: CELL_SIZE / 2,
-                            height: CELL_SIZE / 2,
+                            left: `${(monster.position.x / GRID_SIZE) * 100}%`,
+                            top: `${(monster.position.y / GRID_SIZE) * 100}%`,
+                            width: `${(0.5 / GRID_SIZE) * 100}%`,
+                            height: `${(0.5 / GRID_SIZE) * 100}%`,
+                            transform: 'translate(50%, 50%)',
                             zIndex: 5,
                           }}
                         >
@@ -1409,8 +1325,8 @@ function App() {
                             key={dmg.id}
                             className="absolute pointer-events-none font-bold"
                             style={{
-                              left: dmg.position.x * CELL_SIZE + CELL_SIZE / 2,
-                              top: dmg.position.y * CELL_SIZE - yOffset,
+                              left: `${(dmg.position.x / GRID_SIZE) * 100}%`,
+                              top: `calc(${(dmg.position.y / GRID_SIZE) * 100}% - ${yOffset}px)`,
                               transform: `translate(-50%, -50%) scale(${scale})`,
                               opacity: opacity,
                               zIndex: 10,
@@ -1425,7 +1341,7 @@ function App() {
                         )
                       })}
                       
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 9, width: GRID_SIZE * CELL_SIZE, height: GRID_SIZE * CELL_SIZE, overflow: 'visible' }}>
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 9, overflow: 'visible' }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
                         {particles.map(particle => {
                           const age = Date.now() - particle.timestamp
                           const opacity = Math.max(0, 1 - age / particle.lifetime)
@@ -1524,8 +1440,8 @@ function App() {
                             key={exp.id}
                             className="absolute pointer-events-none"
                             style={{
-                              left: exp.position.x * CELL_SIZE + CELL_SIZE / 2,
-                              top: exp.position.y * CELL_SIZE + CELL_SIZE / 2,
+                              left: `${(exp.position.x / GRID_SIZE) * 100}%`,
+                              top: `${(exp.position.y / GRID_SIZE) * 100}%`,
                               transform: `translate(-50%, -50%) scale(${scale})`,
                               zIndex: 8,
                             }}
