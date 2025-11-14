@@ -328,8 +328,10 @@ function App() {
     const monstersPerWave = 8 + wave * 3
     
     if (monstersSpawnedThisWave >= monstersPerWave) {
-      spawnMonster(true)
-      return
+      const timer = setTimeout(() => {
+        spawnMonster(true)
+      }, 500)
+      return () => clearTimeout(timer)
     }
 
     const spawnInterval = setInterval(() => {
@@ -471,7 +473,7 @@ function App() {
     }, 1500)
     
     return () => clearTimeout(checkComplete)
-  }, [gameState, monsters.length, bossDefeated, wave, nextWeatherChange, score, addToLeaderboard])
+  }, [gameState, monsters.length, bossDefeated, wave, nextWeatherChange, score])
 
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
