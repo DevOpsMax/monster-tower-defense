@@ -230,7 +230,7 @@ const MAPS: Record<string, MapConfig> = {
   },
 }
 
-const CELL_SIZE = 40
+const CELL_SIZE = 48
 
 const MONSTER_TYPES = {
   normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
@@ -887,13 +887,14 @@ function App() {
 
             <div className="flex-1 flex gap-2 overflow-hidden">
               <div className="flex-1 flex flex-col gap-2 min-w-0">
-                <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-auto">
-                  <div className="relative flex items-center justify-center" style={{ minWidth: '100%', minHeight: '100%' }}>
+                <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-x-auto overflow-y-hidden">
+                  <div className="relative flex items-center justify-center h-full">
                     <div 
                       className="relative bg-card rounded-lg shadow-inner"
                       style={{
                         width: `${GRID_WIDTH * CELL_SIZE}px`,
                         height: `${GRID_HEIGHT * CELL_SIZE}px`,
+                        maxHeight: '100%',
                       }}
                     >
                       <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
