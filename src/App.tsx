@@ -910,8 +910,8 @@ function App() {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="h-full flex flex-col gap-2">
-            <Card className="p-2 shrink-0">
-              <div className="flex flex-wrap items-center justify-center gap-2">
+            <Card className="p-4 shrink-0">
+              <div className="flex flex-wrap items-center justify-center gap-3">
                 <motion.div
                   key={`health-${health}`}
                   animate={health < prevHealth ? {
@@ -920,8 +920,8 @@ function App() {
                   } : {}}
                   transition={{ duration: 0.4 }}
                 >
-                  <Badge className="text-sm px-2.5 py-1 bg-red-500 hover:bg-red-600 text-white border-red-600">
-                    <Heart className="mr-1" weight="fill" size={16} />
+                  <Badge className="text-lg px-4 py-2 bg-red-500 hover:bg-red-600 text-white border-red-600">
+                    <Heart className="mr-2" weight="fill" size={20} />
                     {health}
                   </Badge>
                 </motion.div>
@@ -934,14 +934,14 @@ function App() {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Badge className="text-sm px-2.5 py-1 tabular-nums bg-amber-500 hover:bg-amber-600 text-white border-amber-600">
-                    <Coin className="mr-1" weight="fill" size={16} />
+                  <Badge className="text-lg px-4 py-2 tabular-nums bg-amber-500 hover:bg-amber-600 text-white border-amber-600">
+                    <Coin className="mr-2" weight="fill" size={20} />
                     {Math.floor(displayCoins)}
                   </Badge>
                 </motion.div>
                 
-                <Badge className="text-sm px-2.5 py-1 bg-purple-500 hover:bg-purple-600 text-white border-purple-600">
-                  <Crown className="mr-1" weight="fill" size={14} />
+                <Badge className="text-lg px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white border-purple-600">
+                  <Crown className="mr-2" weight="fill" size={18} />
                   Wave {wave}/10
                 </Badge>
                 
@@ -952,25 +952,25 @@ function App() {
                   }}
                   transition={{ duration: 0.25 }}
                 >
-                  <Badge className="text-sm px-2.5 py-1 tabular-nums bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
-                    <Target className="mr-1" weight="fill" size={14} />
+                  <Badge className="text-lg px-4 py-2 tabular-nums bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
+                    <Target className="mr-2" weight="fill" size={18} />
                     {Math.floor(displayScore).toLocaleString()}
                   </Badge>
                 </motion.div>
                 
-                <Separator orientation="vertical" className="h-6" />
+                <Separator orientation="vertical" className="h-8" />
                 
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 border-2 border-orange-300 rounded-md">
+                <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border-2 border-orange-300 rounded-md">
                   <motion.div 
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1.5"
                     animate={monsters.length < prevMonsterCount && monsters.length > 0 ? {
                       scale: [1, 1.2, 1],
                       filter: ['brightness(1)', 'brightness(1.8)', 'brightness(1)']
                     } : {}}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className="text-xs font-medium text-orange-700">Enemies:</span>
-                    <span className="text-sm font-bold tabular-nums text-orange-900">
+                    <span className="text-sm font-medium text-orange-700">Enemies:</span>
+                    <span className="text-lg font-bold tabular-nums text-orange-900">
                       {bossDefeated 
                         ? monsters.length 
                         : bossSpawned 
@@ -979,7 +979,7 @@ function App() {
                       }
                     </span>
                   </motion.div>
-                  <Separator orientation="vertical" className="h-4 bg-orange-300" />
+                  <Separator orientation="vertical" className="h-6 bg-orange-300" />
                   <div className="flex items-center gap-1">
                     <AnimatePresence mode="wait">
                       {bossSpawned ? (
@@ -995,8 +995,8 @@ function App() {
                             exit={{ scale: 0.8, opacity: 0 }}
                             transition={{ duration: 0.5 }}
                           >
-                            <Badge className="text-xs px-1.5 py-0.5 bg-gray-500 text-white border-gray-600">
-                              <Skull className="mr-0.5" size={12} weight="fill" />
+                            <Badge className="text-sm px-2 py-1 bg-gray-500 text-white border-gray-600">
+                              <Skull className="mr-1" size={14} weight="fill" />
                               Defeated
                             </Badge>
                           </motion.div>
@@ -1012,8 +1012,8 @@ function App() {
                             exit={{ scale: 0.8, opacity: 0 }}
                             transition={{ duration: 0.6 }}
                           >
-                            <Badge className="text-xs px-1.5 py-0.5 animate-pulse bg-red-600 text-white border-red-700">
-                              <Crown className="mr-0.5" size={12} weight="fill" />
+                            <Badge className="text-sm px-2 py-1 animate-pulse bg-red-600 text-white border-red-700">
+                              <Crown className="mr-1" size={14} weight="fill" />
                               BOSS
                             </Badge>
                           </motion.div>
@@ -1025,8 +1025,8 @@ function App() {
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0.8, opacity: 0 }}
                         >
-                          <Badge className="text-xs px-1.5 py-0.5 bg-yellow-500 text-white border-yellow-600">
-                            <Crown className="mr-0.5" size={12} weight="fill" />
+                          <Badge className="text-sm px-2 py-1 bg-yellow-500 text-white border-yellow-600">
+                            <Crown className="mr-1" size={14} weight="fill" />
                             Boss Soon
                           </Badge>
                         </motion.div>
@@ -1035,13 +1035,13 @@ function App() {
                   </div>
                 </div>
                 
-                <Separator orientation="vertical" className="h-6" />
+                <Separator orientation="vertical" className="h-8" />
                 
-                <div className="flex gap-1.5">
+                <div className="flex gap-2">
                   <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white border-green-600" title="Help & Tips">
-                        <Question weight="fill" size={16} />
+                      <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white border-green-600 px-3 py-2" title="Help & Tips">
+                        <Question weight="fill" size={20} />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -1198,8 +1198,8 @@ function App() {
 
                   <Dialog open={mapSelectModalOpen} onOpenChange={setMapSelectModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="bg-teal-500 hover:bg-teal-600 text-white border-teal-600" title="Change Map">
-                        <MapPin weight="fill" size={16} />
+                      <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white border-teal-600 px-3 py-2" title="Change Map">
+                        <MapPin weight="fill" size={20} />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl">
@@ -1240,17 +1240,17 @@ function App() {
                   </Dialog>
 
                   {gameState === 'playing' && (
-                    <Button size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600" onClick={() => setGameState('paused')} title="Pause">
-                      <Pause weight="fill" size={16} />
+                    <Button size="lg" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-3 py-2" onClick={() => setGameState('paused')} title="Pause">
+                      <Pause weight="fill" size={20} />
                     </Button>
                   )}
                   {gameState === 'paused' && (
-                    <Button size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600" onClick={() => setGameState('playing')} title="Resume">
-                      <Play weight="fill" size={16} />
+                    <Button size="lg" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-3 py-2" onClick={() => setGameState('playing')} title="Resume">
+                      <Play weight="fill" size={20} />
                     </Button>
                   )}
-                  <Button size="sm" className="bg-slate-500 hover:bg-slate-600 text-white border-slate-600" onClick={startGame} title="Restart">
-                    <ArrowClockwise weight="fill" size={16} />
+                  <Button size="lg" className="bg-slate-500 hover:bg-slate-600 text-white border-slate-600 px-3 py-2" onClick={startGame} title="Restart">
+                    <ArrowClockwise weight="fill" size={20} />
                   </Button>
                 </div>
               </div>
