@@ -1626,69 +1626,78 @@ function App() {
               </div>
             </Card>
 
-            <div className="flex-1 relative overflow-hidden" style={{ minHeight: 0 }}>
-                <AnimatePresence>
-                  {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
-                    <motion.div
-                      className="absolute top-4 right-4 z-50"
-                      initial={{ scale: 0, rotate: -180, x: 100 }}
-                      animate={{ scale: 1, rotate: 0, x: 0 }}
-                      exit={{ scale: 0, opacity: 0, y: -50 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    >
-                      <div className="bg-gradient-to-br from-orange-600 via-red-600 to-red-700 text-white border-4 border-yellow-400 shadow-2xl shadow-orange-900/80 rounded-2xl px-6 py-4 backdrop-blur-sm">
-                        <div className="flex flex-col items-center gap-1">
-                          <motion.div 
-                            className="text-5xl font-black"
-                            style={{ fontFamily: 'var(--font-heading)' }}
-                            animate={{ 
-                <AnimatePresence>
-                  {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
-                    <motion.div
-                      className="absolute top-4 right-4 z-50"
-                      initial={{ scale: 0, rotate: -180, x: 100 }}
-                      animate={{ scale: 1, rotate: 0, x: 0 }}
-                      exit={{ scale: 0, opacity: 0, y: -50 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    >
-                      <div className="bg-gradient-to-br from-orange-600 via-red-600 to-red-700 text-white border-4 border-yellow-400 shadow-2xl shadow-orange-900/80 rounded-2xl px-6 py-4 backdrop-blur-sm">
-                        <div className="flex flex-col items-center gap-1">
-                          <motion.div 
-                            className="text-5xl font-black"
-                            style={{ fontFamily: 'var(--font-heading)' }}
-                            animate={{ 
-                              scale: [1, 1.2, 1],
-                              rotate: [0, -5, 5, 0]
-                            }}
-                            transition={{ 
-                              duration: 0.5, 
-                              repeat: Infinity,
-                              repeatType: 'reverse'
-                            }}
-                          >
-                            🔥
-                          </motion.div>
-                          <div className="text-3xl font-black tracking-wider" style={{ 
-                            fontFamily: 'var(--font-heading)',
-                            textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.6)'
-                          }}>
-                            x{comboCount} COMBO
-                          </div>
-                          <div className="text-sm font-bold text-yellow-200">
-                            {(1 + (comboCount - 1) * 0.1).toFixed(1)}x COINS!
+            <Card className="flex-1 relative overflow-hidden bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-0">
+              <div
+                ref={gameContainerRef}
+                className="h-full overflow-auto relative"
+                style={{ 
+                  backgroundColor: WEATHER_EFFECTS[weather].color,
+                }}
+              >
+                <div
+                  className="relative"
+                  style={{
+                    width: `${GRID_WIDTH * CELL_SIZE}px`,
+                    height: `${GRID_HEIGHT * CELL_SIZE}px`,
+                  }}
+                >
+                  <AnimatePresence>
+                    {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
+                      <motion.div
+                        className="absolute top-4 right-4 z-50"
+                        initial={{ scale: 0, rotate: -180, x: 100 }}
+                        animate={{ scale: 1, rotate: 0, x: 0 }}
+                        exit={{ scale: 0, opacity: 0, y: -50 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      >
+                        <div className="bg-gradient-to-br from-orange-600 via-red-600 to-red-700 text-white border-4 border-yellow-400 shadow-2xl shadow-orange-900/80 rounded-2xl px-6 py-4 backdrop-blur-sm">
+                          <div className="flex flex-col items-center gap-1">
+                            <motion.div 
+                              className="text-5xl font-black"
+                              style={{ fontFamily: 'var(--font-heading)' }}
+                              animate={{ 
+                                scale: [1, 1.2, 1],
+                                rotate: [0, -5, 5, 0]
+                              }}
+                              transition={{ 
+                                duration: 0.5, 
+                                repeat: Infinity,
+                                repeatType: 'reverse'
+                              }}
+                            >
+                              🔥
+                            </motion.div>
+                            <div className="text-3xl font-black tracking-wider" style={{ 
+                              fontFamily: 'var(--font-heading)',
+                              textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.6)'
+                            }}>
+                              x{comboCount} COMBO
+                            </div>
+                            <div className="text-sm font-bold text-yellow-200">
+                              {(1 + (comboCount - 1) * 0.1).toFixed(1)}x COINS!
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }}>
+                    <path
+                      d={PATH.map((p, i) => {
+                        const x = (p.x + 0.5) * CELL_SIZE
+                        const y = (p.y + 0.5) * CELL_SIZE
+                        return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+                      }).join(' ')}
+                      stroke="oklch(0.35 0.05 260)"
+                      strokeWidth={CELL_SIZE * 0.7}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                       
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
+                  <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
                         <defs>
                           <filter id="glow">
                             <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
@@ -3162,7 +3171,6 @@ function App() {
                     </div>
                   </div>
                 </Card>
-            </div>
 
             <Card className="shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-2" style={{ zIndex: 20 }}>
               <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
