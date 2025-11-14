@@ -261,7 +261,7 @@ const TOWER_TYPES = {
     damage: 12, 
     range: 2.0, 
     fireRate: 500, 
-    color: 'oklch(0.65 0.25 220)', 
+    color: 'oklch(0.60 0.25 265)', 
     icon: Lightning, 
     name: 'Arc Spark', 
     desc: 'Chain lightning',
@@ -275,7 +275,7 @@ const TOWER_TYPES = {
     damage: 40, 
     range: 2.5, 
     fireRate: 1400, 
-    color: 'oklch(0.55 0.22 30)', 
+    color: 'oklch(0.55 0.20 35)', 
     icon: Crosshair, 
     name: 'Rail Cannon', 
     desc: 'Armor piercing',
@@ -289,7 +289,7 @@ const TOWER_TYPES = {
     damage: 8, 
     range: 2.2, 
     fireRate: 600, 
-    color: 'oklch(0.60 0.18 240)', 
+    color: 'oklch(0.65 0.20 220)', 
     icon: Snowflake, 
     name: 'Frost Shard', 
     desc: 'Slows enemies',
@@ -303,7 +303,7 @@ const TOWER_TYPES = {
     damage: 18, 
     range: 2.0, 
     fireRate: 800, 
-    color: 'oklch(0.60 0.28 15)', 
+    color: 'oklch(0.58 0.25 15)', 
     icon: Fire, 
     name: 'Flame Caster', 
     desc: 'Burning DOT',
@@ -317,7 +317,7 @@ const TOWER_TYPES = {
     damage: 6, 
     range: 2.8, 
     fireRate: 300, 
-    color: 'oklch(0.55 0.25 290)', 
+    color: 'oklch(0.55 0.22 300)', 
     icon: CloudRain, 
     name: 'Void Vortex', 
     desc: 'Area control',
@@ -331,7 +331,7 @@ const TOWER_TYPES = {
     damage: 4, 
     range: 3.5, 
     fireRate: 80, 
-    color: 'oklch(0.65 0.28 340)', 
+    color: 'oklch(0.62 0.24 340)', 
     icon: Target, 
     name: 'Beam Laser', 
     desc: 'Rapid continuous',
@@ -345,7 +345,7 @@ const TOWER_TYPES = {
     damage: 55, 
     range: 2.3, 
     fireRate: 2000, 
-    color: 'oklch(0.38 0.20 280)', 
+    color: 'oklch(0.35 0.18 285)', 
     icon: Skull, 
     name: 'Void Reaper', 
     desc: 'Pure damage',
@@ -359,7 +359,7 @@ const TOWER_TYPES = {
     damage: 32, 
     range: 3.2, 
     fireRate: 1600, 
-    color: 'oklch(0.58 0.22 140)', 
+    color: 'oklch(0.60 0.20 150)', 
     icon: CloudRain, 
     name: 'Storm Caller', 
     desc: 'Area strikes',
@@ -2520,20 +2520,15 @@ function App() {
                           )}
                           
                           {affordable ? (
-                            <>
-                              <div className="relative pt-3 pb-2">
+                            <div className="flex flex-col items-center w-full py-2 px-2 min-h-[122px]">
+                              <div className="relative pt-1 pb-2">
                                 <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg bg-white/20 backdrop-blur-sm border-2 border-white/30">
                                   <Icon size={24} weight="fill" color="white" />
                                 </div>
                               </div>
                               
-                              <div className="flex flex-col items-center gap-0.5 pb-2 px-2 w-full">
-                                <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/20">
-                                  <Coin size={10} weight="fill" className="text-yellow-300" />
-                                  <span className="text-xs font-bold text-white">{config.cost}</span>
-                                </div>
-                                
-                                <div className="grid grid-cols-3 gap-1 w-full mt-1">
+                              <div className="flex flex-col items-center gap-1.5 w-full">
+                                <div className="grid grid-cols-3 gap-1 w-full">
                                   <div className="flex flex-col items-center">
                                     <Sword size={10} weight="fill" className="text-white/90" />
                                     <span className="text-[9px] font-semibold text-white/90">{config.damage}</span>
@@ -2547,11 +2542,16 @@ function App() {
                                     <span className="text-[9px] font-semibold text-white/90">{Math.round(1000/config.fireRate * 10)/10}</span>
                                   </div>
                                 </div>
+                                
+                                <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/20">
+                                  <Coin size={10} weight="fill" className="text-yellow-300" />
+                                  <span className="text-xs font-bold text-white">{config.cost}</span>
+                                </div>
                               </div>
-                            </>
+                            </div>
                           ) : (
-                            <div className="flex flex-col items-center justify-center py-3 px-2 gap-2 w-full">
-                              <div className="relative">
+                            <div className="flex flex-col items-center justify-between w-full py-2 px-2 min-h-[122px]">
+                              <div className="relative pt-1 pb-2">
                                 <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-inner bg-slate-950/80 border-2 border-red-900/50">
                                   <Icon size={22} weight="fill" color="oklch(0.40 0.08 0)" />
                                 </div>
