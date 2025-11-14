@@ -1,0 +1,1 @@
+Note: The App.tsx file became corrupted during editing. Creating fresh condensed dashboard version.
