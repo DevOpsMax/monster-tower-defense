@@ -2003,12 +2003,17 @@ function App() {
                         const stats = getTowerStats(tower)
                         const towerLevel = tower.level
                         
-                        const sizeMultiplier = Math.min(2.5, 1 + (towerLevel - 1) * 0.08)
+                        const baseTowerSize = CELL_SIZE * 0.5
+                        const sizeMultiplier = Math.min(1.4, 1 + (towerLevel - 1) * 0.02)
+                        const finalTowerSize = baseTowerSize * sizeMultiplier
                         const glowIntensity = Math.min(50, 10 + towerLevel * 2)
                         
                         const expNeeded = getExpNeededForLevel(towerLevel + 1)
                         const expPercent = (tower.experience / expNeeded) * 100
                         const isHovered = hoveredTower === tower.id
+                        
+                        const towerCenterX = tower.position.x * CELL_SIZE + CELL_SIZE / 2
+                        const towerCenterY = tower.position.y * CELL_SIZE + CELL_SIZE / 2
                         
                         return (
                           <div key={tower.id}>
@@ -2027,8 +2032,8 @@ function App() {
                                 <div
                                   className="absolute bg-slate-900/95 rounded-lg px-3 py-2 pointer-events-none shadow-xl border-2 border-primary/50 backdrop-blur-sm"
                                   style={{
-                                    left: `${tower.position.x * CELL_SIZE}px`,
-                                    top: `${(tower.position.y - 1) * CELL_SIZE}px`,
+                                    left: `${towerCenterX}px`,
+                                    top: `${towerCenterY - finalTowerSize / 2 - 8}px`,
                                     transform: 'translate(-50%, -100%)',
                                     zIndex: 50,
                                     minWidth: '180px',
@@ -2071,11 +2076,11 @@ function App() {
                             <motion.div
                               className="absolute flex items-center justify-center rounded-full shadow-lg cursor-pointer"
                               style={{
-                                left: `${tower.position.x * CELL_SIZE}px`,
-                                top: `${tower.position.y * CELL_SIZE}px`,
-                                width: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
-                                height: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
-                                transform: 'translate(50%, 50%)',
+                                left: `${towerCenterX}px`,
+                                top: `${towerCenterY}px`,
+                                width: `${finalTowerSize}px`,
+                                height: `${finalTowerSize}px`,
+                                transform: 'translate(-50%, -50%)',
                                 backgroundColor: config.color,
                                 zIndex: 4,
                                 boxShadow: `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
@@ -2092,25 +2097,21 @@ function App() {
                               }}
                               transition={{ duration: 2, repeat: Infinity }}
                             >
-                              <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
-                              {towerLevel > 1 && (
-                                <motion.div 
-                                  className="absolute -top-2 -right-2 bg-gradient-to-br from-yellow-400 to-amber-600 text-white font-bold rounded-full flex items-center justify-center border-3 border-white shadow-xl"
-                                  style={{ 
-                                    fontSize: towerLevel >= 10 ? '9px' : '11px',
-                                    width: towerLevel >= 10 ? '28px' : '24px',
-                                    height: towerLevel >= 10 ? '28px' : '24px',
-                                    fontFamily: 'var(--font-heading)',
-                                  }}
-                                  initial={{ scale: 0, rotate: -180 }}
-                                  animate={{ scale: 1, rotate: 0 }}
-                                  transition={{ type: 'spring', stiffness: 300 }}
-                                >
-                                  {towerLevel}
-                                </motion.div>
-                              )}
-                              {tower.experience > 0 && (
-                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[120%] h-1.5 bg-slate-900 rounded-full overflow-hidden border-2 border-slate-700 shadow-lg">
+                              <Icon size={Math.floor(finalTowerSize * 0.6)} weight="fill" color="white" />
+                            </motion.div>
+                            
+                            <div
+                              className="absolute pointer-events-none"
+                              style={{
+                                left: `${towerCenterX}px`,
+                                top: `${towerCenterY + finalTowerSize / 2 + 4}px`,
+                                transform: 'translate(-50%, 0)',
+                                zIndex: 5,
+                                width: `${Math.max(finalTowerSize * 1.3, 42)}px`,
+                              }}
+                            >
+                              <div className="relative">
+                                <div className="h-3 bg-slate-900/90 rounded-full overflow-hidden border-2 border-slate-700/80 shadow-lg backdrop-blur-sm">
                                   <motion.div
                                     className="h-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 relative"
                                     style={{ width: `${expPercent}%` }}
@@ -2125,8 +2126,26 @@ function App() {
                                     />
                                   </motion.div>
                                 </div>
-                              )}
-                            </motion.div>
+                                
+                                <motion.div 
+                                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white font-bold rounded-full flex items-center justify-center border-2 border-amber-500/80 shadow-lg"
+                                  style={{ 
+                                    fontSize: towerLevel >= 10 ? '8px' : '9px',
+                                    width: towerLevel >= 10 ? '20px' : '18px',
+                                    height: towerLevel >= 10 ? '20px' : '18px',
+                                    fontFamily: 'var(--font-heading)',
+                                    textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                                    boxShadow: `0 0 12px rgba(251, 191, 36, 0.5), inset 0 1px 2px rgba(255,255,255,0.2)`,
+                                  }}
+                                  initial={{ scale: 0, rotate: -180 }}
+                                  animate={{ scale: 1, rotate: 0 }}
+                                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                  whileHover={{ scale: 1.1 }}
+                                >
+                                  {towerLevel}
+                                </motion.div>
+                              </div>
+                            </div>
                           </div>
                         )
                       })}
