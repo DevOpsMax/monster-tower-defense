@@ -2550,7 +2550,7 @@ function App() {
                               </div>
                             </div>
                           ) : (
-                            <div className="flex flex-col items-center justify-between w-full py-2 px-2 min-h-[122px]">
+                            <div className="flex flex-col items-center w-full py-2 px-2 min-h-[122px]">
                               <div className="relative pt-1 pb-2">
                                 <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-inner bg-slate-950/80 border-2 border-red-900/50">
                                   <Icon size={22} weight="fill" color="oklch(0.40 0.08 0)" />
@@ -2562,9 +2562,26 @@ function App() {
                                 </div>
                               </div>
                               
-                              <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full border border-red-900/50">
-                                <Coin size={12} weight="fill" className="text-red-700" />
-                                <span className="text-xs font-bold text-red-300">{config.cost}</span>
+                              <div className="flex flex-col items-center gap-1.5 w-full">
+                                <div className="grid grid-cols-3 gap-1 w-full">
+                                  <div className="flex flex-col items-center">
+                                    <Sword size={10} weight="fill" className="text-slate-600" />
+                                    <span className="text-[9px] font-semibold text-slate-600">{config.damage}</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <Target size={10} weight="fill" className="text-slate-600" />
+                                    <span className="text-[9px] font-semibold text-slate-600">{config.range}</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <Lightning size={10} weight="fill" className="text-slate-600" />
+                                    <span className="text-[9px] font-semibold text-slate-600">{Math.round(1000/config.fireRate * 10)/10}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-red-900/50">
+                                  <Coin size={10} weight="fill" className="text-red-700" />
+                                  <span className="text-xs font-bold text-red-300">{config.cost}</span>
+                                </div>
                               </div>
                             </div>
                           )}
