@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -192,7 +192,7 @@ const MAPS: Record<string, MapConfig> = {
   },
 }
 
-const CELL_SIZE = 50
+const CELL_SIZE = 80
 
 const MONSTER_TYPES = {
   normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
@@ -242,6 +242,7 @@ function App() {
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
   const [particles, setParticles] = useState<Particle[]>([])
   const [explosions, setExplosions] = useState<Explosion[]>([])
+  const gameContainerRef = useRef<HTMLDivElement>(null)
 
   const currentMap = MAPS[selectedMap]
   const PATH = currentMap.path
@@ -645,6 +646,23 @@ function App() {
 
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
+  useEffect(() => {
+    if (gameState === 'playing' && gameContainerRef.current) {
+      const pathMidX = (PATH[Math.floor(PATH.length / 2)]?.x || PATH[0].x) * CELL_SIZE
+      const pathMidY = (PATH[Math.floor(PATH.length / 2)]?.y || PATH[0].y) * CELL_SIZE
+      
+      const container = gameContainerRef.current
+      const scrollLeft = pathMidX - container.clientWidth / 2 + CELL_SIZE / 2
+      const scrollTop = pathMidY - container.clientHeight / 2 + CELL_SIZE / 2
+      
+      container.scrollTo({
+        left: scrollLeft,
+        top: scrollTop,
+        behavior: 'smooth'
+      })
+    }
+  }, [gameState, selectedMap])
+
   return (
     <div className="h-screen bg-background overflow-hidden flex flex-col">
       {(gameState === 'menu' || gameState === 'mapSelect' || gameState === 'leaderboard' || gameState === 'gameOver') && (
@@ -830,19 +848,16 @@ function App() {
 
             <div className="flex-1 flex gap-2 overflow-hidden">
               <div className="flex-1 flex flex-col gap-2 min-w-0">
-                <Card className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-hidden">
-                  <div className="relative w-full h-full flex items-center justify-center">
+                <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-auto">
+                  <div className="relative w-full h-full flex items-start justify-start min-w-full min-h-full">
                     <div 
-                      className="relative bg-card rounded-lg shadow-inner"
+                      className="relative bg-card rounded-lg shadow-inner mx-auto"
                       style={{
-                        width: `min(100%, ${GRID_SIZE * CELL_SIZE}px)`,
-                        height: `min(100%, ${GRID_SIZE * CELL_SIZE}px)`,
-                        aspectRatio: '1 / 1',
-                        maxWidth: '100%',
-                        maxHeight: '100%',
+                        width: `${GRID_SIZE * CELL_SIZE}px`,
+                        height: `${GRID_SIZE * CELL_SIZE}px`,
                       }}
                     >
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_SIZE * CELL_SIZE} height={GRID_SIZE * CELL_SIZE}>
                         <path
                           d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
                           stroke="oklch(0.85 0.02 90)"
@@ -853,7 +868,7 @@ function App() {
                         />
                       </svg>
                       
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} width={GRID_SIZE * CELL_SIZE} height={GRID_SIZE * CELL_SIZE}>
                         <defs>
                           <filter id="glow">
                             <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
@@ -1191,10 +1206,10 @@ function App() {
                       <div
                         className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
                         style={{
-                          left: `${(PATH[0].x / GRID_SIZE) * 100}%`,
-                          top: `${(PATH[0].y / GRID_SIZE) * 100}%`,
-                          width: `${(0.5 / GRID_SIZE) * 100}%`,
-                          height: `${(0.5 / GRID_SIZE) * 100}%`,
+                          left: `${PATH[0].x * CELL_SIZE}px`,
+                          top: `${PATH[0].y * CELL_SIZE}px`,
+                          width: `${CELL_SIZE * 0.5}px`,
+                          height: `${CELL_SIZE * 0.5}px`,
                           transform: 'translate(50%, 50%)',
                           zIndex: 2,
                         }}
@@ -1205,10 +1220,10 @@ function App() {
                       <div
                         className="absolute flex items-center justify-center text-3xl bg-red-500 rounded-full shadow-lg border-4 border-red-600"
                         style={{
-                          left: `${(PATH[PATH.length - 1].x / GRID_SIZE) * 100}%`,
-                          top: `${(PATH[PATH.length - 1].y / GRID_SIZE) * 100}%`,
-                          width: `${(0.5 / GRID_SIZE) * 100}%`,
-                          height: `${(0.5 / GRID_SIZE) * 100}%`,
+                          left: `${PATH[PATH.length - 1].x * CELL_SIZE}px`,
+                          top: `${PATH[PATH.length - 1].y * CELL_SIZE}px`,
+                          width: `${CELL_SIZE * 0.5}px`,
+                          height: `${CELL_SIZE * 0.5}px`,
                           transform: 'translate(50%, 50%)',
                           zIndex: 2,
                         }}
@@ -1231,10 +1246,10 @@ function App() {
                                 canPlace ? 'cursor-pointer hover:bg-primary/10' : ''
                               }`}
                               style={{
-                                left: `${(x / GRID_SIZE) * 100}%`,
-                                top: `${(y / GRID_SIZE) * 100}%`,
-                                width: `${(1 / GRID_SIZE) * 100}%`,
-                                height: `${(1 / GRID_SIZE) * 100}%`,
+                                left: `${x * CELL_SIZE}px`,
+                                top: `${y * CELL_SIZE}px`,
+                                width: `${CELL_SIZE}px`,
+                                height: `${CELL_SIZE}px`,
                                 zIndex: 2,
                               }}
                               onMouseEnter={() => setHoveredCell({ x, y })}
@@ -1249,10 +1264,10 @@ function App() {
                         <div
                           className="absolute rounded-full border-2 border-primary/30 bg-primary/5 pointer-events-none"
                           style={{
-                            left: `${((hoveredCell.x + 0.5 - TOWER_TYPES[selectedTowerType].range) / GRID_SIZE) * 100}%`,
-                            top: `${((hoveredCell.y + 0.5 - TOWER_TYPES[selectedTowerType].range) / GRID_SIZE) * 100}%`,
-                            width: `${((TOWER_TYPES[selectedTowerType].range * 2) / GRID_SIZE) * 100}%`,
-                            height: `${((TOWER_TYPES[selectedTowerType].range * 2) / GRID_SIZE) * 100}%`,
+                            left: `${(hoveredCell.x + 0.5 - TOWER_TYPES[selectedTowerType].range) * CELL_SIZE}px`,
+                            top: `${(hoveredCell.y + 0.5 - TOWER_TYPES[selectedTowerType].range) * CELL_SIZE}px`,
+                            width: `${TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE}px`,
+                            height: `${TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE}px`,
                             zIndex: 3,
                           }}
                         />
@@ -1266,10 +1281,10 @@ function App() {
                             key={tower.id}
                             className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300"
                             style={{
-                              left: `${(tower.position.x / GRID_SIZE) * 100}%`,
-                              top: `${(tower.position.y / GRID_SIZE) * 100}%`,
-                              width: `${(0.5 / GRID_SIZE) * 100}%`,
-                              height: `${(0.5 / GRID_SIZE) * 100}%`,
+                              left: `${tower.position.x * CELL_SIZE}px`,
+                              top: `${tower.position.y * CELL_SIZE}px`,
+                              width: `${CELL_SIZE * 0.5}px`,
+                              height: `${CELL_SIZE * 0.5}px`,
                               transform: 'translate(50%, 50%)',
                               backgroundColor: config.color,
                               zIndex: 4,
@@ -1285,10 +1300,10 @@ function App() {
                           key={monster.id}
                           className="absolute transition-all duration-75"
                           style={{
-                            left: `${(monster.position.x / GRID_SIZE) * 100}%`,
-                            top: `${(monster.position.y / GRID_SIZE) * 100}%`,
-                            width: `${(0.5 / GRID_SIZE) * 100}%`,
-                            height: `${(0.5 / GRID_SIZE) * 100}%`,
+                            left: `${monster.position.x * CELL_SIZE}px`,
+                            top: `${monster.position.y * CELL_SIZE}px`,
+                            width: `${CELL_SIZE * 0.5}px`,
+                            height: `${CELL_SIZE * 0.5}px`,
                             transform: 'translate(50%, 50%)',
                             zIndex: 5,
                           }}
@@ -1330,8 +1345,8 @@ function App() {
                             key={dmg.id}
                             className="absolute pointer-events-none font-bold"
                             style={{
-                              left: `${(dmg.position.x / GRID_SIZE) * 100}%`,
-                              top: `calc(${(dmg.position.y / GRID_SIZE) * 100}% - ${yOffset}px)`,
+                              left: `${dmg.position.x * CELL_SIZE}px`,
+                              top: `calc(${dmg.position.y * CELL_SIZE}px - ${yOffset}px)`,
                               transform: `translate(-50%, -50%) scale(${scale})`,
                               opacity: opacity,
                               zIndex: 10,
@@ -1346,7 +1361,7 @@ function App() {
                         )
                       })}
                       
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 9, overflow: 'visible' }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 9, overflow: 'visible' }} width={GRID_SIZE * CELL_SIZE} height={GRID_SIZE * CELL_SIZE}>
                         {particles.map(particle => {
                           const age = Date.now() - particle.timestamp
                           const opacity = Math.max(0, 1 - age / particle.lifetime)
@@ -1445,8 +1460,8 @@ function App() {
                             key={exp.id}
                             className="absolute pointer-events-none"
                             style={{
-                              left: `${(exp.position.x / GRID_SIZE) * 100}%`,
-                              top: `${(exp.position.y / GRID_SIZE) * 100}%`,
+                              left: `${exp.position.x * CELL_SIZE}px`,
+                              top: `${exp.position.y * CELL_SIZE}px`,
                               transform: `translate(-50%, -50%) scale(${scale})`,
                               zIndex: 8,
                             }}
