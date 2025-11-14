@@ -846,46 +846,6 @@ function App() {
                             </g>
                           )
                         })}
-                        
-                        {damageNumbers.map(dmg => {
-                          const age = Date.now() - dmg.timestamp
-                          const opacity = Math.max(0, 1 - age / 1500)
-                          const yOffset = (age / 1500) * 40
-                          const scale = Math.min(1.5, 1 + (age / 300))
-                          const xJitter = Math.sin(age / 100) * 5
-                          
-                          return (
-                            <g key={dmg.id}>
-                              <text
-                                x={dmg.position.x * CELL_SIZE + CELL_SIZE / 2 + xJitter}
-                                y={dmg.position.y * CELL_SIZE + CELL_SIZE / 2 - yOffset}
-                                fill="oklch(0.99 0 0)"
-                                fontSize={`${20 * scale}px`}
-                                fontWeight="900"
-                                textAnchor="middle"
-                                opacity={opacity}
-                                strokeWidth="4"
-                                stroke="oklch(0.15 0 0)"
-                                paintOrder="stroke"
-                                fontFamily="var(--font-heading)"
-                              >
-                                -{dmg.damage}
-                              </text>
-                              <text
-                                x={dmg.position.x * CELL_SIZE + CELL_SIZE / 2 + xJitter}
-                                y={dmg.position.y * CELL_SIZE + CELL_SIZE / 2 - yOffset}
-                                fill="oklch(0.65 0.28 25)"
-                                fontSize={`${20 * scale}px`}
-                                fontWeight="900"
-                                textAnchor="middle"
-                                opacity={opacity * 0.9}
-                                fontFamily="var(--font-heading)"
-                              >
-                                -{dmg.damage}
-                              </text>
-                            </g>
-                          )
-                        })}
                       </svg>
 
                       <div
@@ -1014,6 +974,33 @@ function App() {
                           </div>
                         </div>
                       ))}
+                      
+                      {damageNumbers.map(dmg => {
+                        const age = Date.now() - dmg.timestamp
+                        const opacity = Math.max(0, 1 - age / 1500)
+                        const yOffset = (age / 1500) * 60
+                        const scale = Math.min(1.3, 1 + (age / 500))
+                        
+                        return (
+                          <div
+                            key={dmg.id}
+                            className="absolute pointer-events-none font-bold"
+                            style={{
+                              left: dmg.position.x * CELL_SIZE + CELL_SIZE / 2,
+                              top: dmg.position.y * CELL_SIZE - yOffset,
+                              transform: `translate(-50%, -50%) scale(${scale})`,
+                              opacity: opacity,
+                              zIndex: 10,
+                              textShadow: '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8), 1px -1px 2px rgba(0,0,0,0.8), -1px 1px 2px rgba(0,0,0,0.8)',
+                              fontSize: '20px',
+                              color: '#ff4444',
+                              fontFamily: 'var(--font-heading)',
+                            }}
+                          >
+                            -{dmg.damage}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </Card>
