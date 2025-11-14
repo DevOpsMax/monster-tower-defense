@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target, Crown } from '@phosphor-icons/react'
+import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target, Crown, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 type Position = { x: number; y: number }
@@ -280,6 +280,7 @@ function App() {
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
   const [particles, setParticles] = useState<Particle[]>([])
   const [explosions, setExplosions] = useState<Explosion[]>([])
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const gameContainerRef = useRef<HTMLDivElement>(null)
 
   const currentMap = MAPS[selectedMap]
@@ -1620,75 +1621,89 @@ function App() {
                 </div>
               </div>
 
-              <div className="w-64 flex flex-col gap-2 overflow-y-auto shrink-0">
-                <Card className="p-3 bg-secondary/20">
-                  <h3 className="text-sm font-bold mb-2">Wave {wave}/10</h3>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Monsters: {monstersSpawnedThisWave} / {8 + wave * 3}
-                  </p>
-                  {!bossSpawned && (
-                    <Badge variant="outline" className="mt-1 text-xs">
-                      Boss incoming...
-                    </Badge>
-                  )}
-                  {bossSpawned && !bossDefeated && (
-                    <Badge variant="destructive" className="mt-1 animate-pulse text-xs">
-                      👹 BOSS ACTIVE!
-                    </Badge>
-                  )}
-                  {bossDefeated && (
-                    <Badge variant="default" className="mt-1 text-xs">
-                      ✓ Boss Defeated!
-                    </Badge>
-                  )}
-                </Card>
+              <div className={`flex flex-col gap-2 overflow-y-auto shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-10' : 'w-64'}`}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="shrink-0"
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  {sidebarCollapsed ? <CaretLeft size={16} weight="bold" /> : <CaretRight size={16} weight="bold" />}
+                </Button>
 
-                <Card className="p-3 bg-accent/10">
-                  <h3 className="text-sm font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
-                  <div className="text-xs space-y-0.5 text-accent-foreground/90">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">👾</span>
-                      <span>Normal</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">🐰</span>
-                      <span>Fast</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">🦏</span>
-                      <span>Tank</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">👹</span>
-                      <span>Boss</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">🦅</span>
-                      <span>Flying</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">🛡️</span>
-                      <span>Armored</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">🐜</span>
-                      <span>Swarm</span>
-                    </div>
-                  </div>
-                </Card>
+                {!sidebarCollapsed && (
+                  <>
+                    <Card className="p-3 bg-secondary/20">
+                      <h3 className="text-sm font-bold mb-2">Wave {wave}/10</h3>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Monsters: {monstersSpawnedThisWave} / {8 + wave * 3}
+                      </p>
+                      {!bossSpawned && (
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          Boss incoming...
+                        </Badge>
+                      )}
+                      {bossSpawned && !bossDefeated && (
+                        <Badge variant="destructive" className="mt-1 animate-pulse text-xs">
+                          👹 BOSS ACTIVE!
+                        </Badge>
+                      )}
+                      {bossDefeated && (
+                        <Badge variant="default" className="mt-1 text-xs">
+                          ✓ Boss Defeated!
+                        </Badge>
+                      )}
+                    </Card>
 
-                <Card className="p-3 bg-muted/50">
-                  <h3 className="text-sm font-bold mb-2">💡 Tips</h3>
-                  <ul className="text-xs space-y-0.5 text-muted-foreground">
-                    <li>• Defeat boss to advance</li>
-                    <li>• 10 waves per adventure</li>
-                    <li>• Place at curves</li>
-                    <li>• Snipers = long range</li>
-                    <li>• Bombers = area damage</li>
-                    <li>• Weather affects speed</li>
-                    <li>• Armor reduces damage</li>
-                  </ul>
-                </Card>
+                    <Card className="p-3 bg-accent/10">
+                      <h3 className="text-sm font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
+                      <div className="text-xs space-y-0.5 text-accent-foreground/90">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">👾</span>
+                          <span>Normal</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🐰</span>
+                          <span>Fast</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🦏</span>
+                          <span>Tank</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">👹</span>
+                          <span>Boss</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🦅</span>
+                          <span>Flying</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🛡️</span>
+                          <span>Armored</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🐜</span>
+                          <span>Swarm</span>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-3 bg-muted/50">
+                      <h3 className="text-sm font-bold mb-2">💡 Tips</h3>
+                      <ul className="text-xs space-y-0.5 text-muted-foreground">
+                        <li>• Defeat boss to advance</li>
+                        <li>• 10 waves per adventure</li>
+                        <li>• Place at curves</li>
+                        <li>• Snipers = long range</li>
+                        <li>• Bombers = area damage</li>
+                        <li>• Weather affects speed</li>
+                        <li>• Armor reduces damage</li>
+                      </ul>
+                    </Card>
+                  </>
+                )}
               </div>
             </div>
           </div>
