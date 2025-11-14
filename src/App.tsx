@@ -1140,7 +1140,7 @@ function App() {
         </header>
       )}
       
-      <div className="flex-1 px-4 pb-4" style={{ overflow: 'visible' }}>
+      <div className="flex-1 px-4 pb-4 flex flex-col min-h-0 overflow-hidden">
         {gameState === 'menu' && (
           <div className="max-w-4xl mx-auto">
             <Card className="p-6 text-center bg-card border-border">
@@ -1272,7 +1272,7 @@ function App() {
         )}
 
         {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="flex-1 flex flex-col gap-2 min-h-0 overflow-hidden">
+          <div className="flex-1 flex flex-col gap-2 overflow-hidden" style={{ minHeight: 0 }}>
             <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10, position: 'relative' }}>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
@@ -1658,9 +1658,9 @@ function App() {
               </div>
             </Card>
 
-            <div className="flex-1 relative min-h-0 overflow-hidden">
+            <div className="flex-1 relative overflow-hidden" style={{ minHeight: 0 }}>
                 <Card ref={gameContainerRef} className="absolute inset-0 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-auto border-border" style={{ zIndex: 1 }}>
-                  <div className="relative flex items-center justify-center min-h-full min-w-full">
+                  <div className="relative flex items-center justify-center" style={{ minHeight: '100%', minWidth: '100%' }}>
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
                       style={{
