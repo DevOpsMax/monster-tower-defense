@@ -250,7 +250,7 @@ const MONSTER_TYPES = {
 
 const TOWER_TYPES = {
   spark: { 
-    cost: 100, 
+    cost: 150, 
     damage: 12, 
     range: 2.0, 
     fireRate: 500, 
@@ -265,7 +265,7 @@ const TOWER_TYPES = {
     ]
   },
   cannon: { 
-    cost: 150, 
+    cost: 225, 
     damage: 40, 
     range: 2.5, 
     fireRate: 1400, 
@@ -280,7 +280,7 @@ const TOWER_TYPES = {
     ]
   },
   frost: { 
-    cost: 180, 
+    cost: 300, 
     damage: 8, 
     range: 2.2, 
     fireRate: 600, 
@@ -295,7 +295,7 @@ const TOWER_TYPES = {
     ]
   },
   inferno: { 
-    cost: 220, 
+    cost: 400, 
     damage: 18, 
     range: 2.0, 
     fireRate: 800, 
@@ -310,7 +310,7 @@ const TOWER_TYPES = {
     ]
   },
   vortex: { 
-    cost: 280, 
+    cost: 550, 
     damage: 6, 
     range: 2.8, 
     fireRate: 300, 
@@ -325,7 +325,7 @@ const TOWER_TYPES = {
     ]
   },
   laser: { 
-    cost: 350, 
+    cost: 700, 
     damage: 4, 
     range: 3.5, 
     fireRate: 80, 
@@ -340,7 +340,7 @@ const TOWER_TYPES = {
     ]
   },
   void: { 
-    cost: 420, 
+    cost: 900, 
     damage: 55, 
     range: 2.3, 
     fireRate: 2000, 
@@ -355,7 +355,7 @@ const TOWER_TYPES = {
     ]
   },
   storm: { 
-    cost: 500, 
+    cost: 1200, 
     damage: 32, 
     range: 3.2, 
     fireRate: 1600, 
@@ -1962,25 +1962,25 @@ function App() {
                         const towerLevel = tower.level || 1
                         
                         let displayName = config.name
+                        let effectiveDamage = config.damage
+                        let effectiveRange = config.range
+                        let effectiveFireRate = config.fireRate
+                        
                         if (towerLevel > 1) {
-                          const upgradeIndex = towerLevel - 2
-                          if (config.upgrades[upgradeIndex]) {
-                            displayName = config.upgrades[upgradeIndex].name
+                          for (let i = 0; i < towerLevel - 1; i++) {
+                            const upgrade = config.upgrades[i]
+                            if (upgrade) {
+                              displayName = upgrade.name
+                              effectiveDamage += upgrade.damageBonus
+                              effectiveRange *= (1 + upgrade.rangeBonusPercent / 100)
+                              effectiveFireRate += (upgrade.fireRateBonus || 0)
+                            }
                           }
                         }
                         
                         const sizeMultiplier = 1 + (towerLevel - 1) * 0.15
                         
-                        let effectiveRange = config.range
-                        if (towerLevel > 1) {
-                          for (let i = 0; i < towerLevel - 1; i++) {
-                            const upgrade = config.upgrades[i]
-                            if (upgrade) {
-                              effectiveRange *= (1 + upgrade.rangeBonusPercent / 100)
-                            }
-                          }
-                        }
-                        
+                        const expNeeded = towerLevel <= config.upgrades.length ? config.upgrades[towerLevel - 1].expNeeded : 0
                         const isHovered = hoveredTower === tower.id
                         
                         return (
@@ -2011,7 +2011,7 @@ function App() {
                               }}
                               onMouseEnter={() => setHoveredTower(tower.id)}
                               onMouseLeave={() => setHoveredTower(null)}
-                              title={`${displayName} (Lvl ${towerLevel})\nKills: ${tower.kills}\nExp: ${tower.experience}/${towerLevel <= config.upgrades.length ? config.upgrades[towerLevel - 1].expNeeded : 'MAX'}`}
+                              title={`${displayName} (Lvl ${towerLevel})\nKills: ${tower.kills}\nExp: ${tower.experience}/${expNeeded > 0 ? expNeeded : 'MAX'}\nDamage: ${Math.floor(effectiveDamage)}\nRange: ${effectiveRange.toFixed(1)}`}
                             >
                               <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
                               {towerLevel > 1 && (
@@ -2022,11 +2022,11 @@ function App() {
                                   {towerLevel}
                                 </div>
                               )}
-                              {tower.experience > 0 && towerLevel <= config.upgrades.length && (
+                              {tower.experience > 0 && expNeeded > 0 && (
                                 <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gray-700 rounded-full overflow-hidden border border-gray-900">
                                   <div
                                     className="h-full bg-gradient-to-r from-yellow-500 to-yellow-300 transition-all duration-300"
-                                    style={{ width: `${(tower.experience / config.upgrades[towerLevel - 1].expNeeded) * 100}%` }}
+                                    style={{ width: `${(tower.experience / expNeeded) * 100}%` }}
                                   />
                                 </div>
                               )}
@@ -2289,7 +2289,9 @@ function App() {
                 </Card>
 
                 <div className="flex gap-2 justify-start overflow-x-auto overflow-y-hidden items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
-                  {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
+                  {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>)
+                    .sort((a, b) => TOWER_TYPES[a].cost - TOWER_TYPES[b].cost)
+                    .map(type => {
                     const config = TOWER_TYPES[type]
                     const Icon = config.icon
                     const affordable = canAfford(type)
@@ -2304,7 +2306,7 @@ function App() {
                       >
                         <Button
                           variant="outline"
-                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 min-w-[140px] ${
+                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 w-[160px] ${
                             selected 
                               ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/50' 
                               : affordable
@@ -2353,13 +2355,13 @@ function App() {
                           </div>
                           
                           <div className="flex flex-col items-center gap-1 w-full">
-                            <div className="font-bold text-xs text-white tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
+                            <div className="font-bold text-xs text-white tracking-wide truncate w-full text-center" style={{ fontFamily: 'var(--font-heading)' }}>
                               {config.name.toUpperCase()}
                             </div>
-                            <div className="text-xs text-slate-300 leading-tight text-center">
+                            <div className="text-xs text-slate-300 leading-tight text-center line-clamp-1">
                               {config.desc}
                             </div>
-                            <div className="text-[10px] text-blue-300 leading-tight text-center italic">
+                            <div className="text-[10px] text-blue-300 leading-tight text-center italic line-clamp-1">
                               {config.specialty}
                             </div>
                           </div>
@@ -2371,7 +2373,7 @@ function App() {
                             </div>
                             <div className="flex justify-between text-[10px] text-slate-400">
                               <span>RATE: {config.fireRate}ms</span>
-                              <span className="text-green-400">{config.upgrades.length} LVLs</span>
+                              <span className="text-green-400">{config.upgrades.length + 1} LVLs</span>
                             </div>
                           </div>
                           
