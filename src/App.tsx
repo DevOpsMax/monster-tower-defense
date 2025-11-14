@@ -986,7 +986,7 @@ function App() {
                           }
                           setParticles(prev => [...prev, ...burstParticles])
                           
-                          toast.success(`${config.name} reached level ${t.level + 1}! ⚡`, {
+                          toast.success(`${config.name} - Level ${t.level + 1}! 🌟`, {
                             description: `+${config.damagePerLevel} DMG, +${config.rangePerLevel.toFixed(2)} Range, ${config.fireRatePerLevel}ms Rate`
                           })
                           return upgradedTower
@@ -1305,21 +1305,6 @@ function App() {
                   <Crown className="mr-1.5" weight="fill" size={16} />
                   Wave {wave}/10
                 </Badge>
-                
-                <AnimatePresence>
-                  {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-                      <Badge className="text-xs px-2 py-0.5 bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-300 shadow-lg shadow-orange-900/50 animate-pulse">
-                        🔥 x{comboCount}
-                      </Badge>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
                 
                 <motion.div
                   key={`score-flash-${Math.floor(score / 200)}`}
@@ -1657,6 +1642,47 @@ function App() {
             </Card>
 
             <div className="flex-1 relative overflow-hidden" style={{ minHeight: 0 }}>
+                <AnimatePresence>
+                  {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
+                    <motion.div
+                      className="absolute top-4 right-4 z-50"
+                      initial={{ scale: 0, rotate: -180, x: 100 }}
+                      animate={{ scale: 1, rotate: 0, x: 0 }}
+                      exit={{ scale: 0, opacity: 0, y: -50 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
+                      <div className="bg-gradient-to-br from-orange-600 via-red-600 to-red-700 text-white border-4 border-yellow-400 shadow-2xl shadow-orange-900/80 rounded-2xl px-6 py-4 backdrop-blur-sm">
+                        <div className="flex flex-col items-center gap-1">
+                          <motion.div 
+                            className="text-5xl font-black"
+                            style={{ fontFamily: 'var(--font-heading)' }}
+                            animate={{ 
+                              scale: [1, 1.2, 1],
+                              rotate: [0, -5, 5, 0]
+                            }}
+                            transition={{ 
+                              duration: 0.5, 
+                              repeat: Infinity,
+                              repeatType: 'reverse'
+                            }}
+                          >
+                            🔥
+                          </motion.div>
+                          <div className="text-3xl font-black tracking-wider" style={{ 
+                            fontFamily: 'var(--font-heading)',
+                            textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.6)'
+                          }}>
+                            x{comboCount} COMBO
+                          </div>
+                          <div className="text-sm font-bold text-yellow-200">
+                            {(1 + (comboCount - 1) * 0.1).toFixed(1)}x COINS!
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
                 <Card ref={gameContainerRef} className="absolute inset-0 p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-auto border-border" style={{ zIndex: 1 }}>
                   <div className="relative" style={{ minHeight: 'fit-content', minWidth: 'fit-content' }}>
                     <div 
@@ -3130,7 +3156,7 @@ function App() {
                                   fontFamily: 'var(--font-heading)',
                                 }}
                               >
-                                ⚡
+                                ⭐
                               </div>
                               <div
                                 className="absolute text-2xl font-bold"
@@ -3142,7 +3168,7 @@ function App() {
                                   whiteSpace: 'nowrap',
                                 }}
                               >
-                                LEVEL {effect.level}
+                                LEVEL {effect.level}!
                               </div>
                             </div>
                           </motion.div>
