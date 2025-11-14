@@ -29,9 +29,12 @@ type Monster = {
 type Tower = {
   id: string
   position: Position
-  type: 'fast' | 'strong' | 'area' | 'sniper' | 'freeze' | 'bomb'
+  type: 'spark' | 'cannon' | 'vortex' | 'laser' | 'frost' | 'inferno' | 'void' | 'storm'
   lastShot: number
   target: string | null
+  kills: number
+  level: number
+  experience: number
 }
 type Projectile = {
   id: string
@@ -246,12 +249,126 @@ const MONSTER_TYPES = {
 }
 
 const TOWER_TYPES = {
-  fast: { cost: 150, damage: 10, range: 1.5, fireRate: 500, color: 'oklch(0.75 0.20 180)', icon: Lightning, name: 'Zapper', desc: 'Rapid fire' },
-  strong: { cost: 300, damage: 40, range: 2, fireRate: 1500, color: 'oklch(0.70 0.25 20)', icon: Crosshair, name: 'Blaster', desc: 'High damage' },
-  area: { cost: 450, damage: 15, range: 2.5, fireRate: 1000, color: 'oklch(0.65 0.25 300)', icon: Shield, name: 'Guardian', desc: 'Area damage' },
-  sniper: { cost: 600, damage: 100, range: 4, fireRate: 2500, color: 'oklch(0.68 0.22 340)', icon: Target, name: 'Sniper', desc: 'Long range' },
-  freeze: { cost: 360, damage: 5, range: 2, fireRate: 800, color: 'oklch(0.72 0.18 240)', icon: Snowflake, name: 'Freezer', desc: 'Slows enemies' },
-  bomb: { cost: 750, damage: 80, range: 2, fireRate: 3000, color: 'oklch(0.62 0.24 40)', icon: Bomb, name: 'Bomber', desc: 'Explosive' },
+  spark: { 
+    cost: 120, 
+    damage: 8, 
+    range: 1.8, 
+    fireRate: 400, 
+    color: 'oklch(0.80 0.25 200)', 
+    icon: Lightning, 
+    name: 'Arc Spark', 
+    desc: 'Chain lightning',
+    specialty: 'Chains to nearby enemies',
+    upgrades: [
+      { level: 2, expNeeded: 15, damageBonus: 3, rangeBonusPercent: 10, name: 'Charged Spark', newAbility: 'Chains to 2 targets' },
+      { level: 3, expNeeded: 40, damageBonus: 5, rangeBonusPercent: 20, name: 'Tesla Coil', newAbility: 'Chains to 3 targets, stuns briefly' },
+    ]
+  },
+  cannon: { 
+    cost: 200, 
+    damage: 35, 
+    range: 2.2, 
+    fireRate: 1200, 
+    color: 'oklch(0.65 0.28 25)', 
+    icon: Crosshair, 
+    name: 'Heavy Cannon', 
+    desc: 'Piercing shots',
+    specialty: 'Penetrates through enemies',
+    upgrades: [
+      { level: 2, expNeeded: 20, damageBonus: 15, rangeBonusPercent: 15, name: 'Rail Cannon', newAbility: 'Pierces 2 enemies' },
+      { level: 3, expNeeded: 50, damageBonus: 30, rangeBonusPercent: 25, name: 'Hypervelocity Cannon', newAbility: 'Pierces all enemies in line' },
+    ]
+  },
+  vortex: { 
+    cost: 380, 
+    damage: 12, 
+    range: 2.8, 
+    fireRate: 900, 
+    color: 'oklch(0.70 0.30 280)', 
+    icon: CloudRain, 
+    name: 'Void Vortex', 
+    desc: 'Pulls & damages',
+    specialty: 'Slows enemies in area',
+    upgrades: [
+      { level: 2, expNeeded: 25, damageBonus: 8, rangeBonusPercent: 20, name: 'Gravity Well', newAbility: 'Pulls enemies toward center' },
+      { level: 3, expNeeded: 60, damageBonus: 15, rangeBonusPercent: 35, name: 'Black Hole', newAbility: 'Immobilizes enemies briefly' },
+    ]
+  },
+  laser: { 
+    cost: 520, 
+    damage: 6, 
+    range: 3.5, 
+    fireRate: 100, 
+    color: 'oklch(0.75 0.30 340)', 
+    icon: Target, 
+    name: 'Beam Laser', 
+    desc: 'Continuous beam',
+    specialty: 'Constant damage stream',
+    upgrades: [
+      { level: 2, expNeeded: 30, damageBonus: 4, rangeBonusPercent: 20, name: 'Fusion Laser', newAbility: 'Burns through armor faster' },
+      { level: 3, expNeeded: 70, damageBonus: 8, rangeBonusPercent: 30, name: 'Plasma Beam', newAbility: 'Melts armor, bonus vs tanks' },
+    ]
+  },
+  frost: { 
+    cost: 300, 
+    damage: 10, 
+    range: 2.0, 
+    fireRate: 700, 
+    color: 'oklch(0.75 0.20 230)', 
+    icon: Snowflake, 
+    name: 'Frost Shard', 
+    desc: 'Slows enemies',
+    specialty: 'Reduces enemy speed',
+    upgrades: [
+      { level: 2, expNeeded: 20, damageBonus: 6, rangeBonusPercent: 15, name: 'Glacial Spike', newAbility: 'Slows 40%, small splash' },
+      { level: 3, expNeeded: 50, damageBonus: 12, rangeBonusPercent: 25, name: 'Absolute Zero', newAbility: 'Freezes enemies for 1s' },
+    ]
+  },
+  inferno: { 
+    cost: 650, 
+    damage: 60, 
+    range: 2.3, 
+    fireRate: 2400, 
+    color: 'oklch(0.68 0.32 35)', 
+    icon: Fire, 
+    name: 'Inferno Blast', 
+    desc: 'Burning damage',
+    specialty: 'Damage over time effect',
+    upgrades: [
+      { level: 2, expNeeded: 35, damageBonus: 25, rangeBonusPercent: 20, name: 'Pyroclasm', newAbility: 'Spreads fire to nearby enemies' },
+      { level: 3, expNeeded: 80, damageBonus: 50, rangeBonusPercent: 35, name: 'Solar Flare', newAbility: 'Massive AoE explosion' },
+    ]
+  },
+  void: { 
+    cost: 450, 
+    damage: 20, 
+    range: 2.5, 
+    fireRate: 1500, 
+    color: 'oklch(0.45 0.25 290)', 
+    icon: Skull, 
+    name: 'Void Strike', 
+    desc: 'Ignores armor',
+    specialty: 'Pure damage, bypasses armor',
+    upgrades: [
+      { level: 2, expNeeded: 28, damageBonus: 12, rangeBonusPercent: 18, name: 'Entropy Bolt', newAbility: 'Steals life, heals base' },
+      { level: 3, expNeeded: 65, damageBonus: 25, rangeBonusPercent: 30, name: 'Annihilation', newAbility: 'Instant kill chance on weak enemies' },
+    ]
+  },
+  storm: { 
+    cost: 780, 
+    damage: 45, 
+    range: 3.0, 
+    fireRate: 1800, 
+    color: 'oklch(0.72 0.28 120)', 
+    icon: CloudRain, 
+    name: 'Storm Caller', 
+    desc: 'AoE strikes',
+    specialty: 'Hits multiple enemies',
+    upgrades: [
+      { level: 2, expNeeded: 40, damageBonus: 20, rangeBonusPercent: 25, name: 'Tempest', newAbility: 'Lightning strikes random enemies' },
+      { level: 3, expNeeded: 90, damageBonus: 40, rangeBonusPercent: 40, name: 'Maelstrom', newAbility: 'Continuous area storm' },
+    ]
+  },
 }
 
 const WEATHER_EFFECTS = {
@@ -401,6 +518,9 @@ function App() {
       type: selectedTowerType,
       lastShot: 0,
       target: null,
+      kills: 0,
+      level: 1,
+      experience: 0,
     }
 
     setTowers(prev => [...prev, newTower])
@@ -598,16 +718,18 @@ function App() {
                   }
                   setExplosions(prev => [...prev, explosion])
                   
-                  const particleCount = tower.type === 'area' || tower.type === 'bomb' ? 20 : 12
+                  const particleCount = tower.type === 'vortex' || tower.type === 'inferno' || tower.type === 'storm' ? 20 : 12
                   const newParticles: Particle[] = []
                   
                   let particleShape: Particle['shape'] = 'circle'
-                  if (tower.type === 'fast') particleShape = 'star'
-                  else if (tower.type === 'strong') particleShape = 'square'
-                  else if (tower.type === 'area') particleShape = 'triangle'
-                  else if (tower.type === 'sniper') particleShape = 'diamond'
-                  else if (tower.type === 'freeze') particleShape = 'snowflake'
-                  else if (tower.type === 'bomb') particleShape = 'spark'
+                  if (tower.type === 'spark') particleShape = 'star'
+                  else if (tower.type === 'cannon') particleShape = 'square'
+                  else if (tower.type === 'vortex') particleShape = 'triangle'
+                  else if (tower.type === 'laser') particleShape = 'diamond'
+                  else if (tower.type === 'frost') particleShape = 'snowflake'
+                  else if (tower.type === 'inferno') particleShape = 'spark'
+                  else if (tower.type === 'void') particleShape = 'circle'
+                  else if (tower.type === 'storm') particleShape = 'star'
                   
                   for (let i = 0; i < particleCount; i++) {
                     const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5
@@ -620,7 +742,7 @@ function App() {
                         y: Math.sin(angle) * speed,
                       },
                       color: config.color,
-                      size: tower.type === 'bomb' || tower.type === 'area' ? 8 : 5,
+                      size: tower.type === 'inferno' || tower.type === 'vortex' || tower.type === 'storm' ? 8 : 5,
                       timestamp: Date.now(),
                       lifetime: 800 + Math.random() * 400,
                       shape: particleShape,
@@ -633,6 +755,30 @@ function App() {
                     setCoins(c => c + m.reward)
                     setScore(s => s + m.reward * wave)
                     toast.success(`+${m.reward} coins!`)
+                    
+                    setTowers(prevTowers => prevTowers.map(t => {
+                      if (t.id === tower.id) {
+                        const newKills = t.kills + 1
+                        const newExp = t.experience + (m.isBoss ? 10 : 1)
+                        const currentUpgrade = config.upgrades[t.level - 1]
+                        
+                        if (currentUpgrade && newExp >= currentUpgrade.expNeeded) {
+                          const upgradedTower = {
+                            ...t,
+                            kills: newKills,
+                            experience: 0,
+                            level: t.level + 1,
+                          }
+                          toast.success(`${config.name} evolved to ${currentUpgrade.name}! 🎉`, {
+                            description: currentUpgrade.newAbility
+                          })
+                          return upgradedTower
+                        }
+                        
+                        return { ...t, kills: newKills, experience: newExp }
+                      }
+                      return t
+                    }))
                     
                     if (m.isBoss) {
                       setBossDefeated(true)
@@ -1309,7 +1455,7 @@ function App() {
                           
                           return (
                             <g key={proj.id}>
-                              {proj.towerType === 'fast' && (
+                              {proj.towerType === 'spark' && (
                                 <>
                                   <line
                                     x1={startX}
@@ -1349,7 +1495,7 @@ function App() {
                                 </>
                               )}
                               
-                              {proj.towerType === 'strong' && (
+                              {proj.towerType === 'cannon' && (
                                 <>
                                   <line
                                     x1={startX}
@@ -1389,7 +1535,7 @@ function App() {
                                 </>
                               )}
                               
-                              {proj.towerType === 'area' && (
+                              {proj.towerType === 'vortex' && (
                                 <>
                                   <line
                                     x1={startX}
@@ -1440,7 +1586,7 @@ function App() {
                                 </>
                               )}
                               
-                              {proj.towerType === 'sniper' && (
+                              {proj.towerType === 'laser' && (
                                 <>
                                   <line
                                     x1={startX}
@@ -1490,7 +1636,7 @@ function App() {
                                 </>
                               )}
                               
-                              {proj.towerType === 'freeze' && (
+                              {proj.towerType === 'frost' && (
                                 <>
                                   <line
                                     x1={startX}
@@ -1554,7 +1700,7 @@ function App() {
                                 </>
                               )}
                               
-                              {proj.towerType === 'bomb' && (
+                              {proj.towerType === 'inferno' && (
                                 <>
                                   <line
                                     x1={startX}
@@ -1604,6 +1750,97 @@ function App() {
                                     cy={currentY}
                                     r={10}
                                     fill="oklch(0.85 0.25 50)"
+                                    opacity="1"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'void' && (
+                                <>
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="12"
+                                    strokeLinecap="round"
+                                    opacity="0.95"
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="oklch(0.30 0.20 290)"
+                                    strokeWidth="7"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={13}
+                                    fill={color}
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={6}
+                                    fill="oklch(0.20 0.15 290)"
+                                    opacity="1"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'storm' && (
+                                <>
+                                  {proj.trail.slice(-12).map((p, i) => (
+                                    <circle
+                                      key={i}
+                                      cx={p.x * CELL_SIZE}
+                                      cy={p.y * CELL_SIZE}
+                                      r={12 - i * 0.7}
+                                      fill={color}
+                                      opacity={0.4 + (i / 12) * 0.6}
+                                      filter="url(#glow)"
+                                    />
+                                  ))}
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="14"
+                                    strokeLinecap="round"
+                                    opacity="0.9"
+                                    filter="url(#glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="oklch(0.85 0.30 110)"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={15}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={9}
+                                    fill="oklch(0.85 0.30 110)"
                                     opacity="1"
                                   />
                                 </>
@@ -1686,6 +1923,11 @@ function App() {
                       {towers.map(tower => {
                         const config = TOWER_TYPES[tower.type]
                         const Icon = config.icon
+                        const towerLevel = tower.level || 1
+                        const currentUpgrade = config.upgrades[towerLevel - 1]
+                        const towerName = currentUpgrade?.name || config.name
+                        const sizeMultiplier = 1 + (towerLevel - 1) * 0.15
+                        
                         return (
                           <div
                             key={tower.id}
@@ -1693,14 +1935,31 @@ function App() {
                             style={{
                               left: `${tower.position.x * CELL_SIZE}px`,
                               top: `${tower.position.y * CELL_SIZE}px`,
-                              width: `${CELL_SIZE * 0.5}px`,
-                              height: `${CELL_SIZE * 0.5}px`,
+                              width: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
+                              height: `${CELL_SIZE * 0.5 * sizeMultiplier}px`,
                               transform: 'translate(50%, 50%)',
                               backgroundColor: config.color,
                               zIndex: 4,
+                              boxShadow: towerLevel > 1 ? `0 0 ${10 * towerLevel}px ${config.color}` : undefined,
                             }}
                           >
-                            <Icon size={24} weight="fill" color="white" />
+                            <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
+                            {towerLevel > 1 && (
+                              <div 
+                                className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-lg"
+                                style={{ fontSize: '10px' }}
+                              >
+                                {towerLevel}
+                              </div>
+                            )}
+                            {tower.experience > 0 && currentUpgrade && (
+                              <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gray-700 rounded-full overflow-hidden border border-gray-900">
+                                <div
+                                  className="h-full bg-gradient-to-r from-yellow-500 to-yellow-300 transition-all duration-300"
+                                  style={{ width: `${(tower.experience / currentUpgrade.expNeeded) * 100}%` }}
+                                />
+                              </div>
+                            )}
                           </div>
                         )
                       })}
@@ -1876,7 +2135,7 @@ function App() {
                               zIndex: 8,
                             }}
                           >
-                            {exp.towerType === 'bomb' && (
+                            {(exp.towerType === 'inferno' || exp.towerType === 'storm') && (
                               <>
                                 <div
                                   className="absolute rounded-full"
@@ -1901,7 +2160,7 @@ function App() {
                                 />
                               </>
                             )}
-                            {exp.towerType === 'area' && (
+                            {(exp.towerType === 'vortex' || exp.towerType === 'void') && (
                               <>
                                 <div
                                   className="absolute rounded-full"
@@ -1926,7 +2185,7 @@ function App() {
                                 />
                               </>
                             )}
-                            {(exp.towerType === 'fast' || exp.towerType === 'strong' || exp.towerType === 'sniper' || exp.towerType === 'freeze') && (
+                            {(exp.towerType === 'spark' || exp.towerType === 'cannon' || exp.towerType === 'laser' || exp.towerType === 'frost') && (
                               <>
                                 <div
                                   className="absolute rounded-full"
@@ -1958,7 +2217,7 @@ function App() {
                   </div>
                 </Card>
 
-                <div className="flex flex-wrap gap-2 justify-center items-stretch px-4 py-2">
+                <div className="flex gap-2 justify-start overflow-x-auto overflow-y-hidden items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
                     const config = TOWER_TYPES[type]
                     const Icon = config.icon
@@ -1974,7 +2233,7 @@ function App() {
                       >
                         <Button
                           variant="outline"
-                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 min-w-[120px] ${
+                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 min-w-[140px] ${
                             selected 
                               ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/50' 
                               : affordable
@@ -2026,8 +2285,22 @@ function App() {
                             <div className="font-bold text-xs text-white tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
                               {config.name.toUpperCase()}
                             </div>
-                            <div className="text-xs text-slate-300 leading-tight text-center h-7 flex items-center">
+                            <div className="text-xs text-slate-300 leading-tight text-center">
                               {config.desc}
+                            </div>
+                            <div className="text-[10px] text-blue-300 leading-tight text-center italic">
+                              {config.specialty}
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col gap-1 w-full">
+                            <div className="flex justify-between text-[10px] text-slate-400">
+                              <span>DMG: {config.damage}</span>
+                              <span>RNG: {config.range}</span>
+                            </div>
+                            <div className="flex justify-between text-[10px] text-slate-400">
+                              <span>RATE: {config.fireRate}ms</span>
+                              <span className="text-green-400">{config.upgrades.length} LVLs</span>
                             </div>
                           </div>
                           
