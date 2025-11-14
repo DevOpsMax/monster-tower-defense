@@ -2043,9 +2043,10 @@ function App() {
                           </Badge>
                           
                           {!affordable && (
-                            <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
-                              <span className="text-red-400 font-bold text-xs bg-red-950/80 px-2.5 py-1 rounded-full border border-red-800">
-                                🔒 LOCKED
+                            <div className="absolute inset-0 bg-black/60 rounded-lg flex flex-col items-center justify-center backdrop-blur-sm gap-1">
+                              <div className="text-4xl">🔒</div>
+                              <span className="text-red-400 font-bold text-sm bg-red-950/90 px-3 py-1.5 rounded-full border-2 border-red-700 shadow-lg tracking-wider">
+                                LOCKED
                               </span>
                             </div>
                           )}
