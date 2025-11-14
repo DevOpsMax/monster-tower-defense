@@ -770,7 +770,7 @@ function App() {
     <div className="h-screen bg-background overflow-hidden flex flex-col">
       {(gameState === 'menu' || gameState === 'mapSelect' || gameState === 'leaderboard' || gameState === 'gameOver') && (
         <header className="text-center py-4 shrink-0">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
             🛡️ Monster Defenders
           </h1>
           <p className="text-muted-foreground text-sm">Stop the cute monsters from reaching your base!</p>
@@ -780,9 +780,9 @@ function App() {
       <div className="flex-1 overflow-auto px-4 pb-4">
         {gameState === 'menu' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 text-center">
-              <h2 className="text-2xl font-bold mb-3 text-primary">How to Play</h2>
-              <div className="space-y-1.5 text-left mb-4 text-sm">
+            <Card className="p-6 text-center bg-card border-border">
+              <h2 className="text-2xl font-bold mb-3 text-foreground">How to Play</h2>
+              <div className="space-y-1.5 text-left mb-4 text-sm text-muted-foreground">
                 <p>🎯 Click on empty cells to place defenders that stop monsters</p>
                 <p>💰 Earn coins by defeating monsters and use them to buy more defenders</p>
                 <p>❤️ Don't let monsters reach your base or you'll lose hearts</p>
@@ -812,8 +812,8 @@ function App() {
 
         {gameState === 'mapSelect' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4 text-primary text-center">Choose Your Adventure</h2>
+            <Card className="p-6 bg-card border-border">
+              <h2 className="text-2xl font-bold mb-4 text-foreground text-center">Choose Your Adventure</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                 {Object.entries(MAPS).map(([key, map]) => (
                   <Button
@@ -850,18 +850,18 @@ function App() {
 
         {gameState === 'leaderboard' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4 text-primary text-center">🏆 Top 10 Scores</h2>
+            <Card className="p-6 bg-card border-border">
+              <h2 className="text-2xl font-bold mb-4 text-foreground text-center">🏆 Top 10 Scores</h2>
               {leaderboard && leaderboard.length > 0 ? (
                 <div className="space-y-2 mb-4">
                   {leaderboard.map((entry, index) => (
-                    <div key={entry.timestamp} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div key={entry.timestamp} className="flex items-center justify-between p-3 bg-slate-800/50 border border-slate-700/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Badge variant={index === 0 ? 'default' : 'secondary'} className="text-lg px-2 py-0.5">
                           #{index + 1}
                         </Badge>
                         <div>
-                          <p className="text-base font-bold">{entry.score.toLocaleString()} pts</p>
+                          <p className="text-base font-bold text-foreground">{entry.score.toLocaleString()} pts</p>
                           <p className="text-xs text-muted-foreground">Wave {entry.wave} • {entry.mapName}</p>
                         </div>
                       </div>
@@ -883,12 +883,12 @@ function App() {
 
         {gameState === 'gameOver' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 text-center">
+            <Card className="p-6 text-center bg-card border-border">
               <h2 className="text-2xl font-bold mb-3 text-destructive">
                 {wave >= 10 ? '🎉 Victory! 🎉' : 'Game Over!'}
               </h2>
-              <p className="text-lg mb-1">{currentMap.emoji} {currentMap.name}</p>
-              <p className="text-lg mb-2">Wave Reached: {wave}/10</p>
+              <p className="text-lg mb-1 text-foreground">{currentMap.emoji} {currentMap.name}</p>
+              <p className="text-lg mb-2 text-foreground">Wave Reached: {wave}/10</p>
               <p className="text-2xl font-bold text-primary mb-4">Final Score: {score.toLocaleString()}</p>
               {leaderboard && leaderboard.length > 0 && score >= leaderboard[0].score && (
                 <Badge variant="default" className="text-base px-3 py-1 mb-3">
@@ -910,7 +910,7 @@ function App() {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="h-full flex flex-col gap-2">
-            <Card className="p-4 shrink-0">
+            <Card className="p-4 shrink-0 bg-card/95 border-border backdrop-blur-sm">
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <motion.div
                   key={`health-${health}`}
@@ -1044,62 +1044,62 @@ function App() {
                         <Question weight="fill" size={20} />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card border-border">
                       <DialogHeader>
-                        <DialogTitle className="text-2xl">Game Help & Tips</DialogTitle>
+                        <DialogTitle className="text-2xl text-foreground">Game Help & Tips</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-6">
                         <div>
-                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-foreground">
                             👾 Enemy Types
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">👾</span>
-                                <span className="font-semibold">Normal</span>
+                                <span className="font-semibold text-foreground">Normal</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Balanced health and speed</p>
                             </Card>
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">🐰</span>
-                                <span className="font-semibold">Fast</span>
+                                <span className="font-semibold text-foreground">Fast</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Quick but weak, hard to catch</p>
                             </Card>
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">🦏</span>
-                                <span className="font-semibold">Tank</span>
+                                <span className="font-semibold text-foreground">Tank</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Slow but very tough</p>
                             </Card>
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">👹</span>
-                                <span className="font-semibold">Boss</span>
+                                <span className="font-semibold text-foreground">Boss</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Massive health, defeat to advance wave</p>
                             </Card>
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">🦅</span>
-                                <span className="font-semibold">Flying</span>
+                                <span className="font-semibold text-foreground">Flying</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Fast airborne enemy</p>
                             </Card>
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">🛡️</span>
-                                <span className="font-semibold">Armored</span>
+                                <span className="font-semibold text-foreground">Armored</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Reduces incoming damage significantly</p>
                             </Card>
-                            <Card className="p-3">
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-2xl">🐜</span>
-                                <span className="font-semibold">Swarm</span>
+                                <span className="font-semibold text-foreground">Swarm</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Weak but comes in large numbers</p>
                             </Card>
@@ -1109,7 +1109,7 @@ function App() {
                         <Separator />
 
                         <div>
-                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-foreground">
                             🗼 Tower Types
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1117,7 +1117,7 @@ function App() {
                               const config = TOWER_TYPES[type]
                               const Icon = config.icon
                               return (
-                                <Card key={type} className="p-3">
+                                <Card key={type} className="p-3 bg-slate-800/50 border-slate-700/50">
                                   <div className="flex items-center gap-2 mb-2">
                                     <div
                                       className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
@@ -1126,7 +1126,7 @@ function App() {
                                       <Icon size={18} weight="fill" color="white" />
                                     </div>
                                     <div>
-                                      <div className="font-semibold">{config.name}</div>
+                                      <div className="font-semibold text-foreground">{config.name}</div>
                                       <Badge variant="secondary" className="text-xs">
                                         <Coin size={10} weight="fill" className="mr-0.5" />
                                         {config.cost}
@@ -1148,11 +1148,11 @@ function App() {
                         <Separator />
 
                         <div>
-                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-foreground">
                             💡 Strategy Tips
                           </h3>
-                          <Card className="p-4">
-                            <ul className="text-sm space-y-2">
+                          <Card className="p-4 bg-slate-800/50 border-slate-700/50">
+                            <ul className="text-sm space-y-2 text-muted-foreground">
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
                                 <span><strong>Defeat the boss</strong> at the end of each wave to advance</span>
@@ -1202,9 +1202,9 @@ function App() {
                         <MapPin weight="fill" size={20} />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-2xl bg-card border-border">
                       <DialogHeader>
-                        <DialogTitle className="text-2xl">Change Map</DialogTitle>
+                        <DialogTitle className="text-2xl text-foreground">Change Map</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <p className="text-sm text-muted-foreground">
@@ -1257,10 +1257,10 @@ function App() {
             </Card>
 
             <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-                <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-x-auto overflow-y-hidden">
+                <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border">
                   <div className="relative flex items-center justify-center h-full">
                     <div 
-                      className="relative bg-card rounded-lg shadow-inner"
+                      className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
                       style={{
                         width: `${GRID_WIDTH * CELL_SIZE}px`,
                         height: `${GRID_HEIGHT * CELL_SIZE}px`,
@@ -1270,7 +1270,7 @@ function App() {
                       <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
                         <path
                           d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
-                          stroke="oklch(0.85 0.02 90)"
+                          stroke="oklch(0.25 0.02 260)"
                           strokeWidth="24"
                           fill="none"
                           strokeLinecap="round"
@@ -1650,8 +1650,8 @@ function App() {
                           return (
                             <div
                               key={`${x}-${y}`}
-                              className={`absolute border transition-all ${
-                                isPath ? 'bg-muted/30' : 'bg-card/50'
+                              className={`absolute border border-slate-700/30 transition-all ${
+                                isPath ? 'bg-slate-700/30' : 'bg-slate-800/30'
                               } ${canPlace && isHovered ? 'bg-primary/20 ring-2 ring-primary' : ''} ${
                                 canPlace ? 'cursor-pointer hover:bg-primary/10' : ''
                               }`}
