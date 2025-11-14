@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target } from '@phosphor-icons/react'
+import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target, Crown } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 type Position = { x: number; y: number }
@@ -21,6 +21,7 @@ type Monster = {
   emoji: string
   color: string
   armor?: number
+  isBoss?: boolean
 }
 type Tower = {
   id: string
@@ -37,38 +38,141 @@ type Projectile = {
   damage: number
   type?: string
 }
-type GameState = 'menu' | 'playing' | 'paused' | 'gameOver' | 'leaderboard'
+type GameState = 'menu' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'mapSelect'
 type WeatherType = 'clear' | 'storm' | 'snow' | 'volcano' | 'rain'
 type LeaderboardEntry = {
   score: number
   wave: number
   timestamp: number
+  mapName: string
+}
+type MapConfig = {
+  name: string
+  emoji: string
+  gridSize: number
+  path: Position[]
+  description: string
+  difficulty: string
 }
 
-const GRID_SIZE = 8
-const CELL_SIZE = 60
-const PATH: Position[] = [
-  { x: 0, y: 3 },
-  { x: 1, y: 3 },
-  { x: 2, y: 3 },
-  { x: 2, y: 2 },
-  { x: 2, y: 1 },
-  { x: 3, y: 1 },
-  { x: 4, y: 1 },
-  { x: 5, y: 1 },
-  { x: 5, y: 2 },
-  { x: 5, y: 3 },
-  { x: 5, y: 4 },
-  { x: 5, y: 5 },
-  { x: 6, y: 5 },
-  { x: 7, y: 5 },
-]
+const MAPS: Record<string, MapConfig> = {
+  forest: {
+    name: 'Forest Trail',
+    emoji: '🌲',
+    gridSize: 10,
+    description: 'A winding path through the enchanted forest',
+    difficulty: 'Easy',
+    path: [
+      { x: 0, y: 5 },
+      { x: 1, y: 5 },
+      { x: 2, y: 5 },
+      { x: 2, y: 4 },
+      { x: 2, y: 3 },
+      { x: 3, y: 3 },
+      { x: 4, y: 3 },
+      { x: 5, y: 3 },
+      { x: 5, y: 4 },
+      { x: 5, y: 5 },
+      { x: 6, y: 5 },
+      { x: 7, y: 5 },
+      { x: 7, y: 6 },
+      { x: 8, y: 6 },
+      { x: 9, y: 6 },
+    ],
+  },
+  desert: {
+    name: 'Desert Dunes',
+    emoji: '🏜️',
+    gridSize: 12,
+    description: 'Navigate the scorching desert sands',
+    difficulty: 'Medium',
+    path: [
+      { x: 0, y: 2 },
+      { x: 1, y: 2 },
+      { x: 2, y: 2 },
+      { x: 3, y: 2 },
+      { x: 3, y: 3 },
+      { x: 3, y: 4 },
+      { x: 4, y: 4 },
+      { x: 5, y: 4 },
+      { x: 6, y: 4 },
+      { x: 6, y: 5 },
+      { x: 6, y: 6 },
+      { x: 6, y: 7 },
+      { x: 7, y: 7 },
+      { x: 8, y: 7 },
+      { x: 9, y: 7 },
+      { x: 9, y: 8 },
+      { x: 10, y: 8 },
+      { x: 11, y: 8 },
+    ],
+  },
+  mountain: {
+    name: 'Mountain Pass',
+    emoji: '⛰️',
+    gridSize: 14,
+    description: 'Defend the treacherous mountain path',
+    difficulty: 'Hard',
+    path: [
+      { x: 0, y: 7 },
+      { x: 1, y: 7 },
+      { x: 2, y: 7 },
+      { x: 2, y: 6 },
+      { x: 2, y: 5 },
+      { x: 3, y: 5 },
+      { x: 4, y: 5 },
+      { x: 5, y: 5 },
+      { x: 5, y: 4 },
+      { x: 5, y: 3 },
+      { x: 6, y: 3 },
+      { x: 7, y: 3 },
+      { x: 8, y: 3 },
+      { x: 8, y: 4 },
+      { x: 8, y: 5 },
+      { x: 9, y: 5 },
+      { x: 10, y: 5 },
+      { x: 10, y: 6 },
+      { x: 10, y: 7 },
+      { x: 11, y: 7 },
+      { x: 12, y: 7 },
+      { x: 13, y: 7 },
+    ],
+  },
+  volcano: {
+    name: 'Volcanic Crater',
+    emoji: '🌋',
+    gridSize: 12,
+    description: 'Brave the molten lava flows',
+    difficulty: 'Expert',
+    path: [
+      { x: 0, y: 6 },
+      { x: 1, y: 6 },
+      { x: 2, y: 6 },
+      { x: 3, y: 6 },
+      { x: 4, y: 6 },
+      { x: 4, y: 5 },
+      { x: 4, y: 4 },
+      { x: 5, y: 4 },
+      { x: 6, y: 4 },
+      { x: 7, y: 4 },
+      { x: 7, y: 5 },
+      { x: 7, y: 6 },
+      { x: 7, y: 7 },
+      { x: 8, y: 7 },
+      { x: 9, y: 7 },
+      { x: 10, y: 7 },
+      { x: 11, y: 7 },
+    ],
+  },
+}
+
+const CELL_SIZE = 50
 
 const MONSTER_TYPES = {
   normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
   fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.6, speedMult: 1.8, rewardMult: 1.2, armorMult: 0 },
   tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 2.5, speedMult: 0.6, rewardMult: 1.5, armorMult: 0 },
-  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 5, speedMult: 0.4, rewardMult: 3, armorMult: 0 },
+  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 10, speedMult: 0.3, rewardMult: 5, armorMult: 0.4 },
   flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.8, speedMult: 1.5, rewardMult: 1.4, armorMult: 0 },
   armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 1.8, speedMult: 0.8, rewardMult: 2, armorMult: 0.3 },
   swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.4, speedMult: 1.4, rewardMult: 0.8, armorMult: 0 },
@@ -93,47 +197,46 @@ const WEATHER_EFFECTS = {
 
 function App() {
   const [gameState, setGameState] = useState<GameState>('menu')
+  const [selectedMap, setSelectedMap] = useState<string>('forest')
   const [monsters, setMonsters] = useState<Monster[]>([])
   const [towers, setTowers] = useState<Tower[]>([])
   const [projectiles, setProjectiles] = useState<Projectile[]>([])
   const [health, setHealth] = useState(10)
-  const [coins, setCoins] = useState(150)
+  const [coins, setCoins] = useState(200)
   const [score, setScore] = useState(0)
   const [wave, setWave] = useState(1)
   const [monstersSpawnedThisWave, setMonstersSpawnedThisWave] = useState(0)
   const [selectedTowerType, setSelectedTowerType] = useState<keyof typeof TOWER_TYPES | null>(null)
   const [hoveredCell, setHoveredCell] = useState<Position | null>(null)
   const [weather, setWeather] = useState<WeatherType>('clear')
-  const [nextWeatherChange, setNextWeatherChange] = useState(5)
+  const [nextWeatherChange, setNextWeatherChange] = useState(3)
+  const [bossSpawned, setBossSpawned] = useState(false)
+  const [bossDefeated, setBossDefeated] = useState(false)
   const [leaderboard, setLeaderboard] = useKV<LeaderboardEntry[]>('monster-defenders-leaderboard', [])
+
+  const currentMap = MAPS[selectedMap]
+  const PATH = currentMap.path
+  const GRID_SIZE = currentMap.gridSize
 
   const isPathCell = (x: number, y: number) => PATH.some(p => p.x === x && p.y === y)
   const hasTower = (x: number, y: number) => towers.some(t => t.position.x === x && t.position.y === y)
 
   const distance = (p1: Position, p2: Position) => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
 
-  const getMonsterTypeForWave = (wave: number, index: number): MonsterType => {
-    if (wave % 5 === 0 && index === 0) return 'boss'
-    
+  const getRandomMonsterType = (): MonsterType => {
     const types: MonsterType[] = ['normal', 'fast', 'tank', 'flying', 'armored', 'swarm']
-    const rand = Math.random()
-    
-    if (wave >= 15 && rand < 0.2) return 'armored'
-    if (wave >= 12 && rand < 0.25) return 'flying'
-    if (wave >= 10 && rand < 0.3) return 'tank'
-    if (wave >= 8 && rand < 0.35) return 'swarm'
-    if (wave >= 5 && rand < 0.4) return 'fast'
-    return 'normal'
+    return types[Math.floor(Math.random() * types.length)]
   }
 
-  const spawnMonster = useCallback(() => {
+  const spawnMonster = useCallback((forceBoss: boolean = false) => {
     const id = `monster-${Date.now()}-${Math.random()}`
-    const type = getMonsterTypeForWave(wave, monstersSpawnedThisWave)
+    const type = forceBoss ? 'boss' : getRandomMonsterType()
     const monsterConfig = MONSTER_TYPES[type]
     
-    const baseHealth = 30 + (wave - 1) * 12
-    const baseSpeed = 0.015 + (wave - 1) * 0.0015
-    const baseReward = 25 + wave * 5
+    const difficultyMultiplier = Math.pow(1.5, wave - 1)
+    const baseHealth = 30 * difficultyMultiplier
+    const baseSpeed = 0.012 + (wave - 1) * 0.0008
+    const baseReward = 25 + wave * 8
     
     const weatherMult = WEATHER_EFFECTS[weather].speedMult
     
@@ -149,11 +252,17 @@ function App() {
       emoji: monsterConfig.emoji,
       color: monsterConfig.color,
       armor: monsterConfig.armorMult,
+      isBoss: forceBoss,
     }
     
     setMonsters(prev => [...prev, newMonster])
     setMonstersSpawnedThisWave(prev => prev + 1)
-  }, [wave, monstersSpawnedThisWave, weather])
+    
+    if (forceBoss) {
+      setBossSpawned(true)
+      toast(`Boss incoming! 👹`, { description: 'Defeat the boss to complete the wave!' })
+    }
+  }, [wave, weather, PATH])
 
   const startGame = () => {
     setGameState('playing')
@@ -161,13 +270,15 @@ function App() {
     setTowers([])
     setProjectiles([])
     setHealth(10)
-    setCoins(150)
+    setCoins(200)
     setScore(0)
     setWave(1)
     setMonstersSpawnedThisWave(0)
     setSelectedTowerType(null)
     setWeather('clear')
-    setNextWeatherChange(5)
+    setNextWeatherChange(3)
+    setBossSpawned(false)
+    setBossDefeated(false)
   }
 
   const addToLeaderboard = (finalScore: number, finalWave: number) => {
@@ -175,6 +286,7 @@ function App() {
       score: finalScore,
       wave: finalWave,
       timestamp: Date.now(),
+      mapName: currentMap.name,
     }
     
     setLeaderboard((currentLeaderboard) => {
@@ -210,20 +322,22 @@ function App() {
   }
 
   useEffect(() => {
-    if (gameState !== 'playing') return
+    if (gameState !== 'playing' || wave > 10) return
 
-    const monstersPerWave = 5 + wave * 2
+    const monstersPerWave = 8 + wave * 3
     
-    if (monstersSpawnedThisWave >= monstersPerWave) return
+    if (bossSpawned || monstersSpawnedThisWave >= monstersPerWave) return
 
     const spawnInterval = setInterval(() => {
-      if (monstersSpawnedThisWave < monstersPerWave) {
-        spawnMonster()
+      if (monstersSpawnedThisWave < monstersPerWave && !bossSpawned) {
+        spawnMonster(false)
+      } else if (monstersSpawnedThisWave >= monstersPerWave && !bossSpawned) {
+        spawnMonster(true)
       }
-    }, 2000)
+    }, 1800 - wave * 80)
 
     return () => clearInterval(spawnInterval)
-  }, [gameState, monstersSpawnedThisWave, wave, spawnMonster])
+  }, [gameState, monstersSpawnedThisWave, wave, bossSpawned, spawnMonster])
 
   useEffect(() => {
     if (gameState !== 'playing') return
@@ -289,6 +403,12 @@ function App() {
                     setCoins(c => c + m.reward)
                     setScore(s => s + m.reward * wave)
                     toast.success(`+${m.reward} coins!`)
+                    
+                    if (m.isBoss) {
+                      setBossDefeated(true)
+                      toast.success('Boss defeated! 🎉')
+                    }
+                    
                     return null
                   }
                   return { ...m, health: newHealth }
@@ -320,25 +440,34 @@ function App() {
   }, [health, gameState, score, wave, leaderboard])
 
   useEffect(() => {
-    if (gameState === 'playing' && monsters.length === 0 && monstersSpawnedThisWave > 0 && towers.length >= 0) {
+    if (gameState === 'playing' && bossDefeated && monsters.length === 0) {
       const checkComplete = setTimeout(() => {
-        if (monsters.length === 0) {
+        if (monsters.length === 0 && bossDefeated) {
+          if (wave >= 10) {
+            setGameState('gameOver')
+            addToLeaderboard(score, wave)
+            toast.success('🎉 Adventure Complete! You conquered all 10 waves! 🎉')
+            return
+          }
+          
           setWave(w => w + 1)
           setMonstersSpawnedThisWave(0)
+          setBossSpawned(false)
+          setBossDefeated(false)
           toast.success(`Wave ${wave} Complete! 🎉`)
           
           if (wave >= nextWeatherChange) {
             const weatherTypes: WeatherType[] = ['clear', 'storm', 'snow', 'volcano', 'rain']
             const newWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)]
             setWeather(newWeather)
-            setNextWeatherChange(wave + 3 + Math.floor(Math.random() * 3))
+            setNextWeatherChange(wave + 2 + Math.floor(Math.random() * 2))
             toast(`Weather changed to ${WEATHER_EFFECTS[newWeather].name}! ${WEATHER_EFFECTS[newWeather].emoji}`)
           }
         }
       }, 2000)
       return () => clearTimeout(checkComplete)
     }
-  }, [gameState, monsters.length, monstersSpawnedThisWave, towers.length, wave, nextWeatherChange])
+  }, [gameState, monsters.length, bossDefeated, wave, nextWeatherChange, score])
 
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
@@ -359,24 +488,61 @@ function App() {
               <p className="text-lg">🎯 Click on empty cells to place defenders that stop monsters</p>
               <p className="text-lg">💰 Earn coins by defeating monsters and use them to buy more defenders</p>
               <p className="text-lg">❤️ Don't let monsters reach your base or you'll lose hearts</p>
-              <p className="text-lg">🌊 Survive as many waves as you can!</p>
+              <p className="text-lg">👹 Each wave ends with a BOSS - defeat it to advance!</p>
+              <p className="text-lg">🗺️ Complete all 10 waves to conquer the adventure!</p>
               <p className="text-lg">⚡ Watch out for weather events that change gameplay!</p>
             </div>
             {leaderboard && leaderboard.length > 0 && (
               <Badge variant="secondary" className="text-xl px-4 py-2 mb-4">
-                High Score: {leaderboard[0].score.toLocaleString()}
+                High Score: {leaderboard[0].score.toLocaleString()} - {leaderboard[0].mapName}
               </Badge>
             )}
             <div className="flex gap-3 justify-center">
-              <Button size="lg" onClick={startGame} className="text-2xl px-8 py-6">
+              <Button size="lg" onClick={() => setGameState('mapSelect')} className="text-2xl px-8 py-6">
                 <Play className="mr-2" size={32} weight="fill" />
-                Start Game
+                Start Adventure
               </Button>
               {leaderboard && leaderboard.length > 0 && (
                 <Button size="lg" variant="outline" onClick={() => setGameState('leaderboard')} className="text-2xl px-8 py-6">
                   🏆 Leaderboard
                 </Button>
               )}
+            </div>
+          </Card>
+        )}
+
+        {gameState === 'mapSelect' && (
+          <Card className="max-w-4xl mx-auto p-8">
+            <h2 className="text-4xl font-bold mb-6 text-primary text-center">Choose Your Adventure</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {Object.entries(MAPS).map(([key, map]) => (
+                <Button
+                  key={key}
+                  variant={selectedMap === key ? 'default' : 'outline'}
+                  className="h-auto p-6 flex flex-col items-start gap-2"
+                  onClick={() => setSelectedMap(key)}
+                >
+                  <div className="flex items-center gap-3 w-full">
+                    <span className="text-4xl">{map.emoji}</span>
+                    <div className="flex-1 text-left">
+                      <div className="text-xl font-bold">{map.name}</div>
+                      <div className="text-sm opacity-75">{map.description}</div>
+                    </div>
+                  </div>
+                  <Badge variant="secondary" className="self-start">
+                    {map.difficulty} • {map.gridSize}x{map.gridSize}
+                  </Badge>
+                </Button>
+              ))}
+            </div>
+            <div className="flex gap-3 justify-center">
+              <Button size="lg" onClick={startGame} className="text-2xl px-8 py-6">
+                <Play className="mr-2" size={32} weight="fill" />
+                Start Game
+              </Button>
+              <Button size="lg" variant="outline" onClick={() => setGameState('menu')} className="text-xl px-6 py-6">
+                Back
+              </Button>
             </div>
           </Card>
         )}
@@ -394,7 +560,7 @@ function App() {
                       </Badge>
                       <div>
                         <p className="text-xl font-bold">{entry.score.toLocaleString()} pts</p>
-                        <p className="text-sm text-muted-foreground">Wave {entry.wave}</p>
+                        <p className="text-sm text-muted-foreground">Wave {entry.wave} • {entry.mapName}</p>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
@@ -414,18 +580,26 @@ function App() {
 
         {gameState === 'gameOver' && (
           <Card className="max-w-2xl mx-auto p-8 text-center">
-            <h2 className="text-4xl font-bold mb-4 text-destructive">Game Over!</h2>
-            <p className="text-2xl mb-4">Wave Reached: {wave}</p>
+            <h2 className="text-4xl font-bold mb-4 text-destructive">
+              {wave >= 10 ? '🎉 Victory! 🎉' : 'Game Over!'}
+            </h2>
+            <p className="text-2xl mb-2">{currentMap.emoji} {currentMap.name}</p>
+            <p className="text-2xl mb-4">Wave Reached: {wave}/10</p>
             <p className="text-3xl font-bold text-primary mb-6">Final Score: {score.toLocaleString()}</p>
             {leaderboard && leaderboard.length > 0 && score >= leaderboard[0].score && (
               <Badge variant="default" className="text-xl px-4 py-2 mb-4">
                 🎉 New High Score! 🎉
               </Badge>
             )}
-            <Button size="lg" onClick={startGame} className="text-2xl px-8 py-6">
-              <ArrowClockwise className="mr-2" size={32} weight="fill" />
-              Play Again
-            </Button>
+            <div className="flex gap-3 justify-center">
+              <Button size="lg" onClick={startGame} className="text-2xl px-8 py-6">
+                <ArrowClockwise className="mr-2" size={32} weight="fill" />
+                Play Again
+              </Button>
+              <Button size="lg" variant="outline" onClick={() => setGameState('menu')} className="text-xl px-6 py-6">
+                Main Menu
+              </Button>
+            </div>
           </Card>
         )}
 
@@ -471,7 +645,89 @@ function App() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-blue-50 to-green-50">
+              <Card className="p-6 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-hidden">
+                {weather === 'rain' && (
+                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                    {Array.from({ length: 50 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-0.5 h-8 bg-blue-400/40"
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          top: `-10%`,
+                          animation: `fall ${0.5 + Math.random() * 0.5}s linear infinite`,
+                          animationDelay: `${Math.random() * 2}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+                {weather === 'snow' && (
+                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                    {Array.from({ length: 40 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute text-white text-xl opacity-80"
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          top: `-10%`,
+                          animation: `fall ${2 + Math.random()}s linear infinite`,
+                          animationDelay: `${Math.random() * 3}s`,
+                        }}
+                      >
+                        ❄️
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {weather === 'storm' && (
+                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                    <div className="absolute inset-0 bg-gray-700/20" />
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute text-yellow-400 text-3xl animate-pulse"
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          top: `${Math.random() * 100}%`,
+                          animationDuration: `${0.3 + Math.random() * 0.3}s`,
+                          animationDelay: `${Math.random() * 2}s`,
+                        }}
+                      >
+                        ⚡
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {weather === 'volcano' && (
+                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                    <div className="absolute inset-0 bg-orange-500/10" />
+                    {Array.from({ length: 20 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-2 h-2 rounded-full bg-orange-500"
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          bottom: `-5%`,
+                          animation: `rise ${1 + Math.random()}s ease-out infinite`,
+                          animationDelay: `${Math.random() * 2}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+                
+                <style>
+                  {`
+                    @keyframes fall {
+                      to { transform: translateY(${GRID_SIZE * CELL_SIZE + 100}px); }
+                    }
+                    @keyframes rise {
+                      to { transform: translateY(-${GRID_SIZE * CELL_SIZE + 100}px); opacity: 0; }
+                    }
+                  `}
+                </style>
+                
                 <div
                   className="relative mx-auto bg-card rounded-lg shadow-inner"
                   style={{
@@ -595,12 +851,14 @@ function App() {
                         className="w-full h-full rounded-full flex items-center justify-center text-2xl shadow-lg animate-in zoom-in duration-300 relative"
                         style={{ 
                           backgroundColor: monster.color,
-                          transform: monster.type === 'boss' ? 'scale(1.3)' : 'scale(1)',
+                          transform: monster.isBoss ? 'scale(1.5)' : 'scale(1)',
                         }}
                       >
                         {monster.emoji}
-                        {monster.type === 'boss' && (
-                          <div className="absolute -top-1 -right-1 text-xs">👑</div>
+                        {monster.isBoss && (
+                          <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
+                            <Crown size={24} weight="fill" color="gold" />
+                          </div>
                         )}
                         {monster.armor && monster.armor > 0 && (
                           <div className="absolute -bottom-1 -right-1 text-xs">🛡️</div>
@@ -674,13 +932,23 @@ function App() {
               </Card>
 
               <Card className="p-4 bg-secondary/20">
-                <h3 className="text-lg font-bold mb-2">Wave {wave}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Monsters: {monstersSpawnedThisWave} / {5 + wave * 2}
+                <h3 className="text-lg font-bold mb-2">Wave {wave}/10</h3>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Monsters: {monstersSpawnedThisWave} / {8 + wave * 3}
                 </p>
-                {wave % 5 === 0 && (
-                  <Badge variant="destructive" className="mt-2">
-                    Boss Wave! 👹
+                {!bossSpawned && (
+                  <Badge variant="outline" className="mt-2">
+                    Boss incoming...
+                  </Badge>
+                )}
+                {bossSpawned && !bossDefeated && (
+                  <Badge variant="destructive" className="mt-2 animate-pulse">
+                    👹 BOSS ACTIVE! Defeat to advance!
+                  </Badge>
+                )}
+                {bossDefeated && (
+                  <Badge variant="default" className="mt-2">
+                    ✓ Boss Defeated!
                   </Badge>
                 )}
               </Card>
@@ -722,6 +990,8 @@ function App() {
               <Card className="p-4 bg-muted/50">
                 <h3 className="text-lg font-bold mb-2">💡 Tips</h3>
                 <ul className="text-sm space-y-1 text-muted-foreground">
+                  <li>• Must defeat boss to advance wave</li>
+                  <li>• 10 waves per adventure</li>
                   <li>• Place defenders near curves</li>
                   <li>• Use snipers for long range</li>
                   <li>• Bombers deal area damage</li>
