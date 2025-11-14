@@ -1114,15 +1114,13 @@ function App() {
 
   useEffect(() => {
     if (gameState === 'playing' && gameContainerRef.current) {
-      const pathMidX = (PATH[Math.floor(PATH.length / 2)]?.x || PATH[0].x) * CELL_SIZE
-      const pathMidY = (PATH[Math.floor(PATH.length / 2)]?.y || PATH[0].y) * CELL_SIZE
-      
       const container = gameContainerRef.current
-      const scrollLeft = pathMidX - container.clientWidth / 2 + CELL_SIZE / 2
-      const scrollTop = pathMidY - container.clientHeight / 2 + CELL_SIZE / 2
+      const pathStartY = PATH[0].y * CELL_SIZE
+      
+      const scrollTop = Math.max(0, pathStartY - 100)
       
       container.scrollTo({
-        left: scrollLeft,
+        left: 0,
         top: scrollTop,
         behavior: 'smooth'
       })
@@ -1659,10 +1657,10 @@ function App() {
             </Card>
 
             <div className="flex-1 relative overflow-hidden" style={{ minHeight: 0 }}>
-                <Card ref={gameContainerRef} className="absolute inset-0 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-auto border-border" style={{ zIndex: 1 }}>
-                  <div className="relative flex items-center justify-center" style={{ minHeight: '100%', minWidth: '100%' }}>
+                <Card ref={gameContainerRef} className="absolute inset-0 p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-auto border-border" style={{ zIndex: 1 }}>
+                  <div className="relative" style={{ minHeight: 'fit-content', minWidth: 'fit-content' }}>
                     <div 
-                      className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
+                      className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50 mx-auto"
                       style={{
                         width: `${GRID_WIDTH * CELL_SIZE}px`,
                         height: `${GRID_HEIGHT * CELL_SIZE}px`,
