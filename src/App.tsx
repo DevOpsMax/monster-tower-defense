@@ -1928,33 +1928,53 @@ function App() {
                       </svg>
 
                       <div
-                        className="absolute flex items-center justify-center text-4xl bg-gradient-to-br from-green-400 to-green-600 rounded-full shadow-2xl border-4 border-green-300 animate-pulse"
+                        className="absolute rounded-full shadow-2xl border-4 border-green-300 animate-pulse overflow-hidden"
                         style={{
-                          left: `${PATH[0].x * CELL_SIZE}px`,
-                          top: `${PATH[0].y * CELL_SIZE}px`,
-                          width: `${CELL_SIZE * 0.7}px`,
-                          height: `${CELL_SIZE * 0.7}px`,
-                          transform: 'translate(50%, 50%)',
+                          left: `${PATH[0].x * CELL_SIZE + CELL_SIZE / 2}px`,
+                          top: `${PATH[0].y * CELL_SIZE + CELL_SIZE / 2}px`,
+                          width: `${CELL_SIZE * 0.9}px`,
+                          height: `${CELL_SIZE * 0.9}px`,
+                          transform: 'translate(-50%, -50%)',
                           zIndex: 2,
-                          boxShadow: '0 0 30px rgba(34, 197, 94, 0.8), 0 8px 25px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.4)',
+                          background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #16a34a 100%)',
+                          boxShadow: '0 0 40px rgba(34, 197, 94, 0.9), 0 10px 30px rgba(0,0,0,0.6), inset 0 3px 12px rgba(255,255,255,0.5), inset 0 -3px 12px rgba(0,0,0,0.3)',
                         }}
                       >
-                        <div style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.6))' }}>▶️</div>
+                        <div className="absolute inset-0 flex items-center justify-center text-5xl" style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.7))' }}>
+                          ▶️
+                        </div>
+                        <div 
+                          className="absolute inset-0"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)',
+                            mixBlendMode: 'overlay',
+                          }}
+                        />
                       </div>
 
                       <div
-                        className="absolute flex items-center justify-center text-4xl bg-gradient-to-br from-red-500 to-red-700 rounded-full shadow-2xl border-4 border-red-300"
+                        className="absolute rounded-full shadow-2xl border-4 border-red-300 overflow-hidden"
                         style={{
-                          left: `${PATH[PATH.length - 1].x * CELL_SIZE}px`,
-                          top: `${PATH[PATH.length - 1].y * CELL_SIZE}px`,
-                          width: `${CELL_SIZE * 0.7}px`,
-                          height: `${CELL_SIZE * 0.7}px`,
-                          transform: 'translate(50%, 50%)',
+                          left: `${PATH[PATH.length - 1].x * CELL_SIZE + CELL_SIZE / 2}px`,
+                          top: `${PATH[PATH.length - 1].y * CELL_SIZE + CELL_SIZE / 2}px`,
+                          width: `${CELL_SIZE * 0.9}px`,
+                          height: `${CELL_SIZE * 0.9}px`,
+                          transform: 'translate(-50%, -50%)',
                           zIndex: 2,
-                          boxShadow: '0 0 30px rgba(239, 68, 68, 0.8), 0 8px 25px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.4)',
+                          background: 'linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%)',
+                          boxShadow: '0 0 40px rgba(239, 68, 68, 0.9), 0 10px 30px rgba(0,0,0,0.6), inset 0 3px 12px rgba(255,255,255,0.5), inset 0 -3px 12px rgba(0,0,0,0.3)',
                         }}
                       >
-                        <div style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.6))' }}>🏠</div>
+                        <div className="absolute inset-0 flex items-center justify-center text-5xl" style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.7))' }}>
+                          🏠
+                        </div>
+                        <div 
+                          className="absolute inset-0"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)',
+                            mixBlendMode: 'overlay',
+                          }}
+                        />
                       </div>
 
                       {Array.from({ length: GRID_HEIGHT }).map((_, y) =>
