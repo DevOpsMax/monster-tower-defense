@@ -260,8 +260,8 @@ const TOWER_TYPES = {
     desc: 'Chain lightning',
     specialty: 'Chains to 2 nearby targets',
     upgrades: [
-      { level: 2, expNeeded: 12, damageBonus: 6, rangeBonusPercent: 15, fireRateBonus: -50, name: 'Charged Coil', newAbility: 'Chains to 3 targets, 25% stun chance' },
-      { level: 3, expNeeded: 30, damageBonus: 12, rangeBonusPercent: 25, fireRateBonus: -100, name: 'Tesla Storm', newAbility: 'Chains to 5 targets, arc jumps back' },
+      { level: 2, expNeeded: 8, damageBonus: 6, rangeBonusPercent: 15, fireRateBonus: -50, name: 'Charged Coil', newAbility: 'Chains to 3 targets, 25% stun chance' },
+      { level: 3, expNeeded: 20, damageBonus: 12, rangeBonusPercent: 25, fireRateBonus: -100, name: 'Tesla Storm', newAbility: 'Chains to 5 targets, arc jumps back' },
     ]
   },
   cannon: { 
@@ -275,8 +275,8 @@ const TOWER_TYPES = {
     desc: 'Armor piercing',
     specialty: 'Ignores 50% armor, high single-target',
     upgrades: [
-      { level: 2, expNeeded: 15, damageBonus: 20, rangeBonusPercent: 20, fireRateBonus: -200, name: 'Siege Cannon', newAbility: 'Ignores 75% armor, 2x vs bosses' },
-      { level: 3, expNeeded: 40, damageBonus: 45, rangeBonusPercent: 30, fireRateBonus: -300, name: 'Obliterator', newAbility: 'Full armor pierce, pierces enemies' },
+      { level: 2, expNeeded: 10, damageBonus: 20, rangeBonusPercent: 20, fireRateBonus: -200, name: 'Siege Cannon', newAbility: 'Ignores 75% armor, 2x vs bosses' },
+      { level: 3, expNeeded: 25, damageBonus: 45, rangeBonusPercent: 30, fireRateBonus: -300, name: 'Obliterator', newAbility: 'Full armor pierce, pierces enemies' },
     ]
   },
   frost: { 
@@ -290,8 +290,8 @@ const TOWER_TYPES = {
     desc: 'Slows enemies',
     specialty: 'Slows by 30%, splash damage',
     upgrades: [
-      { level: 2, expNeeded: 18, damageBonus: 8, rangeBonusPercent: 18, fireRateBonus: -50, name: 'Glacial Spear', newAbility: 'Slows 50%, freezes on crit' },
-      { level: 3, expNeeded: 45, damageBonus: 18, rangeBonusPercent: 30, fireRateBonus: -100, name: 'Absolute Zero', newAbility: 'Slows 70%, freeze AOE on hit' },
+      { level: 2, expNeeded: 12, damageBonus: 8, rangeBonusPercent: 18, fireRateBonus: -50, name: 'Glacial Spear', newAbility: 'Slows 50%, freezes on crit' },
+      { level: 3, expNeeded: 30, damageBonus: 18, rangeBonusPercent: 30, fireRateBonus: -100, name: 'Absolute Zero', newAbility: 'Slows 70%, freeze AOE on hit' },
     ]
   },
   inferno: { 
@@ -305,8 +305,8 @@ const TOWER_TYPES = {
     desc: 'Burning DOT',
     specialty: 'Burns for 5 DPS over 3 seconds',
     upgrades: [
-      { level: 2, expNeeded: 20, damageBonus: 12, rangeBonusPercent: 15, fireRateBonus: -100, name: 'Pyroclasm', newAbility: 'Burns spread to nearby enemies' },
-      { level: 3, expNeeded: 50, damageBonus: 25, rangeBonusPercent: 25, fireRateBonus: -150, name: 'Solar Inferno', newAbility: 'Melts armor, 10 DPS burn, chain fire' },
+      { level: 2, expNeeded: 15, damageBonus: 12, rangeBonusPercent: 15, fireRateBonus: -100, name: 'Pyroclasm', newAbility: 'Burns spread to nearby enemies' },
+      { level: 3, expNeeded: 35, damageBonus: 25, rangeBonusPercent: 25, fireRateBonus: -150, name: 'Solar Inferno', newAbility: 'Melts armor, 10 DPS burn, chain fire' },
     ]
   },
   vortex: { 
@@ -320,8 +320,8 @@ const TOWER_TYPES = {
     desc: 'Area control',
     specialty: 'Pulls & damages all in range',
     upgrades: [
-      { level: 2, expNeeded: 22, damageBonus: 8, rangeBonusPercent: 20, fireRateBonus: 0, name: 'Gravity Well', newAbility: 'Stronger pull, groups enemies' },
-      { level: 3, expNeeded: 55, damageBonus: 16, rangeBonusPercent: 35, fireRateBonus: -50, name: 'Black Hole', newAbility: 'Massive pull, stuns in center' },
+      { level: 2, expNeeded: 18, damageBonus: 8, rangeBonusPercent: 20, fireRateBonus: 0, name: 'Gravity Well', newAbility: 'Stronger pull, groups enemies' },
+      { level: 3, expNeeded: 40, damageBonus: 16, rangeBonusPercent: 35, fireRateBonus: -50, name: 'Black Hole', newAbility: 'Massive pull, stuns in center' },
     ]
   },
   laser: { 
@@ -335,8 +335,8 @@ const TOWER_TYPES = {
     desc: 'Rapid continuous',
     specialty: 'Locks on, damage ramps up over time',
     upgrades: [
-      { level: 2, expNeeded: 25, damageBonus: 3, rangeBonusPercent: 20, fireRateBonus: -20, name: 'Fusion Beam', newAbility: 'Damage ramps 50% faster' },
-      { level: 3, expNeeded: 60, damageBonus: 6, rangeBonusPercent: 30, fireRateBonus: -30, name: 'Disintegrator', newAbility: 'Max ramp melts all armor types' },
+      { level: 2, expNeeded: 20, damageBonus: 3, rangeBonusPercent: 20, fireRateBonus: -20, name: 'Fusion Beam', newAbility: 'Damage ramps 50% faster' },
+      { level: 3, expNeeded: 45, damageBonus: 6, rangeBonusPercent: 30, fireRateBonus: -30, name: 'Disintegrator', newAbility: 'Max ramp melts all armor types' },
     ]
   },
   void: { 
@@ -350,8 +350,8 @@ const TOWER_TYPES = {
     desc: 'Pure damage',
     specialty: 'True damage ignores all defenses',
     upgrades: [
-      { level: 2, expNeeded: 28, damageBonus: 35, rangeBonusPercent: 18, fireRateBonus: -300, name: 'Entropy Strike', newAbility: 'Heals 1 HP per kill' },
-      { level: 3, expNeeded: 65, damageBonus: 75, rangeBonusPercent: 30, fireRateBonus: -500, name: 'Oblivion', newAbility: '15% instant kill on hit' },
+      { level: 2, expNeeded: 22, damageBonus: 35, rangeBonusPercent: 18, fireRateBonus: -300, name: 'Entropy Strike', newAbility: 'Heals 1 HP per kill' },
+      { level: 3, expNeeded: 50, damageBonus: 75, rangeBonusPercent: 30, fireRateBonus: -500, name: 'Oblivion', newAbility: '15% instant kill on hit' },
     ]
   },
   storm: { 
@@ -365,8 +365,8 @@ const TOWER_TYPES = {
     desc: 'Area strikes',
     specialty: 'Hits 3 enemies in range simultaneously',
     upgrades: [
-      { level: 2, expNeeded: 35, damageBonus: 20, rangeBonusPercent: 25, fireRateBonus: -200, name: 'Thunderlord', newAbility: 'Hits 5 enemies, 20% chain strike' },
-      { level: 3, expNeeded: 80, damageBonus: 45, rangeBonusPercent: 40, fireRateBonus: -400, name: 'Tempest God', newAbility: 'Hits all in range, calls lightning storm' },
+      { level: 2, expNeeded: 25, damageBonus: 20, rangeBonusPercent: 25, fireRateBonus: -200, name: 'Thunderlord', newAbility: 'Hits 5 enemies, 20% chain strike' },
+      { level: 3, expNeeded: 55, damageBonus: 45, rangeBonusPercent: 40, fireRateBonus: -400, name: 'Tempest God', newAbility: 'Hits all in range, calls lightning storm' },
     ]
   },
 }
@@ -776,20 +776,24 @@ function App() {
                     setTowers(prevTowers => prevTowers.map(t => {
                       if (t.id === tower.id) {
                         const newKills = t.kills + 1
-                        const newExp = t.experience + (m.isBoss ? 10 : 1)
-                        const currentUpgrade = config.upgrades[t.level - 1]
+                        const expGain = m.isBoss ? 10 : 1
+                        const newExp = t.experience + expGain
                         
-                        if (currentUpgrade && newExp >= currentUpgrade.expNeeded) {
-                          const upgradedTower = {
-                            ...t,
-                            kills: newKills,
-                            experience: 0,
-                            level: t.level + 1,
+                        if (t.level <= config.upgrades.length) {
+                          const currentUpgrade = config.upgrades[t.level - 1]
+                          
+                          if (currentUpgrade && newExp >= currentUpgrade.expNeeded) {
+                            const upgradedTower = {
+                              ...t,
+                              kills: newKills,
+                              experience: newExp - currentUpgrade.expNeeded,
+                              level: t.level + 1,
+                            }
+                            toast.success(`${config.name} evolved to ${currentUpgrade.name}! 🎉`, {
+                              description: currentUpgrade.newAbility
+                            })
+                            return upgradedTower
                           }
-                          toast.success(`${config.name} evolved to ${currentUpgrade.name}! 🎉`, {
-                            description: currentUpgrade.newAbility
-                          })
-                          return upgradedTower
                         }
                         
                         return { ...t, kills: newKills, experience: newExp }
@@ -2011,7 +2015,7 @@ function App() {
                               }}
                               onMouseEnter={() => setHoveredTower(tower.id)}
                               onMouseLeave={() => setHoveredTower(null)}
-                              title={`${displayName} (Lvl ${towerLevel})\nKills: ${tower.kills}\nExp: ${tower.experience}/${expNeeded > 0 ? expNeeded : 'MAX'}\nDamage: ${Math.floor(effectiveDamage)}\nRange: ${effectiveRange.toFixed(1)}`}
+                              title={`${displayName} (Lvl ${towerLevel})\nKills: ${tower.kills}\nExp: ${tower.experience}/${expNeeded > 0 ? expNeeded : 'MAX'}\nDamage: ${Math.floor(effectiveDamage)}\nRange: ${effectiveRange.toFixed(1)}\nFire Rate: ${Math.floor(effectiveFireRate)}ms`}
                             >
                               <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
                               {towerLevel > 1 && (
@@ -2306,7 +2310,7 @@ function App() {
                       >
                         <Button
                           variant="outline"
-                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 w-[160px] ${
+                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 min-w-[180px] w-[180px] ${
                             selected 
                               ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/50' 
                               : affordable
@@ -2358,10 +2362,10 @@ function App() {
                             <div className="font-bold text-xs text-white tracking-wide truncate w-full text-center" style={{ fontFamily: 'var(--font-heading)' }}>
                               {config.name.toUpperCase()}
                             </div>
-                            <div className="text-xs text-slate-300 leading-tight text-center line-clamp-1">
+                            <div className="text-xs text-slate-300 leading-tight text-center line-clamp-1 w-full">
                               {config.desc}
                             </div>
-                            <div className="text-[10px] text-blue-300 leading-tight text-center italic line-clamp-1">
+                            <div className="text-[10px] text-blue-300 leading-tight text-center italic line-clamp-1 w-full">
                               {config.specialty}
                             </div>
                           </div>
