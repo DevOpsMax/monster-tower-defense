@@ -1140,7 +1140,7 @@ function App() {
         </header>
       )}
       
-      <div className="flex-1 overflow-auto px-4 pb-4">
+      <div className="flex-1 px-4 pb-4" style={{ overflow: 'visible' }}>
         {gameState === 'menu' && (
           <div className="max-w-4xl mx-auto">
             <Card className="p-6 text-center bg-card border-border">
@@ -1272,7 +1272,7 @@ function App() {
         )}
 
         {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="h-full flex flex-col gap-2" style={{ position: 'relative', zIndex: 'auto' }}>
+          <div className="h-full flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible' }}>
             <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10 }}>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
@@ -1658,7 +1658,7 @@ function App() {
               </div>
             </Card>
 
-            <div className="flex-1 flex flex-col gap-2 overflow-hidden relative">
+            <div className="flex-1 flex flex-col gap-2 relative" style={{ overflow: 'visible' }}>
                 <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border" style={{ zIndex: 1 }}>
                   <div className="relative flex items-center justify-center h-full">
                     <div 
@@ -3156,7 +3156,7 @@ function App() {
                 </Card>
 
                 <div className="shrink-0 relative" style={{ zIndex: 20 }}>
-                  <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 relative" style={{ overflowY: 'visible', paddingTop: '8px', paddingBottom: '8px' }}>
+                  <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 relative" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>)
                     .sort((a, b) => TOWER_TYPES[a].cost - TOWER_TYPES[b].cost)
                     .map(type => {
@@ -3177,8 +3177,13 @@ function App() {
                       >
                         {isHovered && (
                           <div
-                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/98 rounded-lg px-4 py-3 pointer-events-none shadow-2xl border-2 border-primary/60 backdrop-blur-sm min-w-[280px]"
-                            style={{ zIndex: 9999 }}
+                            className="fixed bg-slate-900/98 rounded-lg px-4 py-3 pointer-events-none shadow-2xl border-2 border-primary/60 backdrop-blur-sm min-w-[280px]"
+                            style={{ 
+                              zIndex: 99999,
+                              left: '50%',
+                              bottom: '140px',
+                              transform: 'translateX(-50%)'
+                            }}
                           >
                             <div className="space-y-2">
                               <div className="text-center">
@@ -3253,10 +3258,6 @@ function App() {
                                 </div>
                               )}
                             </div>
-                            
-                            <div 
-                              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900 border-r-2 border-b-2 border-primary/60"
-                            />
                           </div>
                         )}
                         
