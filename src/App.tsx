@@ -1664,41 +1664,6 @@ function App() {
                   <AnimatePresence>
                     {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
                       <div style={{ display: 'none' }} />
-                    )}
-                  </AnimatePresence>
-                  
-                  <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }}>
-                    <path
-                      d={PATH.map((p, i) => {
-                        const x = (p.x + 0.5) * CELL_SIZE
-                        const y = (p.y + 0.5) * CELL_SIZE
-                        return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
-                      }).join(' ')}
-                      stroke="oklch(0.35 0.05 260)"
-                      strokeWidth={CELL_SIZE * 0.7}
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                      
-                  <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
-                        <defs>
-                          <filter id="glow">
-                            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                            <feMerge>
-                              <feMergeNode in="coloredBlur"/>
-                              <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                          </filter>
-                          <filter id="strong-glow">
-                            <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-                            <feMerge>
-                              <feMergeNode in="coloredBlur"/>
-                              <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                          </filter>
-                        </defs>
                         {projectiles.map(proj => {
                           const startX = proj.start.x
                           const startY = proj.start.y
@@ -2944,6 +2909,41 @@ function App() {
                                   fontSize: '16px',
                                   textShadow: '2px 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255,215,0,0.6)',
                                   fontFamily: 'var(--font-heading)',
+                      {comboIndicators.map(combo => {
+                        const age = Date.now() - combo.timestamp
+                        const opacity = Math.max(0, 1 - age / 1500)
+                        const yOffset = (age / 1500) * 50
+                        const scale = Math.min(1.2, 1 + (age / 400))
+                        
+                        return (
+                          <motion.div
+                            key={combo.id}
+                            className="absolute pointer-events-none flex items-center gap-1"
+                            style={{
+                              left: `${combo.position.x * CELL_SIZE}px`,
+                              top: `calc(${combo.position.y * CELL_SIZE}px - ${yOffset}px)`,
+                              transform: `translate(-50%, -50%) scale(${scale})`,
+                              opacity: opacity,
+                              zIndex: 10,
+                            }}
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: scale, opacity: opacity }}
+                          >
+                            <div
+                              className="flex items-center gap-1 bg-gradient-to-br from-orange-600 to-red-600 px-2 py-1 rounded-full border-2 border-yellow-400 shadow-lg"
+                              style={{
+                                boxShadow: '0 0 15px rgba(251, 146, 60, 0.8)',
+                              }}
+                            >
+                              <span className="text-xl" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }}>
+                                🔥
+                              </span>
+                              <span
+                                className="font-black text-white"
+                                style={{
+                                  fontSize: '16px',
+                                  textShadow: '2px 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255,215,0,0.6)',
+                                  fontFamily: 'var(--font-heading)',
                                 }}
                               >
                                 x{combo.combo}
@@ -2953,41 +2953,6 @@ function App() {
                         )
                       })}
                       
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 9, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
-                        <defs>
-                          <filter id="particle-glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                            <feMerge>
-                              <feMergeNode in="coloredBlur"/>
-                              <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                          </filter>
-                        </defs>
-                        {particles.map(particle => {
-                          const age = Date.now() - particle.timestamp
-                          const opacity = Math.max(0, 1 - age / particle.lifetime)
-                          const x = particle.position.x
-                          const y = particle.position.y
-                          const size = particle.size
-                          
-                          return (
-                            <g key={particle.id} opacity={opacity}>
-                              {particle.shape === 'circle' && (
-                                <circle
-                                  cx={x}
-                                  cy={y}
-                                  r={size / 2}
-                                  fill={particle.color}
-                                  filter="url(#particle-glow)"
-                                />
-                              )}
-                              
-                              {particle.shape === 'star' && (
-                                <path
-                                  d={`M ${x} ${y - size} L ${x + size * 0.3} ${y - size * 0.3} L ${x + size} ${y} L ${x + size * 0.3} ${y + size * 0.3} L ${x} ${y + size} L ${x - size * 0.3} ${y + size * 0.3} L ${x - size} ${y} L ${x - size * 0.3} ${y - size * 0.3} Z`}
-                                  fill={particle.color}
-                                  transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
-                                  filter="url(#particle-glow)"
                                 />
                               )}
                               
