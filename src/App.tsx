@@ -2043,11 +2043,14 @@ function App() {
                           </Badge>
                           
                           {!affordable && (
-                            <div className="absolute inset-0 bg-black/60 rounded-lg flex flex-col items-center justify-center backdrop-blur-sm gap-1">
+                            <div className="absolute inset-0 bg-slate-900/95 rounded-lg flex flex-col items-center justify-center gap-1">
                               <div className="text-4xl">🔒</div>
                               <span className="text-red-400 font-bold text-sm bg-red-950/90 px-3 py-1.5 rounded-full border-2 border-red-700 shadow-lg tracking-wider">
                                 LOCKED
                               </span>
+                              <div className="text-xs text-slate-400 font-semibold mt-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                                {config.name}
+                              </div>
                             </div>
                           )}
                         </Button>
