@@ -54,6 +54,12 @@ type DamageNumber = {
   timestamp: number
   isCritical?: boolean
 }
+type ComboIndicator = {
+  id: string
+  position: Position
+  combo: number
+  timestamp: number
+}
 type Particle = {
   id: string
   position: Position
@@ -399,6 +405,7 @@ function App() {
   const [bossDefeated, setBossDefeated] = useState(false)
   const [leaderboard, setLeaderboard] = useKV<LeaderboardEntry[]>('monster-defenders-leaderboard', [])
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
+  const [comboIndicators, setComboIndicators] = useState<ComboIndicator[]>([])
   const [particles, setParticles] = useState<Particle[]>([])
   const [explosions, setExplosions] = useState<Explosion[]>([])
   const [levelUpEffects, setLevelUpEffects] = useState<LevelUpEffect[]>([])
@@ -506,6 +513,7 @@ function App() {
     setBossSpawned(false)
     setBossDefeated(false)
     setDamageNumbers([])
+    setComboIndicators([])
     setParticles([])
     setExplosions([])
     setLevelUpEffects([])
@@ -929,6 +937,18 @@ function App() {
                     setScore(s => s + bonusReward * wave)
                     
                     if (newCombo > 1) {
+                      const comboIndicator: ComboIndicator = {
+                        id: `combo-${Date.now()}-${Math.random()}`,
+                        position: { ...m.position },
+                        combo: newCombo,
+                        timestamp: Date.now(),
+                      }
+                      setComboIndicators(prev => [...prev, comboIndicator])
+                      
+                      setTimeout(() => {
+                        setComboIndicators(prev => prev.filter(c => c.id !== comboIndicator.id))
+                      }, 1500)
+                      
                       toast.success(`x${newCombo} COMBO! +${bonusReward} coins!`, {
                         description: `${comboMultiplier.toFixed(1)}x multiplier`
                       })
@@ -1643,42 +1663,7 @@ function App() {
                 >
                   <AnimatePresence>
                     {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
-                      <motion.div
-                        className="absolute top-4 right-4 z-50"
-                        initial={{ scale: 0, rotate: -180, x: 100 }}
-                        animate={{ scale: 1, rotate: 0, x: 0 }}
-                        exit={{ scale: 0, opacity: 0, y: -50 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      >
-                        <div className="bg-gradient-to-br from-orange-600 via-red-600 to-red-700 text-white border-4 border-yellow-400 shadow-2xl shadow-orange-900/80 rounded-2xl px-6 py-4 backdrop-blur-sm">
-                          <div className="flex flex-col items-center gap-1">
-                            <motion.div 
-                              className="text-5xl font-black"
-                              style={{ fontFamily: 'var(--font-heading)' }}
-                              animate={{ 
-                                scale: [1, 1.2, 1],
-                                rotate: [0, -5, 5, 0]
-                              }}
-                              transition={{ 
-                                duration: 0.5, 
-                                repeat: Infinity,
-                                repeatType: 'reverse'
-                              }}
-                            >
-                              🔥
-                            </motion.div>
-                            <div className="text-3xl font-black tracking-wider" style={{ 
-                              fontFamily: 'var(--font-heading)',
-                              textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.6)'
-                            }}>
-                              x{comboCount} COMBO
-                            </div>
-                            <div className="text-sm font-bold text-yellow-200">
-                              {(1 + (comboCount - 1) * 0.1).toFixed(1)}x COINS!
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
+                      <div style={{ display: 'none' }} />
                     )}
                   </AnimatePresence>
                   
@@ -2921,6 +2906,50 @@ function App() {
                               -{dmg.damage}
                             </div>
                           </div>
+                        )
+                      })}
+                      
+                      {comboIndicators.map(combo => {
+                        const age = Date.now() - combo.timestamp
+                        const opacity = Math.max(0, 1 - age / 1500)
+                        const yOffset = (age / 1500) * 50
+                        const scale = Math.min(1.2, 1 + (age / 400))
+                        
+                        return (
+                          <motion.div
+                            key={combo.id}
+                            className="absolute pointer-events-none flex items-center gap-1"
+                            style={{
+                              left: `${combo.position.x * CELL_SIZE}px`,
+                              top: `calc(${combo.position.y * CELL_SIZE}px - ${yOffset}px)`,
+                              transform: `translate(-50%, -50%) scale(${scale})`,
+                              opacity: opacity,
+                              zIndex: 10,
+                            }}
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: scale, opacity: opacity }}
+                          >
+                            <div
+                              className="flex items-center gap-1 bg-gradient-to-br from-orange-600 to-red-600 px-2 py-1 rounded-full border-2 border-yellow-400 shadow-lg"
+                              style={{
+                                boxShadow: '0 0 15px rgba(251, 146, 60, 0.8)',
+                              }}
+                            >
+                              <span className="text-xl" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }}>
+                                🔥
+                              </span>
+                              <span
+                                className="font-black text-white"
+                                style={{
+                                  fontSize: '16px',
+                                  textShadow: '2px 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255,215,0,0.6)',
+                                  fontFamily: 'var(--font-heading)',
+                                }}
+                              >
+                                x{combo.combo}
+                              </span>
+                            </div>
+                          </motion.div>
                         )
                       })}
                       
