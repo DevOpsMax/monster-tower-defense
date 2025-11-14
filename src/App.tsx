@@ -454,12 +454,14 @@ function App() {
     
     const weatherMult = WEATHER_EFFECTS[weather].speedMult
     
+    const speedVariation = 0.8 + Math.random() * 0.4
+    
     const newMonster: Monster = {
       id,
       position: { ...PATH[0] },
       health: baseHealth * monsterConfig.healthMult,
       maxHealth: baseHealth * monsterConfig.healthMult,
-      speed: baseSpeed * monsterConfig.speedMult * weatherMult,
+      speed: baseSpeed * monsterConfig.speedMult * weatherMult * speedVariation,
       pathIndex: 0,
       reward: Math.floor(baseReward * monsterConfig.rewardMult),
       type,
@@ -608,15 +610,19 @@ function App() {
     if (monstersSpawnedThisWave >= monstersPerWave) {
       const timer = setTimeout(() => {
         spawnMonster(true)
-      }, 500)
+      }, 300)
       return () => clearTimeout(timer)
     }
+
+    const baseSpawnRate = 1200
+    const waveSpeedMultiplier = Math.max(0.3, 1 - (wave * 0.07))
+    const spawnRate = Math.floor(baseSpawnRate * waveSpeedMultiplier)
 
     const spawnInterval = setInterval(() => {
       if (monstersSpawnedThisWave < monstersPerWave) {
         spawnMonster(false)
       }
-    }, 1800 - wave * 80)
+    }, spawnRate)
 
     return () => clearInterval(spawnInterval)
   }, [gameState, monstersSpawnedThisWave, wave, bossSpawned, spawnMonster])
@@ -2209,11 +2215,11 @@ function App() {
                             key={monster.id}
                             className="absolute transition-all duration-75"
                             style={{
-                              left: `${monster.position.x * CELL_SIZE}px`,
-                              top: `${monster.position.y * CELL_SIZE}px`,
+                              left: `${monster.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
+                              top: `${monster.position.y * CELL_SIZE + CELL_SIZE / 2}px`,
                               width: `${monsterSize}px`,
                               height: `${monsterSize}px`,
-                              transform: 'translate(50%, 50%)',
+                              transform: 'translate(-50%, -50%)',
                               zIndex: isBoss ? 6 : 5,
                             }}
                           >
