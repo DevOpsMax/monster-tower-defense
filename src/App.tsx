@@ -1588,44 +1588,36 @@ function App() {
                   </div>
                 </Card>
 
-                <Card className="p-2 shrink-0">
-                  <h3 className="text-sm font-bold mb-2 text-primary text-center">🛡️ Place Defenders</h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-                    {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
-                      const config = TOWER_TYPES[type]
-                      const Icon = config.icon
-                      const affordable = canAfford(type)
-                      const selected = selectedTowerType === type
+                <div className="flex flex-wrap gap-1.5 justify-center items-center shrink-0">
+                  {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
+                    const config = TOWER_TYPES[type]
+                    const Icon = config.icon
+                    const affordable = canAfford(type)
+                    const selected = selectedTowerType === type
 
-                      return (
-                        <Button
-                          key={type}
-                          variant={selected ? 'default' : 'outline'}
-                          className="h-auto py-2 px-1.5 flex flex-col items-center justify-center gap-1"
-                          onClick={() => setSelectedTowerType(selected ? null : type)}
-                          disabled={!affordable}
+                    return (
+                      <Button
+                        key={type}
+                        variant={selected ? 'default' : 'outline'}
+                        className="h-auto py-1.5 px-2 flex items-center gap-1.5"
+                        onClick={() => setSelectedTowerType(selected ? null : type)}
+                        disabled={!affordable}
+                      >
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: config.color }}
                         >
-                          <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: config.color }}
-                          >
-                            <Icon size={16} weight="fill" color="white" />
-                          </div>
-                          <div className="text-center">
-                            <div className="font-semibold text-xs">{config.name}</div>
-                          </div>
-                          <Badge variant={affordable ? 'secondary' : 'outline'} className="text-xs px-1 py-0">
-                            <Coin size={10} weight="fill" className="mr-0.5" />
-                            {config.cost}
-                          </Badge>
-                        </Button>
-                      )
-                    })}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1.5 text-center">
-                    💰 +1 coin/sec • Click defender then grid to place
-                  </p>
-                </Card>
+                          <Icon size={14} weight="fill" color="white" />
+                        </div>
+                        <div className="font-semibold text-xs">{config.name}</div>
+                        <Badge variant={affordable ? 'secondary' : 'outline'} className="text-xs px-1 py-0">
+                          <Coin size={10} weight="fill" className="mr-0.5" />
+                          {config.cost}
+                        </Badge>
+                      </Button>
+                    )
+                  })}
+                </div>
               </div>
 
               <div className="w-64 flex flex-col gap-2 overflow-y-auto shrink-0">
