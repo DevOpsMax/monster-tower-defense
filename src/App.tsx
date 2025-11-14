@@ -75,7 +75,8 @@ type LeaderboardEntry = {
 type MapConfig = {
   name: string
   emoji: string
-  gridSize: number
+  gridWidth: number
+  gridHeight: number
   path: Position[]
   description: string
   difficulty: string
@@ -85,102 +86,67 @@ const MAPS: Record<string, MapConfig> = {
   forest: {
     name: 'Forest Trail',
     emoji: '🌲',
-    gridSize: 20,
+    gridWidth: 20,
+    gridHeight: 15,
     description: 'A winding path through the enchanted forest',
     difficulty: 'Easy',
     path: [
-      { x: 0, y: 10 },
-      { x: 1, y: 10 },
-      { x: 2, y: 10 },
-      { x: 3, y: 10 },
-      { x: 4, y: 10 },
-      { x: 4, y: 9 },
-      { x: 4, y: 8 },
-      { x: 5, y: 8 },
-      { x: 6, y: 8 },
-      { x: 7, y: 8 },
-      { x: 8, y: 8 },
-      { x: 8, y: 9 },
-      { x: 8, y: 10 },
-      { x: 9, y: 10 },
-      { x: 10, y: 10 },
-      { x: 11, y: 10 },
-      { x: 12, y: 10 },
-      { x: 12, y: 11 },
-      { x: 13, y: 11 },
-      { x: 14, y: 11 },
-      { x: 15, y: 11 },
-      { x: 16, y: 11 },
-      { x: 17, y: 11 },
-      { x: 18, y: 11 },
-      { x: 19, y: 11 },
+      { x: 0, y: 7 },
+      { x: 1, y: 7 },
+      { x: 2, y: 7 },
+      { x: 3, y: 7 },
+      { x: 4, y: 7 },
+      { x: 4, y: 6 },
+      { x: 4, y: 5 },
+      { x: 5, y: 5 },
+      { x: 6, y: 5 },
+      { x: 7, y: 5 },
+      { x: 8, y: 5 },
+      { x: 8, y: 6 },
+      { x: 8, y: 7 },
+      { x: 9, y: 7 },
+      { x: 10, y: 7 },
+      { x: 11, y: 7 },
+      { x: 12, y: 7 },
+      { x: 12, y: 8 },
+      { x: 13, y: 8 },
+      { x: 14, y: 8 },
+      { x: 15, y: 8 },
+      { x: 16, y: 8 },
+      { x: 17, y: 8 },
+      { x: 18, y: 8 },
+      { x: 19, y: 8 },
     ],
   },
   desert: {
     name: 'Desert Dunes',
     emoji: '🏜️',
-    gridSize: 20,
+    gridWidth: 20,
+    gridHeight: 15,
     description: 'Navigate the scorching desert sands',
     difficulty: 'Medium',
     path: [
-      { x: 0, y: 4 },
-      { x: 1, y: 4 },
-      { x: 2, y: 4 },
-      { x: 3, y: 4 },
-      { x: 4, y: 4 },
+      { x: 0, y: 3 },
+      { x: 1, y: 3 },
+      { x: 2, y: 3 },
+      { x: 3, y: 3 },
+      { x: 4, y: 3 },
+      { x: 5, y: 3 },
       { x: 5, y: 4 },
       { x: 5, y: 5 },
-      { x: 5, y: 6 },
-      { x: 6, y: 6 },
-      { x: 7, y: 6 },
-      { x: 8, y: 6 },
+      { x: 6, y: 5 },
+      { x: 7, y: 5 },
+      { x: 8, y: 5 },
+      { x: 9, y: 5 },
       { x: 9, y: 6 },
       { x: 9, y: 7 },
       { x: 9, y: 8 },
-      { x: 9, y: 9 },
-      { x: 10, y: 9 },
-      { x: 11, y: 9 },
-      { x: 12, y: 9 },
-      { x: 12, y: 10 },
-      { x: 12, y: 11 },
-      { x: 13, y: 11 },
-      { x: 14, y: 11 },
-      { x: 15, y: 11 },
-      { x: 16, y: 11 },
-      { x: 17, y: 11 },
-      { x: 18, y: 11 },
-      { x: 19, y: 11 },
-    ],
-  },
-  mountain: {
-    name: 'Mountain Pass',
-    emoji: '⛰️',
-    gridSize: 20,
-    description: 'Defend the treacherous mountain path',
-    difficulty: 'Hard',
-    path: [
-      { x: 0, y: 10 },
-      { x: 1, y: 10 },
-      { x: 2, y: 10 },
-      { x: 3, y: 10 },
-      { x: 3, y: 9 },
-      { x: 3, y: 8 },
-      { x: 4, y: 8 },
-      { x: 5, y: 8 },
-      { x: 6, y: 8 },
-      { x: 7, y: 8 },
-      { x: 7, y: 7 },
-      { x: 7, y: 6 },
-      { x: 8, y: 6 },
-      { x: 9, y: 6 },
-      { x: 10, y: 6 },
-      { x: 11, y: 6 },
-      { x: 11, y: 7 },
+      { x: 10, y: 8 },
       { x: 11, y: 8 },
       { x: 12, y: 8 },
-      { x: 13, y: 8 },
-      { x: 14, y: 8 },
-      { x: 14, y: 9 },
+      { x: 12, y: 9 },
+      { x: 12, y: 10 },
+      { x: 13, y: 10 },
       { x: 14, y: 10 },
       { x: 15, y: 10 },
       { x: 16, y: 10 },
@@ -189,43 +155,82 @@ const MAPS: Record<string, MapConfig> = {
       { x: 19, y: 10 },
     ],
   },
+  mountain: {
+    name: 'Mountain Pass',
+    emoji: '⛰️',
+    gridWidth: 20,
+    gridHeight: 15,
+    description: 'Defend the treacherous mountain path',
+    difficulty: 'Hard',
+    path: [
+      { x: 0, y: 7 },
+      { x: 1, y: 7 },
+      { x: 2, y: 7 },
+      { x: 3, y: 7 },
+      { x: 3, y: 6 },
+      { x: 3, y: 5 },
+      { x: 4, y: 5 },
+      { x: 5, y: 5 },
+      { x: 6, y: 5 },
+      { x: 7, y: 5 },
+      { x: 7, y: 4 },
+      { x: 7, y: 3 },
+      { x: 8, y: 3 },
+      { x: 9, y: 3 },
+      { x: 10, y: 3 },
+      { x: 11, y: 3 },
+      { x: 11, y: 4 },
+      { x: 11, y: 5 },
+      { x: 12, y: 5 },
+      { x: 13, y: 5 },
+      { x: 14, y: 5 },
+      { x: 14, y: 6 },
+      { x: 14, y: 7 },
+      { x: 15, y: 7 },
+      { x: 16, y: 7 },
+      { x: 17, y: 7 },
+      { x: 18, y: 7 },
+      { x: 19, y: 7 },
+    ],
+  },
   volcano: {
     name: 'Volcanic Crater',
     emoji: '🌋',
-    gridSize: 20,
+    gridWidth: 20,
+    gridHeight: 15,
     description: 'Brave the molten lava flows',
     difficulty: 'Expert',
     path: [
-      { x: 0, y: 10 },
-      { x: 1, y: 10 },
-      { x: 2, y: 10 },
-      { x: 3, y: 10 },
-      { x: 4, y: 10 },
-      { x: 5, y: 10 },
-      { x: 6, y: 10 },
-      { x: 7, y: 10 },
-      { x: 7, y: 9 },
-      { x: 7, y: 8 },
-      { x: 8, y: 8 },
-      { x: 9, y: 8 },
-      { x: 10, y: 8 },
+      { x: 0, y: 7 },
+      { x: 1, y: 7 },
+      { x: 2, y: 7 },
+      { x: 3, y: 7 },
+      { x: 4, y: 7 },
+      { x: 5, y: 7 },
+      { x: 6, y: 7 },
+      { x: 7, y: 7 },
+      { x: 7, y: 6 },
+      { x: 7, y: 5 },
+      { x: 8, y: 5 },
+      { x: 9, y: 5 },
+      { x: 10, y: 5 },
+      { x: 11, y: 5 },
+      { x: 11, y: 6 },
+      { x: 11, y: 7 },
       { x: 11, y: 8 },
-      { x: 11, y: 9 },
-      { x: 11, y: 10 },
-      { x: 11, y: 11 },
-      { x: 12, y: 11 },
-      { x: 13, y: 11 },
-      { x: 14, y: 11 },
-      { x: 15, y: 11 },
-      { x: 16, y: 11 },
-      { x: 17, y: 11 },
-      { x: 18, y: 11 },
-      { x: 19, y: 11 },
+      { x: 12, y: 8 },
+      { x: 13, y: 8 },
+      { x: 14, y: 8 },
+      { x: 15, y: 8 },
+      { x: 16, y: 8 },
+      { x: 17, y: 8 },
+      { x: 18, y: 8 },
+      { x: 19, y: 8 },
     ],
   },
 }
 
-const CELL_SIZE = 35
+const CELL_SIZE = 40
 
 const MONSTER_TYPES = {
   normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
@@ -279,7 +284,8 @@ function App() {
 
   const currentMap = MAPS[selectedMap]
   const PATH = currentMap.path
-  const GRID_SIZE = currentMap.gridSize
+  const GRID_WIDTH = currentMap.gridWidth
+  const GRID_HEIGHT = currentMap.gridHeight
 
   const isPathCell = (x: number, y: number) => PATH.some(p => p.x === x && p.y === y)
   const hasTower = (x: number, y: number) => towers.some(t => t.position.x === x && t.position.y === y)
@@ -760,7 +766,7 @@ function App() {
                       </div>
                     </div>
                     <Badge variant="secondary" className="self-start text-xs">
-                      {map.difficulty} • {map.gridSize}x{map.gridSize}
+                      {map.difficulty} • {map.gridWidth}x{map.gridHeight}
                     </Badge>
                   </Button>
                 ))}
@@ -886,11 +892,11 @@ function App() {
                     <div 
                       className="relative bg-card rounded-lg shadow-inner"
                       style={{
-                        width: `${GRID_SIZE * CELL_SIZE}px`,
-                        height: `${GRID_SIZE * CELL_SIZE}px`,
+                        width: `${GRID_WIDTH * CELL_SIZE}px`,
+                        height: `${GRID_HEIGHT * CELL_SIZE}px`,
                       }}
                     >
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_SIZE * CELL_SIZE} height={GRID_SIZE * CELL_SIZE}>
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
                         <path
                           d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
                           stroke="oklch(0.85 0.02 90)"
@@ -901,7 +907,7 @@ function App() {
                         />
                       </svg>
                       
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} width={GRID_SIZE * CELL_SIZE} height={GRID_SIZE * CELL_SIZE}>
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 100, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
                         <defs>
                           <filter id="glow">
                             <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
@@ -1264,8 +1270,8 @@ function App() {
                         🏠
                       </div>
 
-                      {Array.from({ length: GRID_SIZE }).map((_, y) =>
-                        Array.from({ length: GRID_SIZE }).map((_, x) => {
+                      {Array.from({ length: GRID_HEIGHT }).map((_, y) =>
+                        Array.from({ length: GRID_WIDTH }).map((_, x) => {
                           const isPath = isPathCell(x, y)
                           const isHovered = hoveredCell?.x === x && hoveredCell?.y === y
                           const canPlace = selectedTowerType && !isPath && !hasTower(x, y)
@@ -1394,7 +1400,7 @@ function App() {
                         )
                       })}
                       
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 9, overflow: 'visible' }} width={GRID_SIZE * CELL_SIZE} height={GRID_SIZE * CELL_SIZE}>
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 9, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
                         {particles.map(particle => {
                           const age = Date.now() - particle.timestamp
                           const opacity = Math.max(0, 1 - age / particle.lifetime)
