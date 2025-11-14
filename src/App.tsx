@@ -1272,7 +1272,7 @@ function App() {
         )}
 
         {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="h-full flex flex-col gap-2">
+          <div className="h-full flex flex-col gap-2 overflow-hidden">
             <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10, position: 'relative' }}>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
@@ -1658,15 +1658,14 @@ function App() {
               </div>
             </Card>
 
-            <div className="flex-1 flex flex-col gap-2 relative min-h-0">
-                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border" style={{ zIndex: 1, position: 'relative' }}>
-                  <div className="relative flex items-center justify-center h-full">
+            <div className="flex-1 flex flex-col gap-2 relative overflow-hidden min-h-0">
+                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-auto border-border" style={{ zIndex: 1, position: 'relative' }}>
+                  <div className="relative flex items-center justify-center min-h-full">
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
                       style={{
                         width: `${GRID_WIDTH * CELL_SIZE}px`,
                         height: `${GRID_HEIGHT * CELL_SIZE}px`,
-                        maxHeight: '100%',
                       }}
                     >
                       <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
@@ -3177,7 +3176,7 @@ function App() {
                           <div
                             className="absolute bg-slate-900/98 rounded-lg px-4 py-3 shadow-2xl border-2 border-primary/60 backdrop-blur-sm min-w-[280px] pointer-events-none"
                             style={{ 
-                              zIndex: 999,
+                              zIndex: 9999,
                               left: '50%',
                               bottom: '100%',
                               transform: 'translateX(-50%) translateY(-8px)',
