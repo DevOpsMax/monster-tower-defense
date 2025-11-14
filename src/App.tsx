@@ -8,6 +8,7 @@ import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield 
 import { toast } from 'sonner'
 
 type Position = { x: number; y: number }
+type MonsterType = 'normal' | 'fast' | 'tank' | 'boss'
 type Monster = {
   id: string
   position: Position
@@ -16,6 +17,9 @@ type Monster = {
   speed: number
   pathIndex: number
   reward: number
+  type: MonsterType
+  emoji: string
+  color: string
 }
 type Tower = {
   id: string
@@ -52,6 +56,13 @@ const PATH: Position[] = [
   { x: 7, y: 5 },
 ]
 
+const MONSTER_TYPES = {
+  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1 },
+  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.6, speedMult: 1.8, rewardMult: 1.2 },
+  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 2.5, speedMult: 0.6, rewardMult: 1.5 },
+  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 5, speedMult: 0.4, rewardMult: 3 },
+}
+
 const TOWER_TYPES = {
   fast: { cost: 50, damage: 10, range: 1.5, fireRate: 500, color: 'oklch(0.75 0.20 180)', icon: Lightning, name: 'Zapper' },
   strong: { cost: 100, damage: 40, range: 2, fireRate: 1500, color: 'oklch(0.70 0.25 20)', icon: Crosshair, name: 'Blaster' },
@@ -67,6 +78,7 @@ function App() {
   const [coins, setCoins] = useState(150)
   const [score, setScore] = useState(0)
   const [wave, setWave] = useState(1)
+  const [monstersSpawnedThisWave, setMonstersSpawnedThisWave] = useState(0)
   const [selectedTowerType, setSelectedTowerType] = useState<keyof typeof TOWER_TYPES | null>(null)
   const [hoveredCell, setHoveredCell] = useState<Position | null>(null)
   const [highScore, setHighScore] = useKV<number>('monster-defenders-high-score', 0)
@@ -76,8 +88,18 @@ function App() {
 
   const distance = (p1: Position, p2: Position) => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
 
+  const getMonsterTypeForWave = (wave: number, index: number): MonsterType => {
+    if (wave % 5 === 0 && index === 0) return 'boss'
+    if (wave >= 10 && Math.random() < 0.3) return 'tank'
+    if (wave >= 5 && Math.random() < 0.4) return 'fast'
+    return 'normal'
+  }
+
   const spawnMonster = useCallback(() => {
     const id = `monster-${Date.now()}-${Math.random()}`
+    const type = getMonsterTypeForWave(wave, monstersSpawnedThisWave)
+    const monsterConfig = MONSTER_TYPES[type]
+    
     const baseHealth = 30 + (wave - 1) * 10
     const baseSpeed = 0.015 + (wave - 1) * 0.002
     const baseReward = 25 + wave * 5
@@ -85,15 +107,19 @@ function App() {
     const newMonster: Monster = {
       id,
       position: { ...PATH[0] },
-      health: baseHealth,
-      maxHealth: baseHealth,
-      speed: baseSpeed,
+      health: baseHealth * monsterConfig.healthMult,
+      maxHealth: baseHealth * monsterConfig.healthMult,
+      speed: baseSpeed * monsterConfig.speedMult,
       pathIndex: 0,
-      reward: baseReward,
+      reward: Math.floor(baseReward * monsterConfig.rewardMult),
+      type,
+      emoji: monsterConfig.emoji,
+      color: monsterConfig.color,
     }
     
     setMonsters(prev => [...prev, newMonster])
-  }, [wave])
+    setMonstersSpawnedThisWave(prev => prev + 1)
+  }, [wave, monstersSpawnedThisWave])
 
   const startGame = () => {
     setGameState('playing')
@@ -104,6 +130,7 @@ function App() {
     setCoins(150)
     setScore(0)
     setWave(1)
+    setMonstersSpawnedThisWave(0)
     setSelectedTowerType(null)
   }
 
@@ -133,15 +160,18 @@ function App() {
   useEffect(() => {
     if (gameState !== 'playing') return
 
+    const monstersPerWave = 5 + wave * 2
+    
+    if (monstersSpawnedThisWave >= monstersPerWave) return
+
     const spawnInterval = setInterval(() => {
-      const monstersPerWave = 3 + Math.floor(wave / 2)
-      if (monsters.length < monstersPerWave) {
+      if (monstersSpawnedThisWave < monstersPerWave) {
         spawnMonster()
       }
     }, 2000)
 
     return () => clearInterval(spawnInterval)
-  }, [gameState, monsters.length, wave, spawnMonster])
+  }, [gameState, monstersSpawnedThisWave, wave, spawnMonster])
 
   useEffect(() => {
     if (gameState !== 'playing') return
@@ -236,16 +266,17 @@ function App() {
   }, [health, gameState, score, highScore, setHighScore])
 
   useEffect(() => {
-    if (gameState === 'playing' && monsters.length === 0 && towers.length > 0) {
+    if (gameState === 'playing' && monsters.length === 0 && monstersSpawnedThisWave > 0 && towers.length >= 0) {
       const checkComplete = setTimeout(() => {
         if (monsters.length === 0) {
           setWave(w => w + 1)
-          toast.success(`Wave ${wave} Complete! Next wave incoming!`)
+          setMonstersSpawnedThisWave(0)
+          toast.success(`Wave ${wave} Complete! 🎉`)
         }
-      }, 3000)
+      }, 2000)
       return () => clearTimeout(checkComplete)
     }
-  }, [gameState, monsters.length, towers.length, wave])
+  }, [gameState, monsters.length, monstersSpawnedThisWave, towers.length, wave])
 
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
@@ -355,6 +386,32 @@ function App() {
                     />
                   </svg>
 
+                  <div
+                    className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
+                    style={{
+                      left: PATH[0].x * CELL_SIZE + CELL_SIZE / 4,
+                      top: PATH[0].y * CELL_SIZE + CELL_SIZE / 4,
+                      width: CELL_SIZE / 2,
+                      height: CELL_SIZE / 2,
+                      zIndex: 2,
+                    }}
+                  >
+                    ▶️
+                  </div>
+
+                  <div
+                    className="absolute flex items-center justify-center text-3xl bg-red-500 rounded-full shadow-lg border-4 border-red-600"
+                    style={{
+                      left: PATH[PATH.length - 1].x * CELL_SIZE + CELL_SIZE / 4,
+                      top: PATH[PATH.length - 1].y * CELL_SIZE + CELL_SIZE / 4,
+                      width: CELL_SIZE / 2,
+                      height: CELL_SIZE / 2,
+                      zIndex: 2,
+                    }}
+                  >
+                    🏠
+                  </div>
+
                   {Array.from({ length: GRID_SIZE }).map((_, y) =>
                     Array.from({ length: GRID_SIZE }).map((_, x) => {
                       const isPath = isPathCell(x, y)
@@ -431,10 +488,16 @@ function App() {
                       }}
                     >
                       <div
-                        className="w-full h-full rounded-full flex items-center justify-center text-2xl shadow-lg animate-in zoom-in duration-300"
-                        style={{ backgroundColor: 'oklch(0.75 0.18 60)' }}
+                        className="w-full h-full rounded-full flex items-center justify-center text-2xl shadow-lg animate-in zoom-in duration-300 relative"
+                        style={{ 
+                          backgroundColor: monster.color,
+                          transform: monster.type === 'boss' ? 'scale(1.3)' : 'scale(1)',
+                        }}
                       >
-                        👾
+                        {monster.emoji}
+                        {monster.type === 'boss' && (
+                          <div className="absolute -top-1 -right-1 text-xs">👑</div>
+                        )}
                       </div>
                       <div className="absolute -top-2 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
                         <div
@@ -503,12 +566,47 @@ function App() {
                 </div>
               </Card>
 
+              <Card className="p-4 bg-secondary/20">
+                <h3 className="text-lg font-bold mb-2">Wave {wave}</h3>
+                <p className="text-sm text-muted-foreground">
+                  Monsters: {monstersSpawnedThisWave} / {5 + wave * 2}
+                </p>
+                {wave % 5 === 0 && (
+                  <Badge variant="destructive" className="mt-2">
+                    Boss Wave! 👹
+                  </Badge>
+                )}
+              </Card>
+
               <Card className="p-4 bg-accent/10">
-                <h3 className="text-lg font-bold mb-2 text-accent-foreground">💡 Tips</h3>
-                <ul className="text-sm space-y-1 text-accent-foreground/80">
+                <h3 className="text-lg font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
+                <div className="text-sm space-y-2 text-accent-foreground/90">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">👾</span>
+                    <span>Normal - Balanced</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🐰</span>
+                    <span>Fast - Quick but weak</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🦏</span>
+                    <span>Tank - Slow but tough</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">👹</span>
+                    <span>Boss - Every 5th wave</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-muted/50">
+                <h3 className="text-lg font-bold mb-2">💡 Tips</h3>
+                <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Place defenders near curves</li>
                   <li>• Mix fast and strong types</li>
-                  <li>• Save coins for tough waves</li>
+                  <li>• Save coins for boss waves</li>
+                  <li>• Use zappers for fast enemies</li>
                 </ul>
               </Card>
             </div>
