@@ -1629,13 +1629,13 @@ function App() {
             <Card className="flex-1 relative overflow-hidden bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-0">
               <div
                 ref={gameContainerRef}
-                className="h-full overflow-auto relative flex items-center justify-center"
+                className="h-full overflow-auto relative"
                 style={{ 
                   backgroundColor: 'oklch(0.15 0.02 260)',
                 }}
               >
                 <div
-                  className="relative"
+                  className="relative mx-auto my-4"
                   style={{
                     width: `${GRID_WIDTH * CELL_SIZE}px`,
                     height: `${GRID_HEIGHT * CELL_SIZE}px`,
@@ -2924,7 +2924,7 @@ function App() {
                         )
                       })}
                       
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 9, overflow: 'visible', width: '100%', height: '100%' }}>
+                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 9, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
                         <defs>
                           <filter id="particle-glow">
                             <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
