@@ -1150,20 +1150,21 @@ function App() {
   return (
     <div className="h-screen bg-background overflow-hidden flex flex-col">
       {(gameState === 'menu' || gameState === 'mapSelect' || gameState === 'leaderboard' || gameState === 'gameOver') && (
-        <header className="text-center py-4 shrink-0">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+        <header className="text-center py-4 shrink-0 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-1 neon-text relative" style={{ fontFamily: 'var(--font-heading)' }}>
             🛡️ Monster Defenders
           </h1>
-          <p className="text-muted-foreground text-sm">Stop the cute monsters from reaching your base!</p>
+          <p className="text-accent text-sm relative" style={{ textShadow: '0 0 10px oklch(0.75 0.28 195 / 0.6)' }}>Stop the cute monsters from reaching your base!</p>
         </header>
       )}
       
       <div className="flex-1 px-4 pb-4 flex flex-col min-h-0 overflow-hidden">
         {gameState === 'menu' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 text-center bg-card border-border">
-              <h2 className="text-2xl font-bold mb-3 text-foreground">How to Play</h2>
-              <div className="space-y-1.5 text-left mb-4 text-sm text-muted-foreground">
+            <Card className="p-6 text-center bg-card border-2 border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm" style={{ boxShadow: '0 0 40px oklch(0.68 0.24 330 / 0.3), 0 8px 32px rgba(0,0,0,0.5)' }}>
+              <h2 className="text-2xl font-bold mb-3 text-primary neon-text">How to Play</h2>
+              <div className="space-y-1.5 text-left mb-4 text-sm text-foreground/90">
                 <p>🎯 Click on empty cells to place defenders that stop monsters</p>
                 <p>💰 Earn coins by defeating monsters and use them to buy more defenders</p>
                 <p>❤️ Don't let monsters reach your base or you'll lose hearts</p>
@@ -1172,17 +1173,17 @@ function App() {
                 <p>⚡ Watch out for weather events that change gameplay!</p>
               </div>
               {leaderboard && leaderboard.length > 0 && (
-                <Badge variant="secondary" className="text-base px-3 py-1 mb-3">
+                <Badge variant="secondary" className="text-base px-3 py-1 mb-3 border-accent/50" style={{ boxShadow: '0 0 15px oklch(0.75 0.28 195 / 0.4)' }}>
                   High Score: {leaderboard[0].score.toLocaleString()} - {leaderboard[0].mapName}
                 </Badge>
               )}
               <div className="flex gap-2 justify-center">
-                <Button size="lg" onClick={() => setGameState('mapSelect')} className="text-lg px-6 py-5">
+                <Button size="lg" onClick={() => setGameState('mapSelect')} className="text-lg px-6 py-5 bg-primary hover:bg-primary/90 border-2 border-primary/50" style={{ boxShadow: '0 0 25px oklch(0.68 0.24 330 / 0.6), 0 4px 20px rgba(0,0,0,0.4)' }}>
                   <Play className="mr-2" size={24} weight="fill" />
                   Start Adventure
                 </Button>
                 {leaderboard && leaderboard.length > 0 && (
-                  <Button size="lg" variant="outline" onClick={() => setGameState('leaderboard')} className="text-lg px-6 py-5">
+                  <Button size="lg" variant="outline" onClick={() => setGameState('leaderboard')} className="text-lg px-6 py-5 border-2 border-accent/50 hover:bg-accent/10" style={{ boxShadow: '0 0 20px oklch(0.75 0.28 195 / 0.4)' }}>
                     🏆 Leaderboard
                   </Button>
                 )}
@@ -1193,14 +1194,15 @@ function App() {
 
         {gameState === 'mapSelect' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 bg-card border-border">
-              <h2 className="text-2xl font-bold mb-4 text-foreground text-center">Choose Your Adventure</h2>
+            <Card className="p-6 bg-card border-2 border-secondary/30 shadow-lg shadow-secondary/20 backdrop-blur-sm" style={{ boxShadow: '0 0 40px oklch(0.65 0.25 260 / 0.3), 0 8px 32px rgba(0,0,0,0.5)' }}>
+              <h2 className="text-2xl font-bold mb-4 text-secondary text-center" style={{ textShadow: '0 0 20px oklch(0.65 0.25 260 / 0.6)' }}>Choose Your Adventure</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                 {Object.entries(MAPS).map(([key, map]) => (
                   <Button
                     key={key}
                     variant={selectedMap === key ? 'default' : 'outline'}
-                    className="h-auto p-4 flex flex-col items-start gap-2"
+                    className={`h-auto p-4 flex flex-col items-start gap-2 border-2 transition-all ${selectedMap === key ? 'border-primary/50 bg-primary hover:bg-primary/90' : 'border-accent/30 hover:border-accent/50 hover:bg-accent/10'}`}
+                    style={selectedMap === key ? { boxShadow: '0 0 30px oklch(0.68 0.24 330 / 0.5)' } : { boxShadow: '0 0 15px oklch(0.75 0.28 195 / 0.2)' }}
                     onClick={() => setSelectedMap(key)}
                   >
                     <div className="flex items-center gap-2 w-full">
@@ -1210,18 +1212,18 @@ function App() {
                         <div className="text-xs opacity-75">{map.description}</div>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="self-start text-xs">
+                    <Badge variant="secondary" className="self-start text-xs border-accent/50" style={{ boxShadow: '0 0 10px oklch(0.75 0.28 195 / 0.3)' }}>
                       {map.difficulty} • {map.gridWidth}x{map.gridHeight}
                     </Badge>
                   </Button>
                 ))}
               </div>
               <div className="flex gap-2 justify-center">
-                <Button size="lg" onClick={startGame} className="text-lg px-6 py-5">
+                <Button size="lg" onClick={startGame} className="text-lg px-6 py-5 bg-primary hover:bg-primary/90 border-2 border-primary/50" style={{ boxShadow: '0 0 25px oklch(0.68 0.24 330 / 0.6)' }}>
                   <Play className="mr-2" size={24} weight="fill" />
                   Start Game
                 </Button>
-                <Button size="lg" variant="outline" onClick={() => setGameState('menu')} className="text-base px-5 py-5">
+                <Button size="lg" variant="outline" onClick={() => setGameState('menu')} className="text-base px-5 py-5 border-2 border-secondary/50 hover:bg-secondary/10" style={{ boxShadow: '0 0 20px oklch(0.65 0.25 260 / 0.4)' }}>
                   Back
                 </Button>
               </div>
@@ -1231,31 +1233,31 @@ function App() {
 
         {gameState === 'leaderboard' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 bg-card border-border">
-              <h2 className="text-2xl font-bold mb-4 text-foreground text-center">🏆 Top 10 Scores</h2>
+            <Card className="p-6 bg-card border-2 border-accent/30 shadow-lg shadow-accent/20 backdrop-blur-sm" style={{ boxShadow: '0 0 40px oklch(0.75 0.28 195 / 0.3), 0 8px 32px rgba(0,0,0,0.5)' }}>
+              <h2 className="text-2xl font-bold mb-4 text-accent text-center" style={{ textShadow: '0 0 20px oklch(0.75 0.28 195 / 0.6)' }}>🏆 Top 10 Scores</h2>
               {leaderboard && leaderboard.length > 0 ? (
                 <div className="space-y-2 mb-4">
                   {leaderboard.map((entry, index) => (
-                    <div key={entry.timestamp} className="flex items-center justify-between p-3 bg-slate-800/50 border border-slate-700/50 rounded-lg">
+                    <div key={entry.timestamp} className="flex items-center justify-between p-3 bg-muted/50 border-2 border-primary/20 rounded-lg backdrop-blur-sm transition-all hover:border-primary/40 hover:bg-muted/70" style={{ boxShadow: index === 0 ? '0 0 20px oklch(0.68 0.24 330 / 0.4)' : '0 0 10px oklch(0.65 0.25 260 / 0.2)' }}>
                       <div className="flex items-center gap-3">
-                        <Badge variant={index === 0 ? 'default' : 'secondary'} className="text-lg px-2 py-0.5">
+                        <Badge variant={index === 0 ? 'default' : 'secondary'} className={`text-lg px-2 py-0.5 border-2 ${index === 0 ? 'border-primary/50 bg-primary' : 'border-secondary/50'}`} style={index === 0 ? { boxShadow: '0 0 15px oklch(0.68 0.24 330 / 0.6)' } : {}}>
                           #{index + 1}
                         </Badge>
                         <div>
-                          <p className="text-base font-bold text-foreground">{entry.score.toLocaleString()} pts</p>
-                          <p className="text-xs text-muted-foreground">Wave {entry.wave} • {entry.mapName}</p>
+                          <p className="text-base font-bold text-primary">{entry.score.toLocaleString()} pts</p>
+                          <p className="text-xs text-foreground/70">Wave {entry.wave} • {entry.mapName}</p>
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-accent/70">
                         {new Date(entry.timestamp).toLocaleDateString()}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground mb-4">No scores yet. Play a game to get on the board!</p>
+                <p className="text-center text-foreground/70 mb-4">No scores yet. Play a game to get on the board!</p>
               )}
-              <Button size="lg" onClick={() => setGameState('menu')} className="w-full text-base">
+              <Button size="lg" onClick={() => setGameState('menu')} className="w-full text-base bg-secondary hover:bg-secondary/90 border-2 border-secondary/50" style={{ boxShadow: '0 0 25px oklch(0.65 0.25 260 / 0.5)' }}>
                 Back to Menu
               </Button>
             </Card>
@@ -1264,24 +1266,24 @@ function App() {
 
         {gameState === 'gameOver' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 text-center bg-card border-border">
-              <h2 className="text-2xl font-bold mb-3 text-destructive">
+            <Card className="p-6 text-center bg-card border-2 border-primary/30 shadow-lg shadow-primary/20 backdrop-blur-sm" style={{ boxShadow: '0 0 40px oklch(0.68 0.24 330 / 0.3), 0 8px 32px rgba(0,0,0,0.5)' }}>
+              <h2 className="text-2xl font-bold mb-3 text-primary neon-text">
                 {wave >= 10 ? '🎉 Victory! 🎉' : 'Game Over!'}
               </h2>
               <p className="text-lg mb-1 text-foreground">{currentMap.emoji} {currentMap.name}</p>
-              <p className="text-lg mb-2 text-foreground">Wave Reached: {wave}/10</p>
-              <p className="text-2xl font-bold text-primary mb-4">Final Score: {score.toLocaleString()}</p>
+              <p className="text-lg mb-2 text-accent">Wave Reached: {wave}/10</p>
+              <p className="text-2xl font-bold text-primary mb-4" style={{ textShadow: '0 0 20px oklch(0.68 0.24 330 / 0.6)' }}>Final Score: {score.toLocaleString()}</p>
               {leaderboard && leaderboard.length > 0 && score >= leaderboard[0].score && (
-                <Badge variant="default" className="text-base px-3 py-1 mb-3">
+                <Badge variant="default" className="text-base px-3 py-1 mb-3 border-2 border-accent/50 bg-primary" style={{ boxShadow: '0 0 25px oklch(0.68 0.24 330 / 0.7)' }}>
                   🎉 New High Score! 🎉
                 </Badge>
               )}
               <div className="flex gap-2 justify-center">
-                <Button size="lg" onClick={startGame} className="text-lg px-6 py-5">
+                <Button size="lg" onClick={startGame} className="text-lg px-6 py-5 bg-primary hover:bg-primary/90 border-2 border-primary/50" style={{ boxShadow: '0 0 25px oklch(0.68 0.24 330 / 0.6)' }}>
                   <ArrowClockwise className="mr-2" size={24} weight="fill" />
                   Play Again
                 </Button>
-                <Button size="lg" variant="outline" onClick={() => setGameState('menu')} className="text-base px-5 py-5">
+                <Button size="lg" variant="outline" onClick={() => setGameState('menu')} className="text-base px-5 py-5 border-2 border-secondary/50 hover:bg-secondary/10" style={{ boxShadow: '0 0 20px oklch(0.65 0.25 260 / 0.4)' }}>
                   Main Menu
                 </Button>
               </div>
@@ -1291,7 +1293,7 @@ function App() {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="flex-1 flex flex-col gap-2 overflow-hidden" style={{ minHeight: 0 }}>
-            <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10, position: 'relative' }}>
+            <Card className="p-3 shrink-0 bg-card/95 border-2 border-primary/30 backdrop-blur-sm shadow-xl" style={{ zIndex: 10, position: 'relative', boxShadow: '0 0 30px oklch(0.68 0.24 330 / 0.3), 0 4px 20px rgba(0,0,0,0.5)' }}>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
                   key={`health-${health}`}
@@ -1301,7 +1303,7 @@ function App() {
                   } : {}}
                   transition={{ duration: 0.4 }}
                 >
-                  <Badge className="text-base px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white border-red-500 shadow-lg shadow-red-900/50">
+                  <Badge className="text-base px-3 py-1.5 bg-destructive hover:bg-destructive/90 text-white border-2 border-destructive/50 shadow-lg" style={{ boxShadow: '0 0 20px oklch(0.55 0.27 12 / 0.6)' }}>
                     <Heart className="mr-1.5" weight="fill" size={18} />
                     {health}
                   </Badge>
@@ -1315,13 +1317,13 @@ function App() {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-amber-600 hover:bg-amber-700 text-white border-amber-500 shadow-lg shadow-amber-900/50">
+                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-accent hover:bg-accent/90 text-background border-2 border-accent/50 shadow-lg" style={{ boxShadow: '0 0 20px oklch(0.75 0.28 195 / 0.6)' }}>
                     <Coin className="mr-1.5" weight="fill" size={18} />
                     {Math.floor(displayCoins)}
                   </Badge>
                 </motion.div>
                 
-                <Badge className="text-base px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white border-purple-500 shadow-lg shadow-purple-900/50">
+                <Badge className="text-base px-3 py-1.5 bg-secondary hover:bg-secondary/90 text-white border-2 border-secondary/50 shadow-lg" style={{ boxShadow: '0 0 20px oklch(0.65 0.25 260 / 0.6)' }}>
                   <Crown className="mr-1.5" weight="fill" size={16} />
                   Wave {wave}/10
                 </Badge>
@@ -1406,13 +1408,13 @@ function App() {
                 <div className="flex gap-1.5">
                   <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white border-green-500 px-2 py-1.5 shadow-lg shadow-green-900/50" title="Help & Tips">
+                      <Button size="sm" className="bg-accent hover:bg-accent/90 text-background border-2 border-accent/50 px-2 py-1.5 shadow-lg" style={{ boxShadow: '0 0 15px oklch(0.75 0.28 195 / 0.5)' }} title="Help & Tips">
                         <Question weight="fill" size={18} />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card border-border">
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card border-2 border-primary/30 backdrop-blur-sm" style={{ boxShadow: '0 0 40px oklch(0.68 0.24 330 / 0.4)' }}>
                       <DialogHeader>
-                        <DialogTitle className="text-2xl text-foreground">Game Help & Tips</DialogTitle>
+                        <DialogTitle className="text-2xl text-primary neon-text">Game Help & Tips</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-6">
                         <div>
@@ -1588,16 +1590,16 @@ function App() {
 
                   <Dialog open={mapSelectModalOpen} onOpenChange={setMapSelectModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white border-teal-500 px-2 py-1.5 shadow-lg shadow-teal-900/50" title="Change Map">
+                      <Button size="sm" className="bg-secondary hover:bg-secondary/90 text-white border-2 border-secondary/50 px-2 py-1.5 shadow-lg" style={{ boxShadow: '0 0 15px oklch(0.65 0.25 260 / 0.5)' }} title="Change Map">
                         <MapPin weight="fill" size={18} />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-card border-border">
+                    <DialogContent className="max-w-2xl bg-card border-2 border-secondary/30 backdrop-blur-sm" style={{ boxShadow: '0 0 40px oklch(0.65 0.25 260 / 0.4)' }}>
                       <DialogHeader>
-                        <DialogTitle className="text-2xl text-foreground">Change Map</DialogTitle>
+                        <DialogTitle className="text-2xl text-secondary" style={{ textShadow: '0 0 20px oklch(0.65 0.25 260 / 0.6)' }}>Change Map</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-foreground/80">
                           Select a new map. Your current game will restart.
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1605,7 +1607,7 @@ function App() {
                             <Button
                               key={key}
                               variant={selectedMap === key ? 'default' : 'outline'}
-                              className="h-auto p-4 flex flex-col items-start gap-2"
+                              className={`h-auto p-4 flex flex-col items-start gap-2 border-2 ${selectedMap === key ? 'border-primary/50 bg-primary' : 'border-accent/30 hover:border-accent/50'}`}
                               onClick={() => {
                                 setSelectedMap(key)
                                 setMapSelectModalOpen(false)
@@ -1619,7 +1621,7 @@ function App() {
                                   <div className="text-xs opacity-75">{map.description}</div>
                                 </div>
                               </div>
-                              <Badge variant="secondary" className="self-start text-xs">
+                              <Badge variant="secondary" className="self-start text-xs border-accent/50">
                                 {map.difficulty} • {map.gridWidth}x{map.gridHeight}
                               </Badge>
                             </Button>
@@ -1630,28 +1632,28 @@ function App() {
                   </Dialog>
 
                   {gameState === 'playing' && (
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500 px-2 py-1.5 shadow-lg shadow-indigo-900/50" onClick={() => setGameState('paused')} title="Pause">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-background border-2 border-primary/50 px-2 py-1.5 shadow-lg" style={{ boxShadow: '0 0 15px oklch(0.68 0.24 330 / 0.5)' }} onClick={() => setGameState('paused')} title="Pause">
                       <Pause weight="fill" size={18} />
                     </Button>
                   )}
                   {gameState === 'paused' && (
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500 px-2 py-1.5 shadow-lg shadow-indigo-900/50" onClick={() => setGameState('playing')} title="Resume">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-background border-2 border-primary/50 px-2 py-1.5 shadow-lg" style={{ boxShadow: '0 0 15px oklch(0.68 0.24 330 / 0.5)' }} onClick={() => setGameState('playing')} title="Resume">
                       <Play weight="fill" size={18} />
                     </Button>
                   )}
-                  <Button size="sm" className="bg-slate-600 hover:bg-slate-700 text-white border-slate-500 px-2 py-1.5 shadow-lg shadow-slate-900/50" onClick={startGame} title="Restart">
+                  <Button size="sm" className="bg-muted hover:bg-muted/80 text-foreground border-2 border-border px-2 py-1.5 shadow-lg" onClick={startGame} title="Restart">
                     <ArrowClockwise weight="fill" size={18} />
                   </Button>
                 </div>
               </div>
             </Card>
 
-            <Card className="flex-1 relative overflow-hidden bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-0">
+            <Card className="flex-1 relative overflow-hidden bg-card/95 border-2 border-secondary/30 backdrop-blur-sm shadow-xl p-0" style={{ boxShadow: '0 0 40px oklch(0.65 0.25 260 / 0.3), 0 8px 32px rgba(0,0,0,0.5)' }}>
               <div
                 ref={gameContainerRef}
                 className="h-full overflow-auto relative"
                 style={{ 
-                  backgroundColor: 'oklch(0.15 0.02 260)',
+                  background: 'linear-gradient(180deg, oklch(0.10 0.05 270) 0%, oklch(0.08 0.06 280) 50%, oklch(0.06 0.07 290) 100%)',
                 }}
               >
                 <div
@@ -3187,8 +3189,8 @@ function App() {
                   </div>
                 </Card>
 
-            <Card className="shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-2" style={{ zIndex: 20 }}>
-              <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
+            <Card className="shrink-0 bg-card/95 border-2 border-primary/30 backdrop-blur-sm shadow-xl p-2" style={{ zIndex: 20, boxShadow: '0 0 30px oklch(0.68 0.24 330 / 0.3), 0 4px 20px rgba(0,0,0,0.5)' }}>
+              <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-2 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-muted">
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>)
                     .sort((a, b) => TOWER_TYPES[a].cost - TOWER_TYPES[b].cost)
                     .map(type => {
