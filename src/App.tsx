@@ -1621,7 +1621,7 @@ function App() {
                 </div>
               </div>
 
-              <div className={`flex flex-col gap-2 overflow-y-auto shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-10' : 'w-64'}`}>
+              <div className={`flex flex-col gap-2 overflow-y-auto shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-64'}`}>
                 <Button
                   size="sm"
                   variant="outline"
@@ -1631,6 +1631,49 @@ function App() {
                 >
                   {sidebarCollapsed ? <CaretLeft size={16} weight="bold" /> : <CaretRight size={16} weight="bold" />}
                 </Button>
+
+                {sidebarCollapsed && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <Badge variant="secondary" className="text-xs px-1 py-1 flex flex-col items-center justify-center h-auto" title={`Wave ${wave}/10`}>
+                        <Crown size={14} weight="fill" />
+                        <span className="text-[10px] leading-none">{wave}</span>
+                      </Badge>
+                      <Badge variant="destructive" className="text-xs px-1 py-1 flex flex-col items-center justify-center h-auto" title={`${health} Hearts`}>
+                        <Heart size={14} weight="fill" />
+                        <span className="text-[10px] leading-none">{health}</span>
+                      </Badge>
+                      <Badge variant="default" className="text-xs px-1 py-1 flex flex-col items-center justify-center h-auto" title={`${coins} Coins`}>
+                        <Coin size={14} weight="fill" />
+                        <span className="text-[10px] leading-none">{coins}</span>
+                      </Badge>
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex flex-col gap-1.5">
+                      <div className="text-lg cursor-help" title="Normal - Balanced monster">👾</div>
+                      <div className="text-lg cursor-help" title="Fast - Quick but weak">🐰</div>
+                      <div className="text-lg cursor-help" title="Tank - Slow but tough">🦏</div>
+                      <div className="text-lg cursor-help" title="Boss - Wave boss!">👹</div>
+                      <div className="text-lg cursor-help" title="Flying - Fast flyer">🦅</div>
+                      <div className="text-lg cursor-help" title="Armored - Damage resistant">🛡️</div>
+                      <div className="text-lg cursor-help" title="Swarm - Weak but numerous">🐜</div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex flex-col gap-1.5">
+                      <div className="text-sm cursor-help" title="Defeat boss to advance">💡</div>
+                      <div className="text-sm cursor-help" title="10 waves per adventure">🎯</div>
+                      <div className="text-sm cursor-help" title="Place towers at curves">📍</div>
+                      <div className="text-sm cursor-help" title="Snipers have long range">🎯</div>
+                      <div className="text-sm cursor-help" title="Bombers deal area damage">💣</div>
+                      <div className="text-sm cursor-help" title="Weather affects speed">🌦️</div>
+                      <div className="text-sm cursor-help" title="Armor reduces damage">🛡️</div>
+                    </div>
+                  </>
+                )}
 
                 {!sidebarCollapsed && (
                   <>
