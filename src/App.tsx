@@ -2889,23 +2889,7 @@ function App() {
                               opacity: opacity,
                               zIndex: 10,
                             }}
-                          >
-                            {dmg.isCritical && (
-                              <div 
-                                className="text-xs font-bold px-2 py-0.5 rounded-full mb-1 whitespace-nowrap"
-                                style={{
-                                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                                  color: '#7f1d1d',
-                                  textShadow: '0 1px 2px rgba(255,255,255,0.5)',
-                                  boxShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 2px 4px rgba(0,0,0,0.5)',
-                                  fontSize: '11px',
-                                  fontFamily: 'var(--font-heading)',
-                                  border: '2px solid #FFED4E',
-                                }}
-                              >
-                                CRITICAL HIT!
-                              </div>
-                            )}
+>
                             <div
                               style={{
                                 textShadow: dmg.isCritical
