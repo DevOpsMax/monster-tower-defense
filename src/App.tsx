@@ -1272,8 +1272,8 @@ function App() {
         )}
 
         {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="h-full flex flex-col gap-2">
-            <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl">
+          <div className="h-full flex flex-col gap-2" style={{ position: 'relative', zIndex: 'auto' }}>
+            <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10 }}>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
                   key={`health-${health}`}
@@ -1658,8 +1658,8 @@ function App() {
               </div>
             </Card>
 
-            <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border">
+            <div className="flex-1 flex flex-col gap-2 overflow-hidden relative">
+                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border" style={{ zIndex: 1 }}>
                   <div className="relative flex items-center justify-center h-full">
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
@@ -3155,7 +3155,8 @@ function App() {
                   </div>
                 </Card>
 
-                <div className="flex gap-2 justify-center overflow-x-auto overflow-y-hidden items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
+                <div className="shrink-0 relative" style={{ zIndex: 20 }}>
+                  <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 relative" style={{ overflowY: 'visible', paddingTop: '8px', paddingBottom: '8px' }}>
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>)
                     .sort((a, b) => TOWER_TYPES[a].cost - TOWER_TYPES[b].cost)
                     .map(type => {
@@ -3172,10 +3173,12 @@ function App() {
                         whileTap={affordable ? { scale: 0.92 } : {}}
                         transition={{ duration: 0.2 }}
                         className="relative"
+                        style={{ zIndex: isHovered ? 300 : 1 }}
                       >
                         {isHovered && (
                           <div
-                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/98 rounded-lg px-4 py-3 pointer-events-none shadow-2xl border-2 border-primary/60 backdrop-blur-sm z-[200] min-w-[280px]"
+                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/98 rounded-lg px-4 py-3 pointer-events-none shadow-2xl border-2 border-primary/60 backdrop-blur-sm min-w-[280px]"
+                            style={{ zIndex: 9999 }}
                           >
                             <div className="space-y-2">
                               <div className="text-center">
@@ -3374,6 +3377,7 @@ function App() {
                       </motion.div>
                     )
                   })}
+                  </div>
                 </div>
             </div>
           </div>
