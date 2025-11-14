@@ -233,7 +233,7 @@ function App() {
     const type = forceBoss ? 'boss' : getRandomMonsterType()
     const monsterConfig = MONSTER_TYPES[type]
     
-    const difficultyMultiplier = Math.pow(1.5, wave - 1)
+    const difficultyMultiplier = Math.pow(1.2, wave - 1)
     const baseHealth = 30 * difficultyMultiplier
     const baseSpeed = 0.012 + (wave - 1) * 0.0008
     const baseReward = 25 + wave * 8
