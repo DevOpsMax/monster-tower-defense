@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield } from '@phosphor-icons/react'
+import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 type Position = { x: number; y: number }
-type MonsterType = 'normal' | 'fast' | 'tank' | 'boss'
+type MonsterType = 'normal' | 'fast' | 'tank' | 'boss' | 'flying' | 'armored' | 'swarm'
 type Monster = {
   id: string
   position: Position
@@ -20,11 +20,12 @@ type Monster = {
   type: MonsterType
   emoji: string
   color: string
+  armor?: number
 }
 type Tower = {
   id: string
   position: Position
-  type: 'fast' | 'strong' | 'area'
+  type: 'fast' | 'strong' | 'area' | 'sniper' | 'freeze' | 'bomb'
   lastShot: number
   target: string | null
 }
@@ -34,8 +35,15 @@ type Projectile = {
   target: Position
   towerId: string
   damage: number
+  type?: string
 }
-type GameState = 'menu' | 'playing' | 'paused' | 'gameOver'
+type GameState = 'menu' | 'playing' | 'paused' | 'gameOver' | 'leaderboard'
+type WeatherType = 'clear' | 'storm' | 'snow' | 'volcano' | 'rain'
+type LeaderboardEntry = {
+  score: number
+  wave: number
+  timestamp: number
+}
 
 const GRID_SIZE = 8
 const CELL_SIZE = 60
@@ -57,16 +65,30 @@ const PATH: Position[] = [
 ]
 
 const MONSTER_TYPES = {
-  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1 },
-  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.6, speedMult: 1.8, rewardMult: 1.2 },
-  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 2.5, speedMult: 0.6, rewardMult: 1.5 },
-  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 5, speedMult: 0.4, rewardMult: 3 },
+  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
+  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.6, speedMult: 1.8, rewardMult: 1.2, armorMult: 0 },
+  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 2.5, speedMult: 0.6, rewardMult: 1.5, armorMult: 0 },
+  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 5, speedMult: 0.4, rewardMult: 3, armorMult: 0 },
+  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.8, speedMult: 1.5, rewardMult: 1.4, armorMult: 0 },
+  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 1.8, speedMult: 0.8, rewardMult: 2, armorMult: 0.3 },
+  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.4, speedMult: 1.4, rewardMult: 0.8, armorMult: 0 },
 }
 
 const TOWER_TYPES = {
-  fast: { cost: 50, damage: 10, range: 1.5, fireRate: 500, color: 'oklch(0.75 0.20 180)', icon: Lightning, name: 'Zapper' },
-  strong: { cost: 100, damage: 40, range: 2, fireRate: 1500, color: 'oklch(0.70 0.25 20)', icon: Crosshair, name: 'Blaster' },
-  area: { cost: 150, damage: 15, range: 2.5, fireRate: 1000, color: 'oklch(0.65 0.25 300)', icon: Shield, name: 'Guardian' },
+  fast: { cost: 50, damage: 10, range: 1.5, fireRate: 500, color: 'oklch(0.75 0.20 180)', icon: Lightning, name: 'Zapper', desc: 'Rapid fire' },
+  strong: { cost: 100, damage: 40, range: 2, fireRate: 1500, color: 'oklch(0.70 0.25 20)', icon: Crosshair, name: 'Blaster', desc: 'High damage' },
+  area: { cost: 150, damage: 15, range: 2.5, fireRate: 1000, color: 'oklch(0.65 0.25 300)', icon: Shield, name: 'Guardian', desc: 'Area damage' },
+  sniper: { cost: 200, damage: 100, range: 4, fireRate: 2500, color: 'oklch(0.68 0.22 340)', icon: Target, name: 'Sniper', desc: 'Long range' },
+  freeze: { cost: 120, damage: 5, range: 2, fireRate: 800, color: 'oklch(0.72 0.18 240)', icon: Snowflake, name: 'Freezer', desc: 'Slows enemies' },
+  bomb: { cost: 250, damage: 80, range: 2, fireRate: 3000, color: 'oklch(0.62 0.24 40)', icon: Bomb, name: 'Bomber', desc: 'Explosive' },
+}
+
+const WEATHER_EFFECTS = {
+  clear: { emoji: '☀️', name: 'Clear', speedMult: 1, color: 'oklch(0.95 0.05 90)' },
+  storm: { emoji: '⚡', name: 'Storm', speedMult: 0.85, color: 'oklch(0.70 0.08 260)' },
+  snow: { emoji: '❄️', name: 'Snow', speedMult: 0.7, color: 'oklch(0.88 0.03 240)' },
+  volcano: { emoji: '🌋', name: 'Volcano', speedMult: 1.2, color: 'oklch(0.72 0.15 30)' },
+  rain: { emoji: '🌧️', name: 'Rain', speedMult: 0.9, color: 'oklch(0.82 0.06 220)' },
 }
 
 function App() {
@@ -81,7 +103,9 @@ function App() {
   const [monstersSpawnedThisWave, setMonstersSpawnedThisWave] = useState(0)
   const [selectedTowerType, setSelectedTowerType] = useState<keyof typeof TOWER_TYPES | null>(null)
   const [hoveredCell, setHoveredCell] = useState<Position | null>(null)
-  const [highScore, setHighScore] = useKV<number>('monster-defenders-high-score', 0)
+  const [weather, setWeather] = useState<WeatherType>('clear')
+  const [nextWeatherChange, setNextWeatherChange] = useState(5)
+  const [leaderboard, setLeaderboard] = useKV<LeaderboardEntry[]>('monster-defenders-leaderboard', [])
 
   const isPathCell = (x: number, y: number) => PATH.some(p => p.x === x && p.y === y)
   const hasTower = (x: number, y: number) => towers.some(t => t.position.x === x && t.position.y === y)
@@ -90,8 +114,15 @@ function App() {
 
   const getMonsterTypeForWave = (wave: number, index: number): MonsterType => {
     if (wave % 5 === 0 && index === 0) return 'boss'
-    if (wave >= 10 && Math.random() < 0.3) return 'tank'
-    if (wave >= 5 && Math.random() < 0.4) return 'fast'
+    
+    const types: MonsterType[] = ['normal', 'fast', 'tank', 'flying', 'armored', 'swarm']
+    const rand = Math.random()
+    
+    if (wave >= 15 && rand < 0.2) return 'armored'
+    if (wave >= 12 && rand < 0.25) return 'flying'
+    if (wave >= 10 && rand < 0.3) return 'tank'
+    if (wave >= 8 && rand < 0.35) return 'swarm'
+    if (wave >= 5 && rand < 0.4) return 'fast'
     return 'normal'
   }
 
@@ -100,26 +131,29 @@ function App() {
     const type = getMonsterTypeForWave(wave, monstersSpawnedThisWave)
     const monsterConfig = MONSTER_TYPES[type]
     
-    const baseHealth = 30 + (wave - 1) * 10
-    const baseSpeed = 0.015 + (wave - 1) * 0.002
+    const baseHealth = 30 + (wave - 1) * 12
+    const baseSpeed = 0.015 + (wave - 1) * 0.0015
     const baseReward = 25 + wave * 5
+    
+    const weatherMult = WEATHER_EFFECTS[weather].speedMult
     
     const newMonster: Monster = {
       id,
       position: { ...PATH[0] },
       health: baseHealth * monsterConfig.healthMult,
       maxHealth: baseHealth * monsterConfig.healthMult,
-      speed: baseSpeed * monsterConfig.speedMult,
+      speed: baseSpeed * monsterConfig.speedMult * weatherMult,
       pathIndex: 0,
       reward: Math.floor(baseReward * monsterConfig.rewardMult),
       type,
       emoji: monsterConfig.emoji,
       color: monsterConfig.color,
+      armor: monsterConfig.armorMult,
     }
     
     setMonsters(prev => [...prev, newMonster])
     setMonstersSpawnedThisWave(prev => prev + 1)
-  }, [wave, monstersSpawnedThisWave])
+  }, [wave, monstersSpawnedThisWave, weather])
 
   const startGame = () => {
     setGameState('playing')
@@ -132,6 +166,24 @@ function App() {
     setWave(1)
     setMonstersSpawnedThisWave(0)
     setSelectedTowerType(null)
+    setWeather('clear')
+    setNextWeatherChange(5)
+  }
+
+  const addToLeaderboard = (finalScore: number, finalWave: number) => {
+    const newEntry: LeaderboardEntry = {
+      score: finalScore,
+      wave: finalWave,
+      timestamp: Date.now(),
+    }
+    
+    setLeaderboard((currentLeaderboard) => {
+      const current = currentLeaderboard || []
+      const updated = [...current, newEntry]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10)
+      return updated
+    })
   }
 
   const placeTower = (x: number, y: number) => {
@@ -230,7 +282,9 @@ function App() {
             setTimeout(() => {
               setMonsters(prev => prev.map(m => {
                 if (m.id === target.id) {
-                  const newHealth = m.health - config.damage
+                  const armorReduction = m.armor ? config.damage * m.armor : 0
+                  const actualDamage = config.damage - armorReduction
+                  const newHealth = m.health - actualDamage
                   if (newHealth <= 0) {
                     setCoins(c => c + m.reward)
                     setScore(s => s + m.reward * wave)
@@ -258,12 +312,12 @@ function App() {
   useEffect(() => {
     if (health <= 0 && gameState === 'playing') {
       setGameState('gameOver')
-      if (score > (highScore || 0)) {
-        setHighScore(score)
+      addToLeaderboard(score, wave)
+      if (leaderboard && leaderboard.length > 0 && score >= leaderboard[0].score) {
         toast.success('New High Score!')
       }
     }
-  }, [health, gameState, score, highScore, setHighScore])
+  }, [health, gameState, score, wave, leaderboard])
 
   useEffect(() => {
     if (gameState === 'playing' && monsters.length === 0 && monstersSpawnedThisWave > 0 && towers.length >= 0) {
@@ -272,11 +326,19 @@ function App() {
           setWave(w => w + 1)
           setMonstersSpawnedThisWave(0)
           toast.success(`Wave ${wave} Complete! 🎉`)
+          
+          if (wave >= nextWeatherChange) {
+            const weatherTypes: WeatherType[] = ['clear', 'storm', 'snow', 'volcano', 'rain']
+            const newWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)]
+            setWeather(newWeather)
+            setNextWeatherChange(wave + 3 + Math.floor(Math.random() * 3))
+            toast(`Weather changed to ${WEATHER_EFFECTS[newWeather].name}! ${WEATHER_EFFECTS[newWeather].emoji}`)
+          }
         }
       }, 2000)
       return () => clearTimeout(checkComplete)
     }
-  }, [gameState, monsters.length, monstersSpawnedThisWave, towers.length, wave])
+  }, [gameState, monsters.length, monstersSpawnedThisWave, towers.length, wave, nextWeatherChange])
 
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
@@ -298,15 +360,54 @@ function App() {
               <p className="text-lg">💰 Earn coins by defeating monsters and use them to buy more defenders</p>
               <p className="text-lg">❤️ Don't let monsters reach your base or you'll lose hearts</p>
               <p className="text-lg">🌊 Survive as many waves as you can!</p>
+              <p className="text-lg">⚡ Watch out for weather events that change gameplay!</p>
             </div>
-            {highScore && highScore > 0 && (
+            {leaderboard && leaderboard.length > 0 && (
               <Badge variant="secondary" className="text-xl px-4 py-2 mb-4">
-                High Score: {highScore.toLocaleString()}
+                High Score: {leaderboard[0].score.toLocaleString()}
               </Badge>
             )}
-            <Button size="lg" onClick={startGame} className="text-2xl px-8 py-6">
-              <Play className="mr-2" size={32} weight="fill" />
-              Start Game
+            <div className="flex gap-3 justify-center">
+              <Button size="lg" onClick={startGame} className="text-2xl px-8 py-6">
+                <Play className="mr-2" size={32} weight="fill" />
+                Start Game
+              </Button>
+              {leaderboard && leaderboard.length > 0 && (
+                <Button size="lg" variant="outline" onClick={() => setGameState('leaderboard')} className="text-2xl px-8 py-6">
+                  🏆 Leaderboard
+                </Button>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {gameState === 'leaderboard' && (
+          <Card className="max-w-2xl mx-auto p-8">
+            <h2 className="text-4xl font-bold mb-6 text-primary text-center">🏆 Top 10 Scores</h2>
+            {leaderboard && leaderboard.length > 0 ? (
+              <div className="space-y-3">
+                {leaderboard.map((entry, index) => (
+                  <div key={entry.timestamp} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <Badge variant={index === 0 ? 'default' : 'secondary'} className="text-2xl px-3 py-1">
+                        #{index + 1}
+                      </Badge>
+                      <div>
+                        <p className="text-xl font-bold">{entry.score.toLocaleString()} pts</p>
+                        <p className="text-sm text-muted-foreground">Wave {entry.wave}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(entry.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground">No scores yet. Play a game to get on the board!</p>
+            )}
+            <Button size="lg" onClick={() => setGameState('menu')} className="w-full mt-6 text-xl">
+              Back to Menu
             </Button>
           </Card>
         )}
@@ -316,7 +417,7 @@ function App() {
             <h2 className="text-4xl font-bold mb-4 text-destructive">Game Over!</h2>
             <p className="text-2xl mb-4">Wave Reached: {wave}</p>
             <p className="text-3xl font-bold text-primary mb-6">Final Score: {score.toLocaleString()}</p>
-            {score === (highScore || 0) && score > 0 && (
+            {leaderboard && leaderboard.length > 0 && score >= leaderboard[0].score && (
               <Badge variant="default" className="text-xl px-4 py-2 mb-4">
                 🎉 New High Score! 🎉
               </Badge>
@@ -344,6 +445,9 @@ function App() {
                     </Badge>
                     <Badge variant="secondary" className="text-lg px-3 py-1">
                       Wave {wave}
+                    </Badge>
+                    <Badge variant="outline" className="text-lg px-3 py-1" style={{ backgroundColor: WEATHER_EFFECTS[weather].color }}>
+                      {WEATHER_EFFECTS[weather].emoji} {WEATHER_EFFECTS[weather].name}
                     </Badge>
                     <Badge variant="outline" className="text-lg px-3 py-1">
                       Score: {score.toLocaleString()}
@@ -498,6 +602,9 @@ function App() {
                         {monster.type === 'boss' && (
                           <div className="absolute -top-1 -right-1 text-xs">👑</div>
                         )}
+                        {monster.armor && monster.armor > 0 && (
+                          <div className="absolute -bottom-1 -right-1 text-xs">🛡️</div>
+                        )}
                       </div>
                       <div className="absolute -top-2 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
                         <div
@@ -552,7 +659,7 @@ function App() {
                           <div className="flex-1 min-w-0">
                             <div className="font-semibold">{config.name}</div>
                             <div className="text-xs opacity-75">
-                              Range: {config.range} • Damage: {config.damage}
+                              {config.desc}
                             </div>
                           </div>
                           <Badge variant={affordable ? 'secondary' : 'outline'} className="flex-shrink-0">
@@ -580,22 +687,34 @@ function App() {
 
               <Card className="p-4 bg-accent/10">
                 <h3 className="text-lg font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
-                <div className="text-sm space-y-2 text-accent-foreground/90">
+                <div className="text-sm space-y-1 text-accent-foreground/90">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">👾</span>
+                    <span className="text-lg">👾</span>
                     <span>Normal - Balanced</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">🐰</span>
-                    <span>Fast - Quick but weak</span>
+                    <span className="text-lg">🐰</span>
+                    <span>Fast - Quick</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">🦏</span>
-                    <span>Tank - Slow but tough</span>
+                    <span className="text-lg">🦏</span>
+                    <span>Tank - Tough</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">👹</span>
-                    <span>Boss - Every 5th wave</span>
+                    <span className="text-lg">👹</span>
+                    <span>Boss - Wave 5</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🦅</span>
+                    <span>Flying - Agile</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🛡️</span>
+                    <span>Armored</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🐜</span>
+                    <span>Swarm - Many</span>
                   </div>
                 </div>
               </Card>
@@ -604,9 +723,10 @@ function App() {
                 <h3 className="text-lg font-bold mb-2">💡 Tips</h3>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Place defenders near curves</li>
-                  <li>• Mix fast and strong types</li>
-                  <li>• Save coins for boss waves</li>
-                  <li>• Use zappers for fast enemies</li>
+                  <li>• Use snipers for long range</li>
+                  <li>• Bombers deal area damage</li>
+                  <li>• Weather affects monster speed</li>
+                  <li>• Armor reduces damage taken</li>
                 </ul>
               </Card>
             </div>
