@@ -458,11 +458,13 @@ function App() {
     return () => clearInterval(coinInterval)
   }, [gameState])
 
+  const getMonstersPerWave = (waveNum: number) => 10 + waveNum * 5
+
   useEffect(() => {
     if (gameState !== 'playing' || wave > 10) return
     if (bossSpawned) return
 
-    const monstersPerWave = 8 + wave * 3
+    const monstersPerWave = getMonstersPerWave(wave)
     
     if (monstersSpawnedThisWave >= monstersPerWave) {
       const timer = setTimeout(() => {
@@ -965,8 +967,15 @@ function App() {
                       } : {}}
                       transition={{ duration: 0.3 }}
                     >
-                      <span className="text-xs text-muted-foreground">Enemies:</span>
-                      <span className="text-xs font-semibold tabular-nums">{monsters.length}</span>
+                      <span className="text-xs text-muted-foreground">Remaining:</span>
+                      <span className="text-xs font-semibold tabular-nums">
+                        {bossDefeated 
+                          ? monsters.length 
+                          : bossSpawned 
+                            ? monsters.length 
+                            : monsters.length + (getMonstersPerWave(wave) - monstersSpawnedThisWave) + 1
+                        }
+                      </span>
                     </motion.div>
                     <Separator orientation="vertical" className="h-4" />
                     <div className="flex items-center gap-1">
