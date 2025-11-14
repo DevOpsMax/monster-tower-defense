@@ -420,6 +420,11 @@ function App() {
   const hasTower = (x: number, y: number) => towers.some(t => t.position.x === x && t.position.y === y)
 
   const distance = (p1: Position, p2: Position) => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+  
+  const getCellCenter = (pos: Position) => ({
+    x: pos.x + 0.5,
+    y: pos.y + 0.5
+  })
 
   const getExpNeededForLevel = (level: number): number => {
     return Math.floor(6 * Math.pow(1.6, level - 1))
@@ -701,14 +706,16 @@ function App() {
           if (now - tower.lastShot < stats.fireRate) return tower
 
           const target = monsters.find(m => {
-            const d = distance(tower.position, m.position)
+            const towerCenter = getCellCenter(tower.position)
+            const d = distance(towerCenter, m.position)
             return d <= stats.range && m.health > 0
           })
 
           if (target) {
+            const towerCenter = getCellCenter(tower.position)
             const projectile: Projectile = {
               id: `proj-${now}-${Math.random()}`,
-              start: { ...tower.position },
+              start: towerCenter,
               target: { ...target.position },
               towerId: tower.id,
               damage: stats.damage,
@@ -746,37 +753,147 @@ function App() {
                   }
                   setExplosions(prev => [...prev, explosion])
                   
-                  const particleCount = tower.type === 'vortex' || tower.type === 'inferno' || tower.type === 'storm' ? 20 : 12
                   const newParticles: Particle[] = []
                   
-                  let particleShape: Particle['shape'] = 'circle'
-                  if (tower.type === 'spark') particleShape = 'star'
-                  else if (tower.type === 'cannon') particleShape = 'square'
-                  else if (tower.type === 'vortex') particleShape = 'triangle'
-                  else if (tower.type === 'laser') particleShape = 'diamond'
-                  else if (tower.type === 'frost') particleShape = 'snowflake'
-                  else if (tower.type === 'inferno') particleShape = 'spark'
-                  else if (tower.type === 'void') particleShape = 'circle'
-                  else if (tower.type === 'storm') particleShape = 'star'
-                  
-                  for (let i = 0; i < particleCount; i++) {
-                    const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5
-                    const speed = 0.02 + Math.random() * 0.03
-                    newParticles.push({
-                      id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                      position: { ...m.position },
-                      velocity: {
-                        x: Math.cos(angle) * speed,
-                        y: Math.sin(angle) * speed,
-                      },
-                      color: config.color,
-                      size: tower.type === 'inferno' || tower.type === 'vortex' || tower.type === 'storm' ? 8 : 5,
-                      timestamp: Date.now(),
-                      lifetime: 800 + Math.random() * 400,
-                      shape: particleShape,
-                      rotation: Math.random() * Math.PI * 2,
-                    })
+                  if (tower.type === 'spark') {
+                    for (let i = 0; i < 15; i++) {
+                      const angle = (Math.PI * 2 * i) / 15 + Math.random() * 0.4
+                      const speed = 0.025 + Math.random() * 0.04
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+                        color: i % 2 === 0 ? config.color : '#FFFFFF',
+                        size: 4 + Math.random() * 3,
+                        timestamp: Date.now(),
+                        lifetime: 600 + Math.random() * 400,
+                        shape: 'star',
+                        rotation: Math.random() * Math.PI * 2,
+                      })
+                    }
+                  } else if (tower.type === 'cannon') {
+                    for (let i = 0; i < 20; i++) {
+                      const angle = (Math.PI * 2 * i) / 20 + Math.random() * 0.3
+                      const speed = 0.03 + Math.random() * 0.05
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+                        color: i % 3 === 0 ? '#FFA500' : i % 3 === 1 ? '#FF4500' : config.color,
+                        size: 5 + Math.random() * 4,
+                        timestamp: Date.now(),
+                        lifetime: 700 + Math.random() * 500,
+                        shape: i % 2 === 0 ? 'square' : 'circle',
+                        rotation: Math.random() * Math.PI * 2,
+                      })
+                    }
+                  } else if (tower.type === 'vortex') {
+                    for (let i = 0; i < 25; i++) {
+                      const spiralAngle = (i / 25) * Math.PI * 4
+                      const spiralRadius = (i / 25) * 0.04
+                      const baseAngle = Math.random() * Math.PI * 2
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { 
+                          x: Math.cos(baseAngle + spiralAngle) * (0.02 + spiralRadius),
+                          y: Math.sin(baseAngle + spiralAngle) * (0.02 + spiralRadius)
+                        },
+                        color: i % 2 === 0 ? config.color : '#8B00FF',
+                        size: 6 + Math.random() * 3,
+                        timestamp: Date.now(),
+                        lifetime: 900 + Math.random() * 600,
+                        shape: 'triangle',
+                        rotation: spiralAngle,
+                      })
+                    }
+                  } else if (tower.type === 'laser') {
+                    for (let i = 0; i < 12; i++) {
+                      const angle = (Math.PI * 2 * i) / 12
+                      const speed = 0.015 + Math.random() * 0.025
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+                        color: i % 3 === 0 ? '#FF00FF' : i % 3 === 1 ? '#FFFFFF' : config.color,
+                        size: 4 + Math.random() * 2,
+                        timestamp: Date.now(),
+                        lifetime: 500 + Math.random() * 300,
+                        shape: 'diamond',
+                        rotation: angle,
+                      })
+                    }
+                  } else if (tower.type === 'frost') {
+                    for (let i = 0; i < 18; i++) {
+                      const angle = (Math.PI * 2 * i) / 18 + Math.random() * 0.3
+                      const speed = 0.018 + Math.random() * 0.03
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+                        color: i % 2 === 0 ? '#A0D0FF' : '#FFFFFF',
+                        size: 5 + Math.random() * 3,
+                        timestamp: Date.now(),
+                        lifetime: 1000 + Math.random() * 500,
+                        shape: 'snowflake',
+                        rotation: Math.random() * Math.PI * 2,
+                      })
+                    }
+                  } else if (tower.type === 'inferno') {
+                    for (let i = 0; i < 30; i++) {
+                      const angle = (Math.PI * 2 * i) / 30 + Math.random() * 0.5
+                      const speed = 0.02 + Math.random() * 0.04
+                      const colors = ['#FF4500', '#FF6347', '#FFD700', '#FFA500', config.color]
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { 
+                          x: Math.cos(angle) * speed,
+                          y: Math.sin(angle) * speed - 0.01
+                        },
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        size: 6 + Math.random() * 5,
+                        timestamp: Date.now(),
+                        lifetime: 800 + Math.random() * 600,
+                        shape: 'spark',
+                        rotation: Math.random() * Math.PI * 2,
+                      })
+                    }
+                  } else if (tower.type === 'void') {
+                    for (let i = 0; i < 16; i++) {
+                      const angle = (Math.PI * 2 * i) / 16
+                      const speed = 0.035 + Math.random() * 0.045
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+                        color: i % 2 === 0 ? config.color : '#000000',
+                        size: 7 + Math.random() * 4,
+                        timestamp: Date.now(),
+                        lifetime: 600 + Math.random() * 400,
+                        shape: 'circle',
+                        rotation: 0,
+                      })
+                    }
+                  } else if (tower.type === 'storm') {
+                    for (let i = 0; i < 28; i++) {
+                      const angle = (Math.PI * 2 * i) / 28 + Math.random() * 0.4
+                      const speed = 0.025 + Math.random() * 0.045
+                      const colors = ['#00FF00', '#32CD32', '#ADFF2F', config.color]
+                      newParticles.push({
+                        id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                        position: { ...m.position },
+                        velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        size: 6 + Math.random() * 4,
+                        timestamp: Date.now(),
+                        lifetime: 700 + Math.random() * 500,
+                        shape: 'star',
+                        rotation: Math.random() * Math.PI * 2,
+                      })
+                    }
                   }
+                  
                   setParticles(prev => [...prev, ...newParticles])
                   
                   if (newHealth <= 0) {
@@ -1526,10 +1643,10 @@ function App() {
                           </filter>
                         </defs>
                         {projectiles.map(proj => {
-                          const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
-                          const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
-                          const targetX = proj.target.x * CELL_SIZE + CELL_SIZE / 2
-                          const targetY = proj.target.y * CELL_SIZE + CELL_SIZE / 2
+                          const startX = proj.start.x * CELL_SIZE
+                          const startY = proj.start.y * CELL_SIZE
+                          const targetX = proj.target.x * CELL_SIZE
+                          const targetY = proj.target.y * CELL_SIZE
                           
                           const currentX = startX + (targetX - startX) * proj.progress
                           const currentY = startY + (targetY - startY) * proj.progress
@@ -1537,17 +1654,297 @@ function App() {
                           const towerConfig = TOWER_TYPES[proj.towerType]
                           const color = towerConfig.color
                           
+                          const angle = Math.atan2(targetY - startY, targetX - startX)
+                          
                           return (
                             <g key={proj.id}>
                               {proj.towerType === 'spark' && (
                                 <>
+                                  {[...Array(3)].map((_, i) => {
+                                    const offset = (i - 1) * 8
+                                    const perpX = -Math.sin(angle) * offset
+                                    const perpY = Math.cos(angle) * offset
+                                    const zigzag = Math.sin(proj.progress * Math.PI * 4) * 6
+                                    return (
+                                      <line
+                                        key={i}
+                                        x1={startX}
+                                        y1={startY}
+                                        x2={currentX + perpX * zigzag}
+                                        y2={currentY + perpY * zigzag}
+                                        stroke={i === 1 ? '#FFFFFF' : color}
+                                        strokeWidth={i === 1 ? '4' : '10'}
+                                        strokeLinecap="round"
+                                        opacity={i === 1 ? '1' : '0.7'}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={18}
+                                    fill={color}
+                                    opacity="0.5"
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={10}
+                                    fill="white"
+                                    opacity="1"
+                                  />
+                                  {[...Array(4)].map((_, i) => {
+                                    const sparkAngle = (i / 4) * Math.PI * 2 + proj.progress * Math.PI * 2
+                                    return (
+                                      <line
+                                        key={`spark-${i}`}
+                                        x1={currentX}
+                                        y1={currentY}
+                                        x2={currentX + Math.cos(sparkAngle) * 12}
+                                        y2={currentY + Math.sin(sparkAngle) * 12}
+                                        stroke="#FFFF00"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        opacity="0.9"
+                                      />
+                                    )
+                                  })}
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'cannon' && (
+                                <>
+                                  <defs>
+                                    <radialGradient id={`cannon-grad-${proj.id}`}>
+                                      <stop offset="0%" stopColor="#FFFFFF" />
+                                      <stop offset="50%" stopColor="#FFA500" />
+                                      <stop offset="100%" stopColor={color} />
+                                    </radialGradient>
+                                  </defs>
                                   <line
                                     x1={startX}
                                     y1={startY}
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
+                                    strokeWidth="22"
+                                    strokeLinecap="round"
+                                    opacity="0.95"
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="#FFA500"
                                     strokeWidth="14"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="white"
+                                    strokeWidth="6"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  {proj.trail.slice(-5).map((p, i) => (
+                                    <circle
+                                      key={i}
+                                      cx={p.x * CELL_SIZE}
+                                      cy={p.y * CELL_SIZE}
+                                      r={18 - i * 2}
+                                      fill="#FFA500"
+                                      opacity={0.3 + (i / 5) * 0.4}
+                                      filter="url(#glow)"
+                                    />
+                                  ))}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={20}
+                                    fill={`url(#cannon-grad-${proj.id})`}
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={11}
+                                    fill="white"
+                                    opacity="1"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'vortex' && (
+                                <>
+                                  {proj.trail.slice(-15).map((p, i) => {
+                                    const spiralAngle = (i / 15) * Math.PI * 6 + proj.progress * Math.PI * 4
+                                    const spiralRadius = 15 * (1 - i / 15)
+                                    return (
+                                      <circle
+                                        key={i}
+                                        cx={p.x * CELL_SIZE + Math.cos(spiralAngle) * spiralRadius}
+                                        cy={p.y * CELL_SIZE + Math.sin(spiralAngle) * spiralRadius}
+                                        r={14 - i * 0.7}
+                                        fill={color}
+                                        opacity={0.4 + (i / 15) * 0.6}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
+                                  {[...Array(6)].map((_, i) => {
+                                    const rotAngle = (i / 6) * Math.PI * 2 + proj.progress * Math.PI * 4
+                                    const radius = 18
+                                    return (
+                                      <line
+                                        key={`vortex-${i}`}
+                                        x1={currentX}
+                                        y1={currentY}
+                                        x2={currentX + Math.cos(rotAngle) * radius}
+                                        y2={currentY + Math.sin(rotAngle) * radius}
+                                        stroke={color}
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        opacity="0.8"
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={22}
+                                    fill={color}
+                                    opacity="0.4"
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={12}
+                                    fill="white"
+                                    opacity="0.9"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={6}
+                                    fill={color}
+                                    opacity="1"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'laser' && (
+                                <>
+                                  <defs>
+                                    <linearGradient id={`laser-grad-${proj.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                                      <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+                                      <stop offset="50%" stopColor="#FFFFFF" />
+                                      <stop offset="100%" stopColor={color} stopOpacity="0.3" />
+                                    </linearGradient>
+                                  </defs>
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="16"
+                                    strokeLinecap="round"
+                                    opacity="0.6"
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={`url(#laser-grad-${proj.id})`}
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="#FFFFFF"
+                                    strokeWidth="3"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  {[...Array(3)].map((_, i) => {
+                                    const t = (proj.progress - (i * 0.2)) % 1
+                                    if (t < 0 || t > 1) return null
+                                    const pulseX = startX + (currentX - startX) * t
+                                    const pulseY = startY + (currentY - startY) * t
+                                    return (
+                                      <circle
+                                        key={i}
+                                        cx={pulseX}
+                                        cy={pulseY}
+                                        r={8}
+                                        fill="white"
+                                        opacity={0.8 * (1 - t)}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={14}
+                                    fill={color}
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={7}
+                                    fill="white"
+                                    opacity="1"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'frost' && (
+                                <>
+                                  {proj.trail.slice(-10).map((p, i) => (
+                                    <g key={i}>
+                                      <circle
+                                        cx={p.x * CELL_SIZE}
+                                        cy={p.y * CELL_SIZE}
+                                        r={11}
+                                        fill={color}
+                                        opacity={0.5 + (i / 10) * 0.5}
+                                        filter="url(#glow)"
+                                      />
+                                      {i % 2 === 0 && (
+                                        <g transform={`translate(${p.x * CELL_SIZE} ${p.y * CELL_SIZE})`}>
+                                          <line x1="-6" y1="0" x2="6" y2="0" stroke="#A0D0FF" strokeWidth="2" />
+                                          <line x1="0" y1="-6" x2="0" y2="6" stroke="#A0D0FF" strokeWidth="2" />
+                                          <line x1="-4" y1="-4" x2="4" y2="4" stroke="#A0D0FF" strokeWidth="1.5" />
+                                          <line x1="-4" y1="4" x2="4" y2="-4" stroke="#A0D0FF" strokeWidth="1.5" />
+                                        </g>
+                                      )}
+                                    </g>
+                                  ))}
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="16"
                                     strokeLinecap="round"
                                     opacity="0.9"
                                     filter="url(#glow)"
@@ -1557,30 +1954,164 @@ function App() {
                                     y1={startY}
                                     x2={currentX}
                                     y2={currentY}
-                                    stroke="white"
-                                    strokeWidth="7"
+                                    stroke="#A0D0FF"
+                                    strokeWidth="9"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
+                                  {[...Array(6)].map((_, i) => {
+                                    const crystalAngle = (i / 6) * Math.PI * 2
+                                    const radius = 14
+                                    return (
+                                      <line
+                                        key={`crystal-${i}`}
+                                        x1={currentX}
+                                        y1={currentY}
+                                        x2={currentX + Math.cos(crystalAngle) * radius}
+                                        y2={currentY + Math.sin(crystalAngle) * radius}
+                                        stroke="white"
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        opacity="0.9"
+                                      />
+                                    )
+                                  })}
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={14}
+                                    r={16}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={8}
+                                    r={10}
                                     fill="white"
+                                    opacity="0.9"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'inferno' && (
+                                <>
+                                  {proj.trail.slice(-12).map((p, i) => {
+                                    if (i % 2 === 0) {
+                                      const colors = ['#FF4500', '#FF6347', '#FFD700']
+                                      return (
+                                        <circle
+                                          key={i}
+                                          cx={p.x * CELL_SIZE + (Math.random() - 0.5) * 8}
+                                          cy={p.y * CELL_SIZE + (Math.random() - 0.5) * 8}
+                                          r={10 + Math.random() * 6}
+                                          fill={colors[Math.floor(Math.random() * colors.length)]}
+                                          opacity={0.6 + (i / 12) * 0.4}
+                                          filter="url(#glow)"
+                                        />
+                                      )
+                                    }
+                                    return null
+                                  })}
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="20"
+                                    strokeLinecap="round"
+                                    strokeDasharray="14,7"
+                                    opacity="0.9"
+                                    filter="url(#glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="oklch(0.85 0.25 50)"
+                                    strokeWidth="12"
+                                    strokeLinecap="round"
+                                    strokeDasharray="14,7"
+                                    opacity="1"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="#FFD700"
+                                    strokeWidth="5"
+                                    strokeLinecap="round"
+                                    opacity="0.9"
+                                  />
+                                  {[...Array(8)].map((_, i) => {
+                                    const flameAngle = (i / 8) * Math.PI * 2 + proj.progress * Math.PI * 3
+                                    const flameRadius = 12 + Math.sin(proj.progress * Math.PI * 8 + i) * 4
+                                    return (
+                                      <circle
+                                        key={`flame-${i}`}
+                                        cx={currentX + Math.cos(flameAngle) * flameRadius}
+                                        cy={currentY + Math.sin(flameAngle) * flameRadius}
+                                        r={5}
+                                        fill={i % 2 === 0 ? '#FF4500' : '#FFD700'}
+                                        opacity="0.8"
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={20}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={13}
+                                    fill="oklch(0.85 0.25 50)"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={7}
+                                    fill="#FFD700"
                                     opacity="1"
                                   />
                                 </>
                               )}
                               
-                              {proj.towerType === 'cannon' && (
+                              {proj.towerType === 'void' && (
                                 <>
+                                  <defs>
+                                    <radialGradient id={`void-grad-${proj.id}`}>
+                                      <stop offset="0%" stopColor="#000000" />
+                                      <stop offset="40%" stopColor={color} />
+                                      <stop offset="100%" stopColor="#8B00FF" />
+                                    </radialGradient>
+                                  </defs>
+                                  {[...Array(4)].map((_, i) => {
+                                    const offset = (i - 1.5) * 10
+                                    const perpX = -Math.sin(angle) * offset
+                                    const perpY = Math.cos(angle) * offset
+                                    return (
+                                      <line
+                                        key={i}
+                                        x1={startX + perpX}
+                                        y1={startY + perpY}
+                                        x2={currentX + perpX}
+                                        y2={currentY + perpY}
+                                        stroke={color}
+                                        strokeWidth="6"
+                                        strokeLinecap="round"
+                                        opacity="0.7"
+                                        filter="url(#strong-glow)"
+                                      />
+                                    )
+                                  })}
                                   <line
                                     x1={startX}
                                     y1={startY}
@@ -1597,283 +2128,41 @@ function App() {
                                     y1={startY}
                                     x2={currentX}
                                     y2={currentY}
-                                    stroke="white"
+                                    stroke="oklch(0.30 0.20 290)"
                                     strokeWidth="10"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={16}
-                                    fill={color}
-                                    filter="url(#strong-glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={9}
-                                    fill="white"
-                                    opacity="1"
-                                  />
-                                </>
-                              )}
-                              
-                              {proj.towerType === 'vortex' && (
-                                <>
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke={color}
-                                    strokeWidth="16"
-                                    strokeLinecap="round"
-                                    opacity="0.85"
-                                    filter="url(#glow)"
-                                  />
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke="white"
-                                    strokeWidth="8"
-                                    strokeLinecap="round"
-                                    opacity="0.9"
-                                  />
-                                  {proj.trail.slice(-10).map((p, i) => (
+                                  {proj.trail.slice(-8).map((p, i) => (
                                     <circle
                                       key={i}
                                       cx={p.x * CELL_SIZE}
                                       cy={p.y * CELL_SIZE}
-                                      r={12 - i * 0.9}
-                                      fill={color}
-                                      opacity={0.5 + (i / 10) * 0.5}
-                                      filter="url(#glow)"
+                                      r={16 - i * 1.2}
+                                      fill="#000000"
+                                      opacity={0.5 + (i / 8) * 0.4}
+                                      filter="url(#strong-glow)"
                                     />
                                   ))}
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={17}
-                                    fill={color}
-                                    filter="url(#glow)"
+                                    r={24}
+                                    fill={`url(#void-grad-${proj.id})`}
+                                    filter="url(#strong-glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
                                     r={10}
-                                    fill="white"
-                                    opacity="0.9"
-                                  />
-                                </>
-                              )}
-                              
-                              {proj.towerType === 'laser' && (
-                                <>
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke={color}
-                                    strokeWidth="10"
-                                    strokeLinecap="round"
-                                    opacity="1"
-                                    filter="url(#glow)"
-                                  />
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke="white"
-                                    strokeWidth="5"
-                                    strokeLinecap="round"
-                                    opacity="1"
-                                  />
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke="#ffff00"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    opacity="1"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={12}
-                                    fill={color}
-                                    filter="url(#glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={6}
-                                    fill="white"
-                                    opacity="1"
-                                  />
-                                </>
-                              )}
-                              
-                              {proj.towerType === 'frost' && (
-                                <>
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke={color}
-                                    strokeWidth="14"
-                                    strokeLinecap="round"
-                                    opacity="0.9"
-                                    filter="url(#glow)"
-                                  />
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke="#a0d0ff"
-                                    strokeWidth="8"
-                                    strokeLinecap="round"
-                                    opacity="1"
-                                  />
-                                  {proj.trail.slice(-8).map((p, i) => (
-                                    <g key={i}>
-                                      <circle
-                                        cx={p.x * CELL_SIZE}
-                                        cy={p.y * CELL_SIZE}
-                                        r={9}
-                                        fill={color}
-                                        opacity={0.6 + (i / 8) * 0.4}
-                                        filter="url(#glow)"
-                                      />
-                                      {i % 2 === 0 && (
-                                        <text
-                                          x={p.x * CELL_SIZE}
-                                          y={p.y * CELL_SIZE + 2}
-                                          textAnchor="middle"
-                                          dominantBaseline="middle"
-                                          fontSize="14"
-                                          opacity={0.8}
-                                        >
-                                          ❄️
-                                        </text>
-                                      )}
-                                    </g>
-                                  ))}
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={14}
-                                    fill={color}
-                                    filter="url(#glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={9}
-                                    fill="white"
-                                    opacity="0.9"
-                                  />
-                                </>
-                              )}
-                              
-                              {proj.towerType === 'inferno' && (
-                                <>
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke={color}
-                                    strokeWidth="16"
-                                    strokeLinecap="round"
-                                    strokeDasharray="18,9"
-                                    opacity="0.9"
-                                    filter="url(#glow)"
-                                  />
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke="oklch(0.85 0.25 50)"
-                                    strokeWidth="9"
-                                    strokeLinecap="round"
-                                    strokeDasharray="18,9"
-                                    opacity="1"
-                                  />
-                                  {proj.trail.slice(-8).map((p, i) => (
-                                    i % 2 === 0 && (
-                                      <circle
-                                        key={i}
-                                        cx={p.x * CELL_SIZE}
-                                        cy={p.y * CELL_SIZE}
-                                        r={8}
-                                        fill="oklch(0.85 0.25 50)"
-                                        opacity={0.7 + (i / 8) * 0.3}
-                                        filter="url(#glow)"
-                                      />
-                                    )
-                                  ))}
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={17}
-                                    fill={color}
-                                    filter="url(#glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={11}
-                                    fill="oklch(0.85 0.25 50)"
-                                    opacity="1"
-                                  />
-                                </>
-                              )}
-                              
-                              {proj.towerType === 'void' && (
-                                <>
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke={color}
-                                    strokeWidth="14"
-                                    strokeLinecap="round"
-                                    opacity="0.95"
-                                    filter="url(#strong-glow)"
-                                  />
-                                  <line
-                                    x1={startX}
-                                    y1={startY}
-                                    x2={currentX}
-                                    y2={currentY}
-                                    stroke="oklch(0.30 0.20 290)"
-                                    strokeWidth="8"
-                                    strokeLinecap="round"
-                                    opacity="1"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={15}
-                                    fill={color}
-                                    filter="url(#strong-glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={7}
                                     fill="oklch(0.20 0.15 290)"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={4}
+                                    fill="#000000"
                                     opacity="1"
                                   />
                                 </>
@@ -1881,26 +2170,52 @@ function App() {
                               
                               {proj.towerType === 'storm' && (
                                 <>
-                                  {proj.trail.slice(-12).map((p, i) => (
+                                  {proj.trail.slice(-15).map((p, i) => (
                                     <circle
                                       key={i}
                                       cx={p.x * CELL_SIZE}
                                       cy={p.y * CELL_SIZE}
-                                      r={14 - i * 0.8}
-                                      fill={color}
-                                      opacity={0.4 + (i / 12) * 0.6}
+                                      r={16 - i * 0.9}
+                                      fill={i % 2 === 0 ? '#00FF00' : color}
+                                      opacity={0.3 + (i / 15) * 0.7}
                                       filter="url(#glow)"
                                     />
                                   ))}
+                                  {[...Array(5)].map((_, i) => {
+                                    const boltOffset = (i - 2) * 12
+                                    const perpX = -Math.sin(angle) * boltOffset
+                                    const perpY = Math.cos(angle) * boltOffset
+                                    const segments = 6
+                                    const points: string[] = []
+                                    for (let s = 0; s <= segments; s++) {
+                                      const t = s / segments
+                                      const x = startX + (currentX - startX) * t + perpX + (Math.random() - 0.5) * 8
+                                      const y = startY + (currentY - startY) * t + perpY + (Math.random() - 0.5) * 8
+                                      points.push(`${x},${y}`)
+                                    }
+                                    return (
+                                      <polyline
+                                        key={`bolt-${i}`}
+                                        points={points.join(' ')}
+                                        stroke={i === 2 ? '#FFFFFF' : '#00FF00'}
+                                        strokeWidth={i === 2 ? '4' : '2'}
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        fill="none"
+                                        opacity={i === 2 ? '1' : '0.7'}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
                                   <line
                                     x1={startX}
                                     y1={startY}
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="16"
+                                    strokeWidth="20"
                                     strokeLinecap="round"
-                                    opacity="0.9"
+                                    opacity="0.8"
                                     filter="url(#glow)"
                                   />
                                   <line
@@ -1909,22 +2224,46 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="oklch(0.85 0.30 110)"
-                                    strokeWidth="9"
+                                    strokeWidth="11"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
+                                  {[...Array(8)].map((_, i) => {
+                                    const sparkAngle = (i / 8) * Math.PI * 2 + proj.progress * Math.PI * 4
+                                    const sparkRadius = 18 + Math.sin(proj.progress * Math.PI * 6 + i) * 5
+                                    return (
+                                      <line
+                                        key={`spark-${i}`}
+                                        x1={currentX}
+                                        y1={currentY}
+                                        x2={currentX + Math.cos(sparkAngle) * sparkRadius}
+                                        y2={currentY + Math.sin(sparkAngle) * sparkRadius}
+                                        stroke="#ADFF2F"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        opacity="0.9"
+                                      />
+                                    )
+                                  })}
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={17}
+                                    r={22}
                                     fill={color}
                                     filter="url(#glow)"
                                   />
                                   <circle
                                     cx={currentX}
                                     cy={currentY}
-                                    r={10}
+                                    r={12}
                                     fill="oklch(0.85 0.30 110)"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={6}
+                                    fill="#FFFFFF"
                                     opacity="1"
                                   />
                                 </>
