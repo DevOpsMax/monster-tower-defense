@@ -63,6 +63,13 @@ type Particle = {
   shape: 'circle' | 'star' | 'square' | 'triangle' | 'diamond' | 'snowflake' | 'spark'
   rotation: number
 }
+type LevelUpEffect = {
+  id: string
+  position: Position
+  timestamp: number
+  level: number
+  towerColor: string
+}
 type Explosion = {
   id: string
   position: Position
@@ -259,10 +266,9 @@ const TOWER_TYPES = {
     name: 'Arc Spark', 
     desc: 'Chain lightning',
     specialty: 'Chains to 2 nearby targets',
-    upgrades: [
-      { level: 2, expNeeded: 8, damageBonus: 6, rangeBonusPercent: 15, fireRateBonus: -50, name: 'Charged Coil', newAbility: 'Chains to 3 targets, 25% stun chance' },
-      { level: 3, expNeeded: 20, damageBonus: 12, rangeBonusPercent: 25, fireRateBonus: -100, name: 'Tesla Storm', newAbility: 'Chains to 5 targets, arc jumps back' },
-    ]
+    damagePerLevel: 3,
+    rangePerLevel: 0.08,
+    fireRatePerLevel: -15,
   },
   cannon: { 
     cost: 225, 
@@ -274,10 +280,9 @@ const TOWER_TYPES = {
     name: 'Rail Cannon', 
     desc: 'Armor piercing',
     specialty: 'Ignores 50% armor, high single-target',
-    upgrades: [
-      { level: 2, expNeeded: 10, damageBonus: 20, rangeBonusPercent: 20, fireRateBonus: -200, name: 'Siege Cannon', newAbility: 'Ignores 75% armor, 2x vs bosses' },
-      { level: 3, expNeeded: 25, damageBonus: 45, rangeBonusPercent: 30, fireRateBonus: -300, name: 'Obliterator', newAbility: 'Full armor pierce, pierces enemies' },
-    ]
+    damagePerLevel: 8,
+    rangePerLevel: 0.12,
+    fireRatePerLevel: -40,
   },
   frost: { 
     cost: 300, 
@@ -289,10 +294,9 @@ const TOWER_TYPES = {
     name: 'Frost Shard', 
     desc: 'Slows enemies',
     specialty: 'Slows by 30%, splash damage',
-    upgrades: [
-      { level: 2, expNeeded: 12, damageBonus: 8, rangeBonusPercent: 18, fireRateBonus: -50, name: 'Glacial Spear', newAbility: 'Slows 50%, freezes on crit' },
-      { level: 3, expNeeded: 30, damageBonus: 18, rangeBonusPercent: 30, fireRateBonus: -100, name: 'Absolute Zero', newAbility: 'Slows 70%, freeze AOE on hit' },
-    ]
+    damagePerLevel: 2,
+    rangePerLevel: 0.10,
+    fireRatePerLevel: -20,
   },
   inferno: { 
     cost: 400, 
@@ -304,10 +308,9 @@ const TOWER_TYPES = {
     name: 'Flame Caster', 
     desc: 'Burning DOT',
     specialty: 'Burns for 5 DPS over 3 seconds',
-    upgrades: [
-      { level: 2, expNeeded: 15, damageBonus: 12, rangeBonusPercent: 15, fireRateBonus: -100, name: 'Pyroclasm', newAbility: 'Burns spread to nearby enemies' },
-      { level: 3, expNeeded: 35, damageBonus: 25, rangeBonusPercent: 25, fireRateBonus: -150, name: 'Solar Inferno', newAbility: 'Melts armor, 10 DPS burn, chain fire' },
-    ]
+    damagePerLevel: 4,
+    rangePerLevel: 0.09,
+    fireRatePerLevel: -25,
   },
   vortex: { 
     cost: 550, 
@@ -319,10 +322,9 @@ const TOWER_TYPES = {
     name: 'Void Vortex', 
     desc: 'Area control',
     specialty: 'Pulls & damages all in range',
-    upgrades: [
-      { level: 2, expNeeded: 18, damageBonus: 8, rangeBonusPercent: 20, fireRateBonus: 0, name: 'Gravity Well', newAbility: 'Stronger pull, groups enemies' },
-      { level: 3, expNeeded: 40, damageBonus: 16, rangeBonusPercent: 35, fireRateBonus: -50, name: 'Black Hole', newAbility: 'Massive pull, stuns in center' },
-    ]
+    damagePerLevel: 2,
+    rangePerLevel: 0.15,
+    fireRatePerLevel: -10,
   },
   laser: { 
     cost: 700, 
@@ -334,10 +336,9 @@ const TOWER_TYPES = {
     name: 'Beam Laser', 
     desc: 'Rapid continuous',
     specialty: 'Locks on, damage ramps up over time',
-    upgrades: [
-      { level: 2, expNeeded: 20, damageBonus: 3, rangeBonusPercent: 20, fireRateBonus: -20, name: 'Fusion Beam', newAbility: 'Damage ramps 50% faster' },
-      { level: 3, expNeeded: 45, damageBonus: 6, rangeBonusPercent: 30, fireRateBonus: -30, name: 'Disintegrator', newAbility: 'Max ramp melts all armor types' },
-    ]
+    damagePerLevel: 1,
+    rangePerLevel: 0.12,
+    fireRatePerLevel: -3,
   },
   void: { 
     cost: 900, 
@@ -349,10 +350,9 @@ const TOWER_TYPES = {
     name: 'Void Reaper', 
     desc: 'Pure damage',
     specialty: 'True damage ignores all defenses',
-    upgrades: [
-      { level: 2, expNeeded: 22, damageBonus: 35, rangeBonusPercent: 18, fireRateBonus: -300, name: 'Entropy Strike', newAbility: 'Heals 1 HP per kill' },
-      { level: 3, expNeeded: 50, damageBonus: 75, rangeBonusPercent: 30, fireRateBonus: -500, name: 'Oblivion', newAbility: '15% instant kill on hit' },
-    ]
+    damagePerLevel: 12,
+    rangePerLevel: 0.10,
+    fireRatePerLevel: -50,
   },
   storm: { 
     cost: 1200, 
@@ -364,10 +364,9 @@ const TOWER_TYPES = {
     name: 'Storm Caller', 
     desc: 'Area strikes',
     specialty: 'Hits 3 enemies in range simultaneously',
-    upgrades: [
-      { level: 2, expNeeded: 25, damageBonus: 20, rangeBonusPercent: 25, fireRateBonus: -200, name: 'Thunderlord', newAbility: 'Hits 5 enemies, 20% chain strike' },
-      { level: 3, expNeeded: 55, damageBonus: 45, rangeBonusPercent: 40, fireRateBonus: -400, name: 'Tempest God', newAbility: 'Hits all in range, calls lightning storm' },
-    ]
+    damagePerLevel: 7,
+    rangePerLevel: 0.14,
+    fireRatePerLevel: -45,
   },
 }
 
@@ -400,6 +399,7 @@ function App() {
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
   const [particles, setParticles] = useState<Particle[]>([])
   const [explosions, setExplosions] = useState<Explosion[]>([])
+  const [levelUpEffects, setLevelUpEffects] = useState<LevelUpEffect[]>([])
   const [helpModalOpen, setHelpModalOpen] = useState(false)
   const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
   const [hoveredTower, setHoveredTower] = useState<string | null>(null)
@@ -420,6 +420,22 @@ function App() {
   const hasTower = (x: number, y: number) => towers.some(t => t.position.x === x && t.position.y === y)
 
   const distance = (p1: Position, p2: Position) => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+
+  const getExpNeededForLevel = (level: number): number => {
+    return Math.floor(5 * Math.pow(1.5, level - 1))
+  }
+
+  const getTowerStats = (tower: Tower) => {
+    const config = TOWER_TYPES[tower.type]
+    const level = tower.level
+    
+    return {
+      damage: config.damage + (config.damagePerLevel * (level - 1)),
+      range: config.range + (config.rangePerLevel * (level - 1)),
+      fireRate: Math.max(50, config.fireRate + (config.fireRatePerLevel * (level - 1))),
+      level: level,
+    }
+  }
 
   const getRandomMonsterType = (): MonsterType => {
     const types: MonsterType[] = ['normal', 'fast', 'tank', 'flying', 'armored', 'swarm']
@@ -480,6 +496,7 @@ function App() {
     setDamageNumbers([])
     setParticles([])
     setExplosions([])
+    setLevelUpEffects([])
     setDisplayCoins(500)
     setDisplayScore(0)
     setPrevHealth(10)
@@ -564,6 +581,7 @@ function App() {
     const explosionLoop = setInterval(() => {
       const now = Date.now()
       setExplosions(prev => prev.filter(exp => now - exp.timestamp < 500))
+      setLevelUpEffects(prev => prev.filter(eff => now - eff.timestamp < 2000))
     }, 50)
 
     return () => clearInterval(explosionLoop)
@@ -671,27 +689,13 @@ function App() {
       setTowers(prev => {
         return prev.map(tower => {
           const config = TOWER_TYPES[tower.type]
+          const stats = getTowerStats(tower)
           
-          let effectiveRange = config.range
-          let effectiveDamage = config.damage
-          let effectiveFireRate = config.fireRate
-          
-          if (tower.level > 1) {
-            for (let i = 0; i < tower.level - 1; i++) {
-              const upgrade = config.upgrades[i]
-              if (upgrade) {
-                effectiveDamage += upgrade.damageBonus
-                effectiveRange *= (1 + upgrade.rangeBonusPercent / 100)
-                effectiveFireRate += (upgrade.fireRateBonus || 0)
-              }
-            }
-          }
-          
-          if (now - tower.lastShot < effectiveFireRate) return tower
+          if (now - tower.lastShot < stats.fireRate) return tower
 
           const target = monsters.find(m => {
             const d = distance(tower.position, m.position)
-            return d <= effectiveRange && m.health > 0
+            return d <= stats.range && m.health > 0
           })
 
           if (target) {
@@ -700,7 +704,7 @@ function App() {
               start: { ...tower.position },
               target: { ...target.position },
               towerId: tower.id,
-              damage: effectiveDamage,
+              damage: stats.damage,
               towerType: tower.type,
               progress: 0,
               trail: [],
@@ -710,8 +714,8 @@ function App() {
             setTimeout(() => {
               setMonsters(prev => prev.map(m => {
                 if (m.id === target.id) {
-                  const armorReduction = m.armor && m.armor > 0 && tower.type !== 'void' ? effectiveDamage * m.armor : 0
-                  const actualDamage = Math.max(1, effectiveDamage - armorReduction)
+                  const armorReduction = m.armor && m.armor > 0 && tower.type !== 'void' ? stats.damage * m.armor : 0
+                  const actualDamage = Math.max(1, stats.damage - armorReduction)
                   const newHealth = m.health - actualDamage
                   
                   const damageNum: DamageNumber = {
@@ -778,22 +782,50 @@ function App() {
                         const newKills = t.kills + 1
                         const expGain = m.isBoss ? 10 : 1
                         const newExp = t.experience + expGain
+                        const expNeeded = getExpNeededForLevel(t.level + 1)
                         
-                        if (t.level <= config.upgrades.length) {
-                          const currentUpgrade = config.upgrades[t.level - 1]
-                          
-                          if (currentUpgrade && newExp >= currentUpgrade.expNeeded) {
-                            const upgradedTower = {
-                              ...t,
-                              kills: newKills,
-                              experience: newExp - currentUpgrade.expNeeded,
-                              level: t.level + 1,
-                            }
-                            toast.success(`${config.name} evolved to ${currentUpgrade.name}! 🎉`, {
-                              description: currentUpgrade.newAbility
-                            })
-                            return upgradedTower
+                        if (newExp >= expNeeded) {
+                          const upgradedTower = {
+                            ...t,
+                            kills: newKills,
+                            experience: newExp - expNeeded,
+                            level: t.level + 1,
                           }
+                          
+                          const levelUpEffect: LevelUpEffect = {
+                            id: `levelup-${Date.now()}-${Math.random()}`,
+                            position: { ...t.position },
+                            timestamp: Date.now(),
+                            level: t.level + 1,
+                            towerColor: config.color,
+                          }
+                          setLevelUpEffects(prev => [...prev, levelUpEffect])
+                          
+                          const burstParticles: Particle[] = []
+                          for (let i = 0; i < 30; i++) {
+                            const angle = (Math.PI * 2 * i) / 30
+                            const speed = 0.04 + Math.random() * 0.04
+                            burstParticles.push({
+                              id: `lvlup-particle-${Date.now()}-${i}-${Math.random()}`,
+                              position: { ...t.position },
+                              velocity: {
+                                x: Math.cos(angle) * speed,
+                                y: Math.sin(angle) * speed - 0.02,
+                              },
+                              color: '#FFD700',
+                              size: 6 + Math.random() * 4,
+                              timestamp: Date.now(),
+                              lifetime: 1200 + Math.random() * 600,
+                              shape: 'star',
+                              rotation: Math.random() * Math.PI * 2,
+                            })
+                          }
+                          setParticles(prev => [...prev, ...burstParticles])
+                          
+                          toast.success(`${config.name} reached level ${t.level + 1}! ⚡`, {
+                            description: `+${config.damagePerLevel} DMG, +${config.rangePerLevel.toFixed(2)} Range, ${config.fireRatePerLevel}ms Rate`
+                          })
+                          return upgradedTower
                         }
                         
                         return { ...t, kills: newKills, experience: newExp }
@@ -1308,14 +1340,19 @@ function App() {
                                   </div>
                                   <Separator className="my-2" />
                                   <div className="text-xs space-y-1">
-                                    <div className="font-semibold text-amber-400">⭐ Evolution Path:</div>
-                                    {config.upgrades.map((upgrade, idx) => (
-                                      <div key={idx} className="text-[10px] text-slate-300 ml-2">
-                                        <span className="font-bold text-yellow-400">Lvl {idx + 2}:</span> {upgrade.name}
-                                        <br />
-                                        <span className="text-slate-400 italic">→ {upgrade.newAbility}</span>
-                                      </div>
-                                    ))}
+                                    <div className="font-semibold text-amber-400">⚡ Progression:</div>
+                                    <div className="text-[10px] text-slate-300 ml-2">
+                                      <span className="text-green-400">+{config.damagePerLevel} DMG</span> per level
+                                    </div>
+                                    <div className="text-[10px] text-slate-300 ml-2">
+                                      <span className="text-blue-400">+{config.rangePerLevel.toFixed(2)} RNG</span> per level
+                                    </div>
+                                    <div className="text-[10px] text-slate-300 ml-2">
+                                      <span className="text-purple-400">{config.fireRatePerLevel} ms</span> per level
+                                    </div>
+                                    <div className="text-[10px] text-yellow-300 ml-2 mt-1 italic">
+                                      Unlimited levels - keep fighting!
+                                    </div>
                                   </div>
                                 </Card>
                               )
@@ -1333,7 +1370,7 @@ function App() {
                             <ul className="text-sm space-y-2 text-muted-foreground">
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
-                                <span><strong>Towers evolve as they fight!</strong> Each kill gives experience - bosses give 10x XP</span>
+                                <span><strong>Towers level up infinitely!</strong> Each kill gives XP - bosses give 10x XP</span>
                               </li>
                               <li className="flex items-start gap-2">
                                 <span className="text-primary">•</span>
@@ -1963,46 +2000,76 @@ function App() {
                       {towers.map(tower => {
                         const config = TOWER_TYPES[tower.type]
                         const Icon = config.icon
-                        const towerLevel = tower.level || 1
+                        const stats = getTowerStats(tower)
+                        const towerLevel = tower.level
                         
-                        let displayName = config.name
-                        let effectiveDamage = config.damage
-                        let effectiveRange = config.range
-                        let effectiveFireRate = config.fireRate
+                        const sizeMultiplier = Math.min(2.5, 1 + (towerLevel - 1) * 0.08)
+                        const glowIntensity = Math.min(50, 10 + towerLevel * 2)
                         
-                        if (towerLevel > 1) {
-                          for (let i = 0; i < towerLevel - 1; i++) {
-                            const upgrade = config.upgrades[i]
-                            if (upgrade) {
-                              displayName = upgrade.name
-                              effectiveDamage += upgrade.damageBonus
-                              effectiveRange *= (1 + upgrade.rangeBonusPercent / 100)
-                              effectiveFireRate += (upgrade.fireRateBonus || 0)
-                            }
-                          }
-                        }
-                        
-                        const sizeMultiplier = 1 + (towerLevel - 1) * 0.15
-                        
-                        const expNeeded = towerLevel <= config.upgrades.length ? config.upgrades[towerLevel - 1].expNeeded : 0
+                        const expNeeded = getExpNeededForLevel(towerLevel + 1)
+                        const expPercent = (tower.experience / expNeeded) * 100
                         const isHovered = hoveredTower === tower.id
                         
                         return (
                           <div key={tower.id}>
                             {isHovered && (
-                              <div
-                                className="absolute rounded-full border-2 border-primary/50 bg-primary/10 pointer-events-none"
-                                style={{
-                                  left: `${(tower.position.x + 0.5 - effectiveRange) * CELL_SIZE}px`,
-                                  top: `${(tower.position.y + 0.5 - effectiveRange) * CELL_SIZE}px`,
-                                  width: `${effectiveRange * 2 * CELL_SIZE}px`,
-                                  height: `${effectiveRange * 2 * CELL_SIZE}px`,
-                                  zIndex: 3,
-                                }}
-                              />
+                              <>
+                                <div
+                                  className="absolute rounded-full border-2 border-primary/50 bg-primary/10 pointer-events-none animate-pulse"
+                                  style={{
+                                    left: `${(tower.position.x + 0.5 - stats.range) * CELL_SIZE}px`,
+                                    top: `${(tower.position.y + 0.5 - stats.range) * CELL_SIZE}px`,
+                                    width: `${stats.range * 2 * CELL_SIZE}px`,
+                                    height: `${stats.range * 2 * CELL_SIZE}px`,
+                                    zIndex: 3,
+                                  }}
+                                />
+                                <div
+                                  className="absolute bg-slate-900/95 rounded-lg px-3 py-2 pointer-events-none shadow-xl border-2 border-primary/50 backdrop-blur-sm"
+                                  style={{
+                                    left: `${tower.position.x * CELL_SIZE}px`,
+                                    top: `${(tower.position.y - 1) * CELL_SIZE}px`,
+                                    transform: 'translate(-50%, -100%)',
+                                    zIndex: 50,
+                                    minWidth: '180px',
+                                  }}
+                                >
+                                  <div className="text-center space-y-1">
+                                    <div className="font-bold text-sm text-primary" style={{ fontFamily: 'var(--font-heading)' }}>
+                                      {config.name}
+                                    </div>
+                                    <div className="text-xs text-yellow-400 font-bold">
+                                      LEVEL {towerLevel}
+                                    </div>
+                                    <div className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent my-1" />
+                                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px]">
+                                      <div className="text-left text-slate-400">Damage:</div>
+                                      <div className="text-right text-green-400 font-bold">{Math.floor(stats.damage)}</div>
+                                      <div className="text-left text-slate-400">Range:</div>
+                                      <div className="text-right text-blue-400 font-bold">{stats.range.toFixed(2)}</div>
+                                      <div className="text-left text-slate-400">Fire Rate:</div>
+                                      <div className="text-right text-purple-400 font-bold">{Math.floor(stats.fireRate)}ms</div>
+                                      <div className="text-left text-slate-400">Kills:</div>
+                                      <div className="text-right text-red-400 font-bold">{tower.kills}</div>
+                                    </div>
+                                    <div className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent my-1" />
+                                    <div className="text-[10px] text-slate-300">
+                                      XP: <span className="text-amber-400 font-bold">{tower.experience}</span> / <span className="text-slate-400">{expNeeded}</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                                      <div
+                                        className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 transition-all duration-300 relative"
+                                        style={{ width: `${expPercent}%` }}
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </>
                             )}
-                            <div
-                              className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300 cursor-pointer hover:scale-110 transition-transform"
+                            <motion.div
+                              className="absolute flex items-center justify-center rounded-full shadow-lg cursor-pointer"
                               style={{
                                 left: `${tower.position.x * CELL_SIZE}px`,
                                 top: `${tower.position.y * CELL_SIZE}px`,
@@ -2011,30 +2078,55 @@ function App() {
                                 transform: 'translate(50%, 50%)',
                                 backgroundColor: config.color,
                                 zIndex: 4,
-                                boxShadow: towerLevel > 1 ? `0 0 ${10 * towerLevel}px ${config.color}` : undefined,
+                                boxShadow: `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
                               }}
                               onMouseEnter={() => setHoveredTower(tower.id)}
                               onMouseLeave={() => setHoveredTower(null)}
-                              title={`${displayName} (Lvl ${towerLevel})\nKills: ${tower.kills}\nExp: ${tower.experience}/${expNeeded > 0 ? expNeeded : 'MAX'}\nDamage: ${Math.floor(effectiveDamage)}\nRange: ${effectiveRange.toFixed(1)}\nFire Rate: ${Math.floor(effectiveFireRate)}ms`}
+                              whileHover={{ scale: 1.15 }}
+                              animate={{
+                                boxShadow: [
+                                  `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
+                                  `0 0 ${glowIntensity + 10}px ${config.color}, 0 4px 25px rgba(0,0,0,0.6)`,
+                                  `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
+                                ]
+                              }}
+                              transition={{ duration: 2, repeat: Infinity }}
                             >
                               <Icon size={24 * sizeMultiplier} weight="fill" color="white" />
                               {towerLevel > 1 && (
-                                <div 
-                                  className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-lg"
-                                  style={{ fontSize: '10px' }}
+                                <motion.div 
+                                  className="absolute -top-2 -right-2 bg-gradient-to-br from-yellow-400 to-amber-600 text-white font-bold rounded-full flex items-center justify-center border-3 border-white shadow-xl"
+                                  style={{ 
+                                    fontSize: towerLevel >= 10 ? '9px' : '11px',
+                                    width: towerLevel >= 10 ? '28px' : '24px',
+                                    height: towerLevel >= 10 ? '28px' : '24px',
+                                    fontFamily: 'var(--font-heading)',
+                                  }}
+                                  initial={{ scale: 0, rotate: -180 }}
+                                  animate={{ scale: 1, rotate: 0 }}
+                                  transition={{ type: 'spring', stiffness: 300 }}
                                 >
                                   {towerLevel}
+                                </motion.div>
+                              )}
+                              {tower.experience > 0 && (
+                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[120%] h-1.5 bg-slate-900 rounded-full overflow-hidden border-2 border-slate-700 shadow-lg">
+                                  <motion.div
+                                    className="h-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 relative"
+                                    style={{ width: `${expPercent}%` }}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${expPercent}%` }}
+                                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                                  >
+                                    <motion.div 
+                                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                                      animate={{ x: ['-100%', '200%'] }}
+                                      transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                                    />
+                                  </motion.div>
                                 </div>
                               )}
-                              {tower.experience > 0 && expNeeded > 0 && (
-                                <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gray-700 rounded-full overflow-hidden border border-gray-900">
-                                  <div
-                                    className="h-full bg-gradient-to-r from-yellow-500 to-yellow-300 transition-all duration-300"
-                                    style={{ width: `${(tower.experience / expNeeded) * 100}%` }}
-                                  />
-                                </div>
-                              )}
-                            </div>
+                            </motion.div>
                           </div>
                         )
                       })}
@@ -2288,6 +2380,67 @@ function App() {
                           </div>
                         )
                       })}
+                      
+                      {levelUpEffects.map(effect => {
+                        const age = Date.now() - effect.timestamp
+                        const progress = age / 2000
+                        const scale = 1 + progress * 3
+                        const opacity = Math.max(0, 1 - progress)
+                        const yOffset = progress * -80
+                        
+                        return (
+                          <motion.div
+                            key={effect.id}
+                            className="absolute pointer-events-none"
+                            style={{
+                              left: `${effect.position.x * CELL_SIZE}px`,
+                              top: `${effect.position.y * CELL_SIZE}px`,
+                              transform: `translate(-50%, calc(-50% + ${yOffset}px))`,
+                              zIndex: 100,
+                            }}
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: scale, opacity: opacity }}
+                          >
+                            <div className="relative">
+                              <div
+                                className="absolute rounded-full"
+                                style={{
+                                  width: 120,
+                                  height: 120,
+                                  backgroundColor: effect.towerColor,
+                                  opacity: opacity * 0.3,
+                                  transform: 'translate(-50%, -50%)',
+                                  boxShadow: `0 0 60px ${effect.towerColor}`,
+                                  filter: 'blur(10px)',
+                                }}
+                              />
+                              <div
+                                className="absolute text-6xl font-bold"
+                                style={{
+                                  transform: 'translate(-50%, -50%)',
+                                  textShadow: `0 0 20px ${effect.towerColor}, 0 0 40px ${effect.towerColor}, 2px 2px 4px rgba(0,0,0,0.8)`,
+                                  color: '#FFD700',
+                                  fontFamily: 'var(--font-heading)',
+                                }}
+                              >
+                                ⚡
+                              </div>
+                              <div
+                                className="absolute text-2xl font-bold"
+                                style={{
+                                  transform: 'translate(-50%, 100%)',
+                                  textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 10px #FFD700',
+                                  color: '#FFD700',
+                                  fontFamily: 'var(--font-heading)',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                LEVEL {effect.level}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
                     </div>
                   </div>
                 </Card>
@@ -2377,7 +2530,7 @@ function App() {
                             </div>
                             <div className="flex justify-between text-[10px] text-slate-400">
                               <span>RATE: {config.fireRate}ms</span>
-                              <span className="text-green-400">{config.upgrades.length + 1} LVLs</span>
+                              <span className="text-green-400">∞ LEVELS</span>
                             </div>
                           </div>
                           
