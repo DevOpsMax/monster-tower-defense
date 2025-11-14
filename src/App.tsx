@@ -2014,7 +2014,7 @@ function App() {
                         const towerCenterX = tower.position.x * CELL_SIZE + CELL_SIZE / 2
                         const towerCenterY = tower.position.y * CELL_SIZE + CELL_SIZE / 2
                         
-                        const expBarWidth = 48
+                        const expBarWidth = 32
                         const expBarHeight = 12
                         const levelCircleSize = 20
                         
