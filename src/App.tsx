@@ -233,7 +233,7 @@ const MAPS: Record<string, MapConfig> = {
   },
 }
 
-const CELL_SIZE = 48
+const CELL_SIZE = 56
 
 const MONSTER_TYPES = {
   normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1, speedMult: 1, rewardMult: 1, armorMult: 0 },
@@ -910,8 +910,8 @@ function App() {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="h-full flex flex-col gap-2">
-            <Card className="p-4 shrink-0 bg-card/95 border-border backdrop-blur-sm">
-              <div className="flex flex-wrap items-center justify-center gap-3">
+            <Card className="p-3 shrink-0 bg-card/95 border-border backdrop-blur-sm">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
                   key={`health-${health}`}
                   animate={health < prevHealth ? {
@@ -920,8 +920,8 @@ function App() {
                   } : {}}
                   transition={{ duration: 0.4 }}
                 >
-                  <Badge className="text-lg px-4 py-2 bg-red-500 hover:bg-red-600 text-white border-red-600">
-                    <Heart className="mr-2" weight="fill" size={20} />
+                  <Badge className="text-base px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white border-red-600">
+                    <Heart className="mr-1.5" weight="fill" size={18} />
                     {health}
                   </Badge>
                 </motion.div>
@@ -934,14 +934,14 @@ function App() {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Badge className="text-lg px-4 py-2 tabular-nums bg-amber-500 hover:bg-amber-600 text-white border-amber-600">
-                    <Coin className="mr-2" weight="fill" size={20} />
+                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-amber-500 hover:bg-amber-600 text-white border-amber-600">
+                    <Coin className="mr-1.5" weight="fill" size={18} />
                     {Math.floor(displayCoins)}
                   </Badge>
                 </motion.div>
                 
-                <Badge className="text-lg px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white border-purple-600">
-                  <Crown className="mr-2" weight="fill" size={18} />
+                <Badge className="text-base px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white border-purple-600">
+                  <Crown className="mr-1.5" weight="fill" size={16} />
                   Wave {wave}/10
                 </Badge>
                 
@@ -952,25 +952,25 @@ function App() {
                   }}
                   transition={{ duration: 0.25 }}
                 >
-                  <Badge className="text-lg px-4 py-2 tabular-nums bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
-                    <Target className="mr-2" weight="fill" size={18} />
+                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
+                    <Target className="mr-1.5" weight="fill" size={16} />
                     {Math.floor(displayScore).toLocaleString()}
                   </Badge>
                 </motion.div>
                 
-                <Separator orientation="vertical" className="h-8" />
+                <Separator orientation="vertical" className="h-7" />
                 
-                <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border-2 border-orange-300 rounded-md">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 border-2 border-orange-300 rounded-md">
                   <motion.div 
-                    className="flex items-center gap-1.5"
+                    className="flex items-center gap-1"
                     animate={monsters.length < prevMonsterCount && monsters.length > 0 ? {
                       scale: [1, 1.2, 1],
                       filter: ['brightness(1)', 'brightness(1.8)', 'brightness(1)']
                     } : {}}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className="text-sm font-medium text-orange-700">Enemies:</span>
-                    <span className="text-lg font-bold tabular-nums text-orange-900">
+                    <span className="text-xs font-medium text-orange-700">Enemies:</span>
+                    <span className="text-base font-bold tabular-nums text-orange-900">
                       {bossDefeated 
                         ? monsters.length 
                         : bossSpawned 
@@ -979,7 +979,7 @@ function App() {
                       }
                     </span>
                   </motion.div>
-                  <Separator orientation="vertical" className="h-6 bg-orange-300" />
+                  <Separator orientation="vertical" className="h-5 bg-orange-300" />
                   <div className="flex items-center gap-1">
                     <AnimatePresence mode="wait">
                       {bossSpawned ? (
@@ -1035,13 +1035,13 @@ function App() {
                   </div>
                 </div>
                 
-                <Separator orientation="vertical" className="h-8" />
+                <Separator orientation="vertical" className="h-7" />
                 
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white border-green-600 px-3 py-2" title="Help & Tips">
-                        <Question weight="fill" size={20} />
+                      <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white border-green-600 px-2 py-1.5" title="Help & Tips">
+                        <Question weight="fill" size={18} />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card border-border">
@@ -1198,8 +1198,8 @@ function App() {
 
                   <Dialog open={mapSelectModalOpen} onOpenChange={setMapSelectModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white border-teal-600 px-3 py-2" title="Change Map">
-                        <MapPin weight="fill" size={20} />
+                      <Button size="sm" className="bg-teal-500 hover:bg-teal-600 text-white border-teal-600 px-2 py-1.5" title="Change Map">
+                        <MapPin weight="fill" size={18} />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-card border-border">
@@ -1240,24 +1240,24 @@ function App() {
                   </Dialog>
 
                   {gameState === 'playing' && (
-                    <Button size="lg" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-3 py-2" onClick={() => setGameState('paused')} title="Pause">
-                      <Pause weight="fill" size={20} />
+                    <Button size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-2 py-1.5" onClick={() => setGameState('paused')} title="Pause">
+                      <Pause weight="fill" size={18} />
                     </Button>
                   )}
                   {gameState === 'paused' && (
-                    <Button size="lg" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-3 py-2" onClick={() => setGameState('playing')} title="Resume">
-                      <Play weight="fill" size={20} />
+                    <Button size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-2 py-1.5" onClick={() => setGameState('playing')} title="Resume">
+                      <Play weight="fill" size={18} />
                     </Button>
                   )}
-                  <Button size="lg" className="bg-slate-500 hover:bg-slate-600 text-white border-slate-600 px-3 py-2" onClick={startGame} title="Restart">
-                    <ArrowClockwise weight="fill" size={20} />
+                  <Button size="sm" className="bg-slate-500 hover:bg-slate-600 text-white border-slate-600 px-2 py-1.5" onClick={startGame} title="Restart">
+                    <ArrowClockwise weight="fill" size={18} />
                   </Button>
                 </div>
               </div>
             </Card>
 
             <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-                <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border">
+                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-auto border-border">
                   <div className="relative flex items-center justify-center h-full">
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
@@ -1958,7 +1958,7 @@ function App() {
                   </div>
                 </Card>
 
-                <div className="flex flex-wrap gap-3 justify-center items-stretch px-4 py-3">
+                <div className="flex flex-wrap gap-2 justify-center items-stretch px-4 py-2">
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
                     const config = TOWER_TYPES[type]
                     const Icon = config.icon
@@ -1974,7 +1974,7 @@ function App() {
                       >
                         <Button
                           variant="outline"
-                          className={`h-auto py-4 px-5 flex flex-col items-center gap-3 relative overflow-hidden transition-all duration-300 min-w-[140px] ${
+                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 min-w-[120px] ${
                             selected 
                               ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/50' 
                               : affordable
@@ -1994,7 +1994,7 @@ function App() {
                           
                           <div className="relative">
                             <motion.div
-                              className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg relative"
+                              className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg relative"
                               style={{ 
                                 backgroundColor: config.color,
                                 boxShadow: selected ? `0 0 30px ${config.color}` : `0 4px 12px rgba(0,0,0,0.4)`
@@ -2008,11 +2008,11 @@ function App() {
                               } : {}}
                               transition={{ duration: 1.5, repeat: Infinity }}
                             >
-                              <Icon size={32} weight="fill" color="white" />
+                              <Icon size={28} weight="fill" color="white" />
                             </motion.div>
                             {selected && (
                               <motion.div
-                                className="absolute -top-2 -right-2 bg-yellow-400 rounded-full w-7 h-7 flex items-center justify-center shadow-lg"
+                                className="absolute -top-1.5 -right-1.5 bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center shadow-lg"
                                 initial={{ scale: 0, rotate: -180 }}
                                 animate={{ scale: 1, rotate: 0 }}
                                 transition={{ type: 'spring', stiffness: 500, damping: 15 }}
@@ -2022,29 +2022,29 @@ function App() {
                             )}
                           </div>
                           
-                          <div className="flex flex-col items-center gap-1.5 w-full">
-                            <div className="font-bold text-sm text-white tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
+                          <div className="flex flex-col items-center gap-1 w-full">
+                            <div className="font-bold text-xs text-white tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
                               {config.name.toUpperCase()}
                             </div>
-                            <div className="text-xs text-slate-300 leading-tight text-center h-8 flex items-center">
+                            <div className="text-xs text-slate-300 leading-tight text-center h-7 flex items-center">
                               {config.desc}
                             </div>
                           </div>
                           
                           <Badge 
-                            className={`text-sm px-3 py-1.5 font-bold shadow-md ${
+                            className={`text-xs px-2.5 py-1 font-bold shadow-md ${
                               affordable 
                                 ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600' 
                                 : 'bg-slate-700 text-slate-400 border-slate-600'
                             }`}
                           >
-                            <Coin size={14} weight="fill" className="mr-1.5" />
+                            <Coin size={12} weight="fill" className="mr-1" />
                             {config.cost}
                           </Badge>
                           
                           {!affordable && (
                             <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
-                              <span className="text-red-400 font-bold text-xs bg-red-950/80 px-3 py-1.5 rounded-full border border-red-800">
+                              <span className="text-red-400 font-bold text-xs bg-red-950/80 px-2.5 py-1 rounded-full border border-red-800">
                                 🔒 LOCKED
                               </span>
                             </div>
