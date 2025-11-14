@@ -831,11 +831,14 @@ function App() {
             <div className="flex-1 flex gap-2 overflow-hidden">
               <div className="flex-1 flex flex-col gap-2 min-w-0">
                 <Card className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-hidden">
-                  <div
-                    className="relative mx-auto bg-card rounded-lg shadow-inner h-full w-full flex items-center justify-center"
-                  >
+                  <div className="relative w-full h-full flex items-center justify-center">
                     <div 
-                      className="relative w-full h-full"
+                      className="relative bg-card rounded-lg shadow-inner"
+                      style={{
+                        aspectRatio: '1 / 1',
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                      }}
                     >
                       <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} viewBox={`0 0 ${GRID_SIZE * CELL_SIZE} ${GRID_SIZE * CELL_SIZE}`} preserveAspectRatio="xMidYMid meet">
                         <path
