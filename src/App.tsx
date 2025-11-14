@@ -646,7 +646,7 @@ function App() {
           const currentX = startX + (targetX - startX) * proj.progress
           const currentY = startY + (targetY - startY) * proj.progress
           
-          const newTrail = [...proj.trail, { x: currentX / CELL_SIZE, y: currentY / CELL_SIZE }]
+          const newTrail = [...proj.trail, { x: currentX, y: currentY }]
           if (newTrail.length > 20) {
             newTrail.shift()
           }
@@ -1643,10 +1643,10 @@ function App() {
                           </filter>
                         </defs>
                         {projectiles.map(proj => {
-                          const startX = proj.start.x * CELL_SIZE
-                          const startY = proj.start.y * CELL_SIZE
-                          const targetX = proj.target.x * CELL_SIZE
-                          const targetY = proj.target.y * CELL_SIZE
+                          const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
+                          const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
+                          const targetX = proj.target.x * CELL_SIZE + CELL_SIZE / 2
+                          const targetY = proj.target.y * CELL_SIZE + CELL_SIZE / 2
                           
                           const currentX = startX + (targetX - startX) * proj.progress
                           const currentY = startY + (targetY - startY) * proj.progress
@@ -1676,6 +1676,28 @@ function App() {
                                         strokeWidth={i === 1 ? '4' : '10'}
                                         strokeLinecap="round"
                                         opacity={i === 1 ? '1' : '0.7'}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
+                                  {[...Array(6)].map((_, i) => {
+                                    const t = 0.2 + (i / 6) * 0.6
+                                    if (t > proj.progress) return null
+                                    const boltX = startX + (currentX - startX) * t
+                                    const boltY = startY + (currentY - startY) * t
+                                    const branchAngle = angle + (Math.PI / 4) * (i % 2 === 0 ? 1 : -1)
+                                    const branchLength = 15 + Math.random() * 10
+                                    return (
+                                      <line
+                                        key={`branch-${i}`}
+                                        x1={boltX}
+                                        y1={boltY}
+                                        x2={boltX + Math.cos(branchAngle) * branchLength}
+                                        y2={boltY + Math.sin(branchAngle) * branchLength}
+                                        stroke={color}
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        opacity={0.6}
                                         filter="url(#glow)"
                                       />
                                     )
@@ -1723,6 +1745,16 @@ function App() {
                                       <stop offset="100%" stopColor={color} />
                                     </radialGradient>
                                   </defs>
+                                  {proj.progress < 0.15 && (
+                                    <circle
+                                      cx={startX}
+                                      cy={startY}
+                                      r={35 * (1 - proj.progress / 0.15)}
+                                      fill="#FFA500"
+                                      opacity={0.8 * (1 - proj.progress / 0.15)}
+                                      filter="url(#strong-glow)"
+                                    />
+                                  )}
                                   <line
                                     x1={startX}
                                     y1={startY}
@@ -1757,28 +1789,35 @@ function App() {
                                   {proj.trail.slice(-5).map((p, i) => (
                                     <circle
                                       key={i}
-                                      cx={p.x * CELL_SIZE}
-                                      cy={p.y * CELL_SIZE}
+                                      cx={p.x}
+                                      cy={p.y}
                                       r={18 - i * 2}
                                       fill="#FFA500"
                                       opacity={0.3 + (i / 5) * 0.4}
                                       filter="url(#glow)"
                                     />
                                   ))}
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={20}
-                                    fill={`url(#cannon-grad-${proj.id})`}
-                                    filter="url(#strong-glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={11}
-                                    fill="white"
-                                    opacity="1"
-                                  />
+                                  <g transform={`translate(${currentX} ${currentY}) rotate(${angle * 180 / Math.PI})`}>
+                                    <circle
+                                      cx={0}
+                                      cy={0}
+                                      r={20}
+                                      fill={`url(#cannon-grad-${proj.id})`}
+                                      filter="url(#strong-glow)"
+                                    />
+                                    <circle
+                                      cx={0}
+                                      cy={0}
+                                      r={11}
+                                      fill="white"
+                                      opacity="1"
+                                    />
+                                    <path
+                                      d="M -8 -4 L 12 0 L -8 4 Z"
+                                      fill="oklch(0.90 0.15 40)"
+                                      opacity="0.8"
+                                    />
+                                  </g>
                                 </>
                               )}
                               
@@ -1790,8 +1829,8 @@ function App() {
                                     return (
                                       <circle
                                         key={i}
-                                        cx={p.x * CELL_SIZE + Math.cos(spiralAngle) * spiralRadius}
-                                        cy={p.y * CELL_SIZE + Math.sin(spiralAngle) * spiralRadius}
+                                        cx={p.x + Math.cos(spiralAngle) * spiralRadius}
+                                        cy={p.y + Math.sin(spiralAngle) * spiralRadius}
                                         r={14 - i * 0.7}
                                         fill={color}
                                         opacity={0.4 + (i / 15) * 0.6}
@@ -1850,6 +1889,17 @@ function App() {
                                       <stop offset="50%" stopColor="#FFFFFF" />
                                       <stop offset="100%" stopColor={color} stopOpacity="0.3" />
                                     </linearGradient>
+                                    <linearGradient id={`laser-pulse-${proj.id}`}>
+                                      <stop offset="0%" stopColor={color}>
+                                        <animate attributeName="stop-opacity" values="0.3;0.8;0.3" dur="0.5s" repeatCount="indefinite" />
+                                      </stop>
+                                      <stop offset="50%" stopColor="#FFFFFF">
+                                        <animate attributeName="stop-opacity" values="0.8;1;0.8" dur="0.5s" repeatCount="indefinite" />
+                                      </stop>
+                                      <stop offset="100%" stopColor={color}>
+                                        <animate attributeName="stop-opacity" values="0.3;0.8;0.3" dur="0.5s" repeatCount="indefinite" />
+                                      </stop>
+                                    </linearGradient>
                                   </defs>
                                   <line
                                     x1={startX}
@@ -1857,9 +1907,9 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="16"
+                                    strokeWidth="18"
                                     strokeLinecap="round"
-                                    opacity="0.6"
+                                    opacity="0.7"
                                     filter="url(#strong-glow)"
                                   />
                                   <line
@@ -1868,7 +1918,7 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={`url(#laser-grad-${proj.id})`}
-                                    strokeWidth="8"
+                                    strokeWidth="9"
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
@@ -1882,8 +1932,8 @@ function App() {
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
-                                  {[...Array(3)].map((_, i) => {
-                                    const t = (proj.progress - (i * 0.2)) % 1
+                                  {[...Array(4)].map((_, i) => {
+                                    const t = (proj.progress - (i * 0.15)) % 1
                                     if (t < 0 || t > 1) return null
                                     const pulseX = startX + (currentX - startX) * t
                                     const pulseY = startY + (currentY - startY) * t
@@ -1892,9 +1942,9 @@ function App() {
                                         key={i}
                                         cx={pulseX}
                                         cy={pulseY}
-                                        r={8}
+                                        r={9}
                                         fill="white"
-                                        opacity={0.8 * (1 - t)}
+                                        opacity={0.9 * (1 - t)}
                                         filter="url(#glow)"
                                       />
                                     )
@@ -1921,15 +1971,15 @@ function App() {
                                   {proj.trail.slice(-10).map((p, i) => (
                                     <g key={i}>
                                       <circle
-                                        cx={p.x * CELL_SIZE}
-                                        cy={p.y * CELL_SIZE}
+                                        cx={p.x}
+                                        cy={p.y}
                                         r={11}
                                         fill={color}
                                         opacity={0.5 + (i / 10) * 0.5}
                                         filter="url(#glow)"
                                       />
                                       {i % 2 === 0 && (
-                                        <g transform={`translate(${p.x * CELL_SIZE} ${p.y * CELL_SIZE})`}>
+                                        <g transform={`translate(${p.x} ${p.y})`}>
                                           <line x1="-6" y1="0" x2="6" y2="0" stroke="#A0D0FF" strokeWidth="2" />
                                           <line x1="0" y1="-6" x2="0" y2="6" stroke="#A0D0FF" strokeWidth="2" />
                                           <line x1="-4" y1="-4" x2="4" y2="4" stroke="#A0D0FF" strokeWidth="1.5" />
@@ -1959,21 +2009,47 @@ function App() {
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
-                                  {[...Array(6)].map((_, i) => {
-                                    const crystalAngle = (i / 6) * Math.PI * 2
-                                    const radius = 14
+                                  {[...Array(8)].map((_, i) => {
+                                    const crystalAngle = (i / 8) * Math.PI * 2 + proj.progress * Math.PI
+                                    const innerRadius = 8
+                                    const outerRadius = 16
                                     return (
-                                      <line
-                                        key={`crystal-${i}`}
-                                        x1={currentX}
-                                        y1={currentY}
-                                        x2={currentX + Math.cos(crystalAngle) * radius}
-                                        y2={currentY + Math.sin(crystalAngle) * radius}
-                                        stroke="white"
-                                        strokeWidth="2.5"
-                                        strokeLinecap="round"
-                                        opacity="0.9"
-                                      />
+                                      <g key={`crystal-${i}`}>
+                                        <line
+                                          x1={currentX + Math.cos(crystalAngle) * innerRadius}
+                                          y1={currentY + Math.sin(crystalAngle) * innerRadius}
+                                          x2={currentX + Math.cos(crystalAngle) * outerRadius}
+                                          y2={currentY + Math.sin(crystalAngle) * outerRadius}
+                                          stroke="white"
+                                          strokeWidth="3"
+                                          strokeLinecap="round"
+                                          opacity="0.95"
+                                        />
+                                        {i % 2 === 0 && (
+                                          <>
+                                            <line
+                                              x1={currentX + Math.cos(crystalAngle) * outerRadius}
+                                              y1={currentY + Math.sin(crystalAngle) * outerRadius}
+                                              x2={currentX + Math.cos(crystalAngle + 0.3) * (outerRadius + 5)}
+                                              y2={currentY + Math.sin(crystalAngle + 0.3) * (outerRadius + 5)}
+                                              stroke="#A0D0FF"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              opacity="0.8"
+                                            />
+                                            <line
+                                              x1={currentX + Math.cos(crystalAngle) * outerRadius}
+                                              y1={currentY + Math.sin(crystalAngle) * outerRadius}
+                                              x2={currentX + Math.cos(crystalAngle - 0.3) * (outerRadius + 5)}
+                                              y2={currentY + Math.sin(crystalAngle - 0.3) * (outerRadius + 5)}
+                                              stroke="#A0D0FF"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              opacity="0.8"
+                                            />
+                                          </>
+                                        )}
+                                      </g>
                                     )
                                   })}
                                   <circle
@@ -2001,8 +2077,8 @@ function App() {
                                       return (
                                         <circle
                                           key={i}
-                                          cx={p.x * CELL_SIZE + (Math.random() - 0.5) * 8}
-                                          cy={p.y * CELL_SIZE + (Math.random() - 0.5) * 8}
+                                          cx={p.x + (Math.random() - 0.5) * 8}
+                                          cy={p.y + (Math.random() - 0.5) * 8}
                                           r={10 + Math.random() * 6}
                                           fill={colors[Math.floor(Math.random() * colors.length)]}
                                           opacity={0.6 + (i / 12) * 0.4}
@@ -2045,19 +2121,33 @@ function App() {
                                     strokeLinecap="round"
                                     opacity="0.9"
                                   />
-                                  {[...Array(8)].map((_, i) => {
-                                    const flameAngle = (i / 8) * Math.PI * 2 + proj.progress * Math.PI * 3
-                                    const flameRadius = 12 + Math.sin(proj.progress * Math.PI * 8 + i) * 4
+                                  {[...Array(12)].map((_, i) => {
+                                    const flameAngle = (i / 12) * Math.PI * 2 + proj.progress * Math.PI * 4
+                                    const flameRadius = 14 + Math.sin(proj.progress * Math.PI * 10 + i) * 6
+                                    const flameSize = 4 + Math.sin(proj.progress * Math.PI * 8 + i * 0.5) * 2
+                                    const colors = ['#FF4500', '#FF6347', '#FFD700', '#FFA500']
                                     return (
-                                      <circle
-                                        key={`flame-${i}`}
-                                        cx={currentX + Math.cos(flameAngle) * flameRadius}
-                                        cy={currentY + Math.sin(flameAngle) * flameRadius}
-                                        r={5}
-                                        fill={i % 2 === 0 ? '#FF4500' : '#FFD700'}
-                                        opacity="0.8"
-                                        filter="url(#glow)"
-                                      />
+                                      <g key={`flame-${i}`}>
+                                        <circle
+                                          cx={currentX + Math.cos(flameAngle) * flameRadius}
+                                          cy={currentY + Math.sin(flameAngle) * flameRadius}
+                                          r={flameSize}
+                                          fill={colors[i % colors.length]}
+                                          opacity="0.85"
+                                          filter="url(#glow)"
+                                        />
+                                        {i % 3 === 0 && (
+                                          <path
+                                            d={`M ${currentX + Math.cos(flameAngle) * flameRadius} ${currentY + Math.sin(flameAngle) * flameRadius} 
+                                                Q ${currentX + Math.cos(flameAngle) * (flameRadius - 3)} ${currentY + Math.sin(flameAngle) * (flameRadius - 3) - 6}
+                                                ${currentX + Math.cos(flameAngle) * (flameRadius - 1)} ${currentY + Math.sin(flameAngle) * (flameRadius - 1) - 10}`}
+                                            stroke="#FFD700"
+                                            strokeWidth="1.5"
+                                            fill="none"
+                                            opacity="0.7"
+                                          />
+                                        )}
+                                      </g>
                                     )
                                   })}
                                   <circle
@@ -2093,6 +2183,25 @@ function App() {
                                       <stop offset="100%" stopColor="#8B00FF" />
                                     </radialGradient>
                                   </defs>
+                                  {[...Array(5)].map((_, i) => {
+                                    const ringProgress = (proj.progress * 2 + i * 0.2) % 1
+                                    const ringX = startX + (currentX - startX) * ringProgress
+                                    const ringY = startY + (currentY - startY) * ringProgress
+                                    const ringSize = 30 * (1 - ringProgress)
+                                    return (
+                                      <circle
+                                        key={`ring-${i}`}
+                                        cx={ringX}
+                                        cy={ringY}
+                                        r={ringSize}
+                                        fill="none"
+                                        stroke={color}
+                                        strokeWidth="2"
+                                        opacity={0.6 * (1 - ringProgress)}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
                                   {[...Array(4)].map((_, i) => {
                                     const offset = (i - 1.5) * 10
                                     const perpX = -Math.sin(angle) * offset
@@ -2136,35 +2245,50 @@ function App() {
                                   {proj.trail.slice(-8).map((p, i) => (
                                     <circle
                                       key={i}
-                                      cx={p.x * CELL_SIZE}
-                                      cy={p.y * CELL_SIZE}
+                                      cx={p.x}
+                                      cy={p.y}
                                       r={16 - i * 1.2}
                                       fill="#000000"
                                       opacity={0.5 + (i / 8) * 0.4}
                                       filter="url(#strong-glow)"
                                     />
                                   ))}
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={24}
-                                    fill={`url(#void-grad-${proj.id})`}
-                                    filter="url(#strong-glow)"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={10}
-                                    fill="oklch(0.20 0.15 290)"
-                                    opacity="1"
-                                  />
-                                  <circle
-                                    cx={currentX}
-                                    cy={currentY}
-                                    r={4}
-                                    fill="#000000"
-                                    opacity="1"
-                                  />
+                                  <g transform={`translate(${currentX} ${currentY}) rotate(${proj.progress * 720})`}>
+                                    <circle
+                                      cx={0}
+                                      cy={0}
+                                      r={24}
+                                      fill={`url(#void-grad-${proj.id})`}
+                                      filter="url(#strong-glow)"
+                                    />
+                                    {[...Array(3)].map((_, i) => {
+                                      const armAngle = (i / 3) * Math.PI * 2
+                                      return (
+                                        <path
+                                          key={`arm-${i}`}
+                                          d={`M 0 0 Q ${Math.cos(armAngle) * 15} ${Math.sin(armAngle) * 15} ${Math.cos(armAngle) * 22} ${Math.sin(armAngle) * 22}`}
+                                          stroke={color}
+                                          strokeWidth="3"
+                                          fill="none"
+                                          opacity="0.8"
+                                        />
+                                      )
+                                    })}
+                                    <circle
+                                      cx={0}
+                                      cy={0}
+                                      r={10}
+                                      fill="oklch(0.20 0.15 290)"
+                                      opacity="1"
+                                    />
+                                    <circle
+                                      cx={0}
+                                      cy={0}
+                                      r={4}
+                                      fill="#000000"
+                                      opacity="1"
+                                    />
+                                  </g>
                                 </>
                               )}
                               
@@ -2173,36 +2297,39 @@ function App() {
                                   {proj.trail.slice(-15).map((p, i) => (
                                     <circle
                                       key={i}
-                                      cx={p.x * CELL_SIZE}
-                                      cy={p.y * CELL_SIZE}
+                                      cx={p.x}
+                                      cy={p.y}
                                       r={16 - i * 0.9}
                                       fill={i % 2 === 0 ? '#00FF00' : color}
                                       opacity={0.3 + (i / 15) * 0.7}
                                       filter="url(#glow)"
                                     />
                                   ))}
-                                  {[...Array(5)].map((_, i) => {
-                                    const boltOffset = (i - 2) * 12
+                                  {[...Array(7)].map((_, i) => {
+                                    const boltOffset = (i - 3) * 12
                                     const perpX = -Math.sin(angle) * boltOffset
                                     const perpY = Math.cos(angle) * boltOffset
-                                    const segments = 6
+                                    const segments = 8
                                     const points: string[] = []
                                     for (let s = 0; s <= segments; s++) {
                                       const t = s / segments
-                                      const x = startX + (currentX - startX) * t + perpX + (Math.random() - 0.5) * 8
-                                      const y = startY + (currentY - startY) * t + perpY + (Math.random() - 0.5) * 8
+                                      const zigzag = Math.sin(t * Math.PI * 3) * 6
+                                      const perpZigX = -Math.sin(angle) * zigzag
+                                      const perpZigY = Math.cos(angle) * zigzag
+                                      const x = startX + (currentX - startX) * t + perpX + perpZigX + (Math.random() - 0.5) * 4
+                                      const y = startY + (currentY - startY) * t + perpY + perpZigY + (Math.random() - 0.5) * 4
                                       points.push(`${x},${y}`)
                                     }
                                     return (
                                       <polyline
                                         key={`bolt-${i}`}
                                         points={points.join(' ')}
-                                        stroke={i === 2 ? '#FFFFFF' : '#00FF00'}
-                                        strokeWidth={i === 2 ? '4' : '2'}
+                                        stroke={i === 3 ? '#FFFFFF' : i % 2 === 0 ? '#00FF00' : '#32CD32'}
+                                        strokeWidth={i === 3 ? '5' : '2.5'}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         fill="none"
-                                        opacity={i === 2 ? '1' : '0.7'}
+                                        opacity={i === 3 ? '1' : '0.75'}
                                         filter="url(#glow)"
                                       />
                                     )
