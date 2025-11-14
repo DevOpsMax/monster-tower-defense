@@ -871,6 +871,33 @@ function App() {
                   <Badge variant="outline" className="text-sm px-2 py-0.5">
                     Score: {score.toLocaleString()}
                   </Badge>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-card border rounded-md">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground">Enemies:</span>
+                      <span className="text-xs font-semibold">{monsters.length}</span>
+                    </div>
+                    <Separator orientation="vertical" className="h-4" />
+                    <div className="flex items-center gap-1">
+                      {bossSpawned ? (
+                        bossDefeated ? (
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                            <Skull className="mr-0.5" size={12} weight="fill" />
+                            Boss Defeated
+                          </Badge>
+                        ) : (
+                          <Badge variant="destructive" className="text-xs px-1.5 py-0 animate-pulse">
+                            <Crown className="mr-0.5" size={12} weight="fill" />
+                            Boss Active
+                          </Badge>
+                        )
+                      ) : (
+                        <Badge variant="outline" className="text-xs px-1.5 py-0">
+                          <Crown className="mr-0.5" size={12} weight="fill" />
+                          Boss Incoming
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-1 flex-wrap">
                   <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
