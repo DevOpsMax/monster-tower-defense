@@ -1940,7 +1940,7 @@ function App() {
                           boxShadow: '0 0 40px rgba(34, 197, 94, 0.9), 0 10px 30px rgba(0,0,0,0.6), inset 0 3px 12px rgba(255,255,255,0.5), inset 0 -3px 12px rgba(0,0,0,0.3)',
                         }}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center text-5xl" style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.7))' }}>
+                        <div className="absolute inset-0 flex items-center justify-center text-3xl" style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.7))' }}>
                           ▶️
                         </div>
                         <div 
@@ -1953,7 +1953,7 @@ function App() {
                       </div>
 
                       <div
-                        className="absolute rounded-full shadow-2xl border-4 border-red-300 overflow-hidden"
+                        className="absolute rounded-full shadow-2xl border-4 border-amber-300 overflow-hidden"
                         style={{
                           left: `${PATH[PATH.length - 1].x * CELL_SIZE + CELL_SIZE / 2}px`,
                           top: `${PATH[PATH.length - 1].y * CELL_SIZE + CELL_SIZE / 2}px`,
@@ -1961,11 +1961,11 @@ function App() {
                           height: `${CELL_SIZE * 0.9}px`,
                           transform: 'translate(-50%, -50%)',
                           zIndex: 2,
-                          background: 'linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%)',
-                          boxShadow: '0 0 40px rgba(239, 68, 68, 0.9), 0 10px 30px rgba(0,0,0,0.6), inset 0 3px 12px rgba(255,255,255,0.5), inset 0 -3px 12px rgba(0,0,0,0.3)',
+                          background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
+                          boxShadow: '0 0 40px rgba(251, 191, 36, 0.9), 0 10px 30px rgba(0,0,0,0.6), inset 0 3px 12px rgba(255,255,255,0.5), inset 0 -3px 12px rgba(0,0,0,0.3)',
                         }}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center text-5xl" style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.7))' }}>
+                        <div className="absolute inset-0 flex items-center justify-center text-3xl" style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.7))' }}>
                           🏠
                         </div>
                         <div 
