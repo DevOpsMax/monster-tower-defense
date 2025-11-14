@@ -51,6 +51,7 @@ type DamageNumber = {
   position: Position
   damage: number
   timestamp: number
+  isCritical?: boolean
 }
 type Particle = {
   id: string
@@ -403,6 +404,9 @@ function App() {
   const [helpModalOpen, setHelpModalOpen] = useState(false)
   const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
   const [hoveredTower, setHoveredTower] = useState<string | null>(null)
+  const [screenShake, setScreenShake] = useState(0)
+  const [comboCount, setComboCount] = useState(0)
+  const [lastKillTime, setLastKillTime] = useState(0)
   const gameContainerRef = useRef<HTMLDivElement>(null)
   
   const [displayCoins, setDisplayCoins] = useState(coins)
@@ -481,6 +485,8 @@ function App() {
     
     if (forceBoss) {
       setBossSpawned(true)
+      setScreenShake(20)
+      setTimeout(() => setScreenShake(0), 500)
       toast(`Boss incoming! 👹`, { description: 'Defeat the boss to complete the wave!' })
     }
   }, [wave, weather, PATH])
@@ -638,15 +644,10 @@ function App() {
     const projectileLoop = setInterval(() => {
       setProjectiles(prev => {
         return prev.map(proj => {
-          const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
-          const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
-          const targetX = proj.target.x * CELL_SIZE + CELL_SIZE / 2
-          const targetY = proj.target.y * CELL_SIZE + CELL_SIZE / 2
+          const currentGridX = proj.start.x + (proj.target.x - proj.start.x) * proj.progress
+          const currentGridY = proj.start.y + (proj.target.y - proj.start.y) * proj.progress
           
-          const currentX = startX + (targetX - startX) * proj.progress
-          const currentY = startY + (targetY - startY) * proj.progress
-          
-          const newTrail = [...proj.trail, { x: currentX, y: currentY }]
+          const newTrail = [...proj.trail, { x: currentGridX, y: currentGridY }]
           if (newTrail.length > 20) {
             newTrail.shift()
           }
@@ -728,15 +729,25 @@ function App() {
             setTimeout(() => {
               setMonsters(prev => prev.map(m => {
                 if (m.id === target.id) {
+                  const isCritical = Math.random() < 0.15
+                  const critMultiplier = isCritical ? 2.0 : 1.0
+                  
                   const armorReduction = m.armor && m.armor > 0 && tower.type !== 'void' ? stats.damage * m.armor : 0
-                  const actualDamage = Math.max(1, stats.damage - armorReduction)
+                  const baseDamage = Math.max(1, stats.damage - armorReduction)
+                  const actualDamage = baseDamage * critMultiplier
                   const newHealth = m.health - actualDamage
+                  
+                  if (isCritical) {
+                    setScreenShake(8)
+                    setTimeout(() => setScreenShake(0), 150)
+                  }
                   
                   const damageNum: DamageNumber = {
                     id: `dmg-${Date.now()}-${Math.random()}`,
                     position: { ...m.position },
                     damage: Math.floor(actualDamage),
                     timestamp: Date.now(),
+                    isCritical: isCritical,
                   }
                   setDamageNumbers(prev => [...prev, damageNum])
                   
@@ -897,9 +908,25 @@ function App() {
                   setParticles(prev => [...prev, ...newParticles])
                   
                   if (newHealth <= 0) {
-                    setCoins(c => c + m.reward)
-                    setScore(s => s + m.reward * wave)
-                    toast.success(`+${m.reward} coins!`)
+                    const now = Date.now()
+                    const timeSinceLastKill = now - lastKillTime
+                    const newCombo = timeSinceLastKill < 2000 ? comboCount + 1 : 1
+                    setComboCount(newCombo)
+                    setLastKillTime(now)
+                    
+                    const comboMultiplier = Math.min(1 + (newCombo - 1) * 0.1, 3.0)
+                    const bonusReward = Math.floor(m.reward * comboMultiplier)
+                    
+                    setCoins(c => c + bonusReward)
+                    setScore(s => s + bonusReward * wave)
+                    
+                    if (newCombo > 1) {
+                      toast.success(`${newCombo}x COMBO! +${bonusReward} coins!`, {
+                        description: `${comboMultiplier.toFixed(1)}x multiplier`
+                      })
+                    } else {
+                      toast.success(`+${bonusReward} coins!`)
+                    }
                     
                     setTowers(prevTowers => prevTowers.map(t => {
                       if (t.id === tower.id) {
@@ -1268,6 +1295,21 @@ function App() {
                   Wave {wave}/10
                 </Badge>
                 
+                <AnimatePresence>
+                  {comboCount > 1 && Date.now() - lastKillTime < 2000 && (
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+                      <Badge className="text-base px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-300 shadow-lg shadow-orange-900/50 animate-pulse">
+                        🔥 {comboCount}x COMBO
+                      </Badge>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
                 <motion.div
                   key={`score-flash-${Math.floor(score / 200)}`}
                   animate={{
@@ -1605,7 +1647,14 @@ function App() {
 
             <div className="flex-1 flex flex-col gap-2 overflow-hidden">
                 <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border">
-                  <div className="relative flex items-center justify-center h-full">
+                  <div 
+                    className="relative flex items-center justify-center h-full transition-transform duration-75"
+                    style={{
+                      transform: screenShake > 0 
+                        ? `translate(${(Math.random() - 0.5) * screenShake}px, ${(Math.random() - 0.5) * screenShake}px)` 
+                        : 'none'
+                    }}
+                  >
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
                       style={{
@@ -1789,8 +1838,8 @@ function App() {
                                   {proj.trail.slice(-5).map((p, i) => (
                                     <circle
                                       key={i}
-                                      cx={p.x}
-                                      cy={p.y}
+                                      cx={p.x * CELL_SIZE + CELL_SIZE / 2}
+                                      cy={p.y * CELL_SIZE + CELL_SIZE / 2}
                                       r={18 - i * 2}
                                       fill="#FFA500"
                                       opacity={0.3 + (i / 5) * 0.4}
@@ -1826,11 +1875,13 @@ function App() {
                                   {proj.trail.slice(-15).map((p, i) => {
                                     const spiralAngle = (i / 15) * Math.PI * 6 + proj.progress * Math.PI * 4
                                     const spiralRadius = 15 * (1 - i / 15)
+                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
+                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
                                     return (
                                       <circle
                                         key={i}
-                                        cx={p.x + Math.cos(spiralAngle) * spiralRadius}
-                                        cy={p.y + Math.sin(spiralAngle) * spiralRadius}
+                                        cx={px + Math.cos(spiralAngle) * spiralRadius}
+                                        cy={py + Math.sin(spiralAngle) * spiralRadius}
                                         r={14 - i * 0.7}
                                         fill={color}
                                         opacity={0.4 + (i / 15) * 0.6}
@@ -1968,26 +2019,30 @@ function App() {
                               
                               {proj.towerType === 'frost' && (
                                 <>
-                                  {proj.trail.slice(-10).map((p, i) => (
-                                    <g key={i}>
-                                      <circle
-                                        cx={p.x}
-                                        cy={p.y}
-                                        r={11}
-                                        fill={color}
-                                        opacity={0.5 + (i / 10) * 0.5}
-                                        filter="url(#glow)"
-                                      />
-                                      {i % 2 === 0 && (
-                                        <g transform={`translate(${p.x} ${p.y})`}>
-                                          <line x1="-6" y1="0" x2="6" y2="0" stroke="#A0D0FF" strokeWidth="2" />
-                                          <line x1="0" y1="-6" x2="0" y2="6" stroke="#A0D0FF" strokeWidth="2" />
-                                          <line x1="-4" y1="-4" x2="4" y2="4" stroke="#A0D0FF" strokeWidth="1.5" />
-                                          <line x1="-4" y1="4" x2="4" y2="-4" stroke="#A0D0FF" strokeWidth="1.5" />
-                                        </g>
-                                      )}
-                                    </g>
-                                  ))}
+                                  {proj.trail.slice(-10).map((p, i) => {
+                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
+                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    return (
+                                      <g key={i}>
+                                        <circle
+                                          cx={px}
+                                          cy={py}
+                                          r={11}
+                                          fill={color}
+                                          opacity={0.5 + (i / 10) * 0.5}
+                                          filter="url(#glow)"
+                                        />
+                                        {i % 2 === 0 && (
+                                          <g transform={`translate(${px} ${py})`}>
+                                            <line x1="-6" y1="0" x2="6" y2="0" stroke="#A0D0FF" strokeWidth="2" />
+                                            <line x1="0" y1="-6" x2="0" y2="6" stroke="#A0D0FF" strokeWidth="2" />
+                                            <line x1="-4" y1="-4" x2="4" y2="4" stroke="#A0D0FF" strokeWidth="1.5" />
+                                            <line x1="-4" y1="4" x2="4" y2="-4" stroke="#A0D0FF" strokeWidth="1.5" />
+                                          </g>
+                                        )}
+                                      </g>
+                                    )
+                                  })}
                                   <line
                                     x1={startX}
                                     y1={startY}
@@ -2074,11 +2129,13 @@ function App() {
                                   {proj.trail.slice(-12).map((p, i) => {
                                     if (i % 2 === 0) {
                                       const colors = ['#FF4500', '#FF6347', '#FFD700']
+                                      const px = p.x * CELL_SIZE + CELL_SIZE / 2
+                                      const py = p.y * CELL_SIZE + CELL_SIZE / 2
                                       return (
                                         <circle
                                           key={i}
-                                          cx={p.x + (Math.random() - 0.5) * 8}
-                                          cy={p.y + (Math.random() - 0.5) * 8}
+                                          cx={px + (Math.random() - 0.5) * 8}
+                                          cy={py + (Math.random() - 0.5) * 8}
                                           r={10 + Math.random() * 6}
                                           fill={colors[Math.floor(Math.random() * colors.length)]}
                                           opacity={0.6 + (i / 12) * 0.4}
@@ -2242,17 +2299,21 @@ function App() {
                                     strokeLinecap="round"
                                     opacity="1"
                                   />
-                                  {proj.trail.slice(-8).map((p, i) => (
-                                    <circle
-                                      key={i}
-                                      cx={p.x}
-                                      cy={p.y}
-                                      r={16 - i * 1.2}
-                                      fill="#000000"
-                                      opacity={0.5 + (i / 8) * 0.4}
-                                      filter="url(#strong-glow)"
-                                    />
-                                  ))}
+                                  {proj.trail.slice(-8).map((p, i) => {
+                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
+                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    return (
+                                      <circle
+                                        key={i}
+                                        cx={px}
+                                        cy={py}
+                                        r={16 - i * 1.2}
+                                        fill="#000000"
+                                        opacity={0.5 + (i / 8) * 0.4}
+                                        filter="url(#strong-glow)"
+                                      />
+                                    )
+                                  })}
                                   <g transform={`translate(${currentX} ${currentY}) rotate(${proj.progress * 720})`}>
                                     <circle
                                       cx={0}
@@ -2294,17 +2355,21 @@ function App() {
                               
                               {proj.towerType === 'storm' && (
                                 <>
-                                  {proj.trail.slice(-15).map((p, i) => (
-                                    <circle
-                                      key={i}
-                                      cx={p.x}
-                                      cy={p.y}
-                                      r={16 - i * 0.9}
-                                      fill={i % 2 === 0 ? '#00FF00' : color}
-                                      opacity={0.3 + (i / 15) * 0.7}
-                                      filter="url(#glow)"
-                                    />
-                                  ))}
+                                  {proj.trail.slice(-15).map((p, i) => {
+                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
+                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    return (
+                                      <circle
+                                        key={i}
+                                        cx={px}
+                                        cy={py}
+                                        r={16 - i * 0.9}
+                                        fill={i % 2 === 0 ? '#00FF00' : color}
+                                        opacity={0.3 + (i / 15) * 0.7}
+                                        filter="url(#glow)"
+                                      />
+                                    )
+                                  })}
                                   {[...Array(7)].map((_, i) => {
                                     const boltOffset = (i - 3) * 12
                                     const perpX = -Math.sin(angle) * boltOffset
@@ -2803,8 +2868,10 @@ function App() {
                       {damageNumbers.map(dmg => {
                         const age = Date.now() - dmg.timestamp
                         const opacity = Math.max(0, 1 - age / 1500)
-                        const yOffset = (age / 1500) * 60
-                        const scale = Math.min(1.3, 1 + (age / 500))
+                        const yOffset = (age / 1500) * (dmg.isCritical ? 80 : 60)
+                        const scale = dmg.isCritical 
+                          ? Math.min(1.8, 1 + (age / 300))
+                          : Math.min(1.3, 1 + (age / 500))
                         
                         return (
                           <div
@@ -2813,16 +2880,20 @@ function App() {
                             style={{
                               left: `${dmg.position.x * CELL_SIZE}px`,
                               top: `calc(${dmg.position.y * CELL_SIZE}px - ${yOffset}px)`,
-                              transform: `translate(-50%, -50%) scale(${scale})`,
+                              transform: `translate(-50%, -50%) scale(${scale}) ${dmg.isCritical ? `rotate(${Math.sin(age / 100) * 5}deg)` : ''}`,
                               opacity: opacity,
                               zIndex: 10,
-                              textShadow: '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8), 1px -1px 2px rgba(0,0,0,0.8), -1px 1px 2px rgba(0,0,0,0.8)',
-                              fontSize: '20px',
-                              color: '#ff4444',
+                              textShadow: dmg.isCritical
+                                ? '3px 3px 6px rgba(0,0,0,0.9), -2px -2px 4px rgba(0,0,0,0.9), 2px -2px 4px rgba(0,0,0,0.9), -2px 2px 4px rgba(0,0,0,0.9), 0 0 20px #FFD700'
+                                : '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8), 1px -1px 2px rgba(0,0,0,0.8), -1px 1px 2px rgba(0,0,0,0.8)',
+                              fontSize: dmg.isCritical ? '28px' : '20px',
+                              color: dmg.isCritical ? '#FFD700' : '#ff4444',
                               fontFamily: 'var(--font-heading)',
                             }}
                           >
+                            {dmg.isCritical && '⚡ '}
                             -{dmg.damage}
+                            {dmg.isCritical && ' ⚡'}
                           </div>
                         )
                       })}
