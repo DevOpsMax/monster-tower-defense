@@ -835,6 +835,8 @@ function App() {
                     <div 
                       className="relative bg-card rounded-lg shadow-inner"
                       style={{
+                        width: `min(100%, ${GRID_SIZE * CELL_SIZE}px)`,
+                        height: `min(100%, ${GRID_SIZE * CELL_SIZE}px)`,
                         aspectRatio: '1 / 1',
                         maxWidth: '100%',
                         maxHeight: '100%',
