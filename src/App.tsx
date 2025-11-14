@@ -2470,23 +2470,25 @@ function App() {
                     return (
                       <motion.div
                         key={type}
-                        whileHover={affordable ? { scale: 1.05, y: -4 } : {}}
-                        whileTap={affordable ? { scale: 0.95 } : {}}
+                        whileHover={affordable ? { scale: 1.08, y: -4 } : { scale: 1.02 }}
+                        whileTap={affordable ? { scale: 0.92 } : {}}
                         transition={{ duration: 0.2 }}
                       >
                         <Button
                           variant="outline"
-                          className={`h-auto py-3 px-4 flex flex-col items-center gap-2 relative overflow-hidden transition-all duration-300 min-w-[180px] w-[180px] ${
+                          className={`h-auto p-0 flex flex-col items-center relative overflow-hidden transition-all duration-300 ${
+                            affordable ? 'min-w-[90px] w-[90px]' : 'min-w-[90px] w-[90px]'
+                          } ${
                             selected 
-                              ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/50' 
+                              ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-2 ring-blue-400/50' 
                               : affordable
                                 ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 hover:border-slate-500 hover:shadow-lg'
-                                : 'bg-slate-900 border-slate-800 opacity-50 cursor-not-allowed'
+                                : 'bg-slate-900/80 border-slate-800 cursor-not-allowed'
                           }`}
-                          onClick={() => setSelectedTowerType(selected ? null : type)}
+                          onClick={() => affordable && setSelectedTowerType(selected ? null : type)}
                           disabled={!affordable}
                         >
-                          {selected && (
+                          {affordable && selected && (
                             <motion.div
                               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                               animate={{ x: ['-100%', '200%'] }}
@@ -2494,82 +2496,81 @@ function App() {
                             />
                           )}
                           
-                          <div className="relative">
-                            <motion.div
-                              className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg relative"
-                              style={{ 
-                                backgroundColor: config.color,
-                                boxShadow: selected ? `0 0 30px ${config.color}` : `0 4px 12px rgba(0,0,0,0.4)`
-                              }}
-                              animate={selected ? { 
-                                boxShadow: [
-                                  `0 0 30px ${config.color}`,
-                                  `0 0 50px ${config.color}`,
-                                  `0 0 30px ${config.color}`
-                                ]
-                              } : {}}
-                              transition={{ duration: 1.5, repeat: Infinity }}
-                            >
-                              <Icon size={28} weight="fill" color="white" />
-                            </motion.div>
-                            {selected && (
-                              <motion.div
-                                className="absolute -top-1.5 -right-1.5 bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center shadow-lg"
-                                initial={{ scale: 0, rotate: -180 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{ type: 'spring', stiffness: 500, damping: 15 }}
-                              >
-                                <span className="text-sm">✓</span>
-                              </motion.div>
-                            )}
-                          </div>
-                          
-                          <div className="flex flex-col items-center gap-1 w-full">
-                            <div className="font-bold text-xs text-white tracking-wide truncate w-full text-center" style={{ fontFamily: 'var(--font-heading)' }}>
-                              {config.name.toUpperCase()}
-                            </div>
-                            <div className="text-xs text-slate-300 leading-tight text-center line-clamp-1 w-full">
-                              {config.desc}
-                            </div>
-                            <div className="text-[10px] text-blue-300 leading-tight text-center italic line-clamp-1 w-full">
-                              {config.specialty}
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-col gap-1 w-full">
-                            <div className="flex justify-between text-[10px] text-slate-400">
-                              <span>DMG: {config.damage}</span>
-                              <span>RNG: {config.range}</span>
-                            </div>
-                            <div className="flex justify-between text-[10px] text-slate-400">
-                              <span>RATE: {config.fireRate}ms</span>
-                              <span className="text-green-400">∞ LEVELS</span>
-                            </div>
-                          </div>
-                          
-                          <Badge 
-                            className={`text-xs px-2.5 py-1 font-bold shadow-md ${
-                              affordable 
-                                ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600' 
-                                : 'bg-slate-700 text-slate-400 border-slate-600'
-                            }`}
-                          >
-                            <Coin size={12} weight="fill" className="mr-1" />
-                            {config.cost}
-                          </Badge>
-                          
-                          {!affordable && (
-                            <div className="absolute inset-0 bg-slate-900/95 rounded-lg flex flex-col items-center justify-center gap-1">
-                              <div className="text-4xl">🔒</div>
-                              <span className="text-red-400 font-bold text-sm bg-red-950/90 px-3 py-1.5 rounded-full border-2 border-red-700 shadow-lg tracking-wider">
-                                LOCKED
-                              </span>
-                              <div className="text-xs text-slate-400 font-semibold mt-1" style={{ fontFamily: 'var(--font-heading)' }}>
-                                {config.name}
+                          {affordable ? (
+                            <>
+                              <div className="relative pt-3 pb-2">
+                                <motion.div
+                                  className="w-12 h-12 rounded-lg flex items-center justify-center shadow-lg relative"
+                                  style={{ 
+                                    backgroundColor: config.color,
+                                    boxShadow: selected ? `0 0 20px ${config.color}` : `0 2px 8px rgba(0,0,0,0.4)`
+                                  }}
+                                  animate={selected ? { 
+                                    boxShadow: [
+                                      `0 0 20px ${config.color}`,
+                                      `0 0 35px ${config.color}`,
+                                      `0 0 20px ${config.color}`
+                                    ]
+                                  } : {}}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                  <Icon size={22} weight="fill" color="white" />
+                                </motion.div>
+                                {selected && (
+                                  <motion.div
+                                    className="absolute -top-1 -right-1 bg-yellow-400 rounded-full w-5 h-5 flex items-center justify-center shadow-lg"
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                                  >
+                                    <span className="text-xs font-bold">✓</span>
+                                  </motion.div>
+                                )}
                               </div>
-                              <div className="flex items-center gap-1 mt-1 bg-slate-800/90 px-2.5 py-1 rounded-full border border-slate-700">
-                                <Coin size={14} weight="fill" className="text-amber-500" />
-                                <span className="text-sm font-bold text-amber-400">{config.cost}</span>
+                              
+                              <div className="flex flex-col items-center gap-0.5 pb-2 px-2 w-full">
+                                <div className="flex items-center gap-1 bg-slate-900/80 px-2 py-0.5 rounded-full border border-slate-700">
+                                  <Coin size={10} weight="fill" className="text-amber-400" />
+                                  <span className="text-xs font-bold text-amber-300">{config.cost}</span>
+                                </div>
+                                
+                                <div className="grid grid-cols-3 gap-1 w-full mt-1">
+                                  <div className="flex flex-col items-center">
+                                    <Sword size={10} weight="fill" className="text-red-400" />
+                                    <span className="text-[9px] font-semibold text-slate-300">{config.damage}</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <Target size={10} weight="fill" className="text-blue-400" />
+                                    <span className="text-[9px] font-semibold text-slate-300">{config.range}</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <Lightning size={10} weight="fill" className="text-yellow-400" />
+                                    <span className="text-[9px] font-semibold text-slate-300">{Math.round(1000/config.fireRate * 10)/10}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center py-3 px-2 gap-2 w-full">
+                              <div className="relative">
+                                <div
+                                  className="w-12 h-12 rounded-lg flex items-center justify-center shadow-inner relative opacity-40"
+                                  style={{ 
+                                    backgroundColor: config.color,
+                                  }}
+                                >
+                                  <Icon size={22} weight="fill" color="white" />
+                                </div>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="bg-slate-900/95 backdrop-blur-sm rounded-full p-1.5 border-2 border-slate-700">
+                                    <span className="text-lg">🔒</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-1 bg-slate-950/90 px-2 py-1 rounded-full border border-slate-700">
+                                <Coin size={12} weight="fill" className="text-slate-500" />
+                                <span className="text-xs font-bold text-slate-400">{config.cost}</span>
                               </div>
                             </div>
                           )}
