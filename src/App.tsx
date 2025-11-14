@@ -426,8 +426,8 @@ function App() {
   const distance = (p1: Position, p2: Position) => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
   
   const getCellCenter = (pos: Position) => ({
-    x: pos.x + 0.5,
-    y: pos.y + 0.5
+    x: (pos.x + 0.5) * CELL_SIZE,
+    y: (pos.y + 0.5) * CELL_SIZE
   })
 
   const getExpNeededForLevel = (level: number): number => {
@@ -572,8 +572,8 @@ function App() {
           return {
             ...particle,
             position: {
-              x: particle.position.x + particle.velocity.x,
-              y: particle.position.y + particle.velocity.y,
+              x: particle.position.x + particle.velocity.x * CELL_SIZE,
+              y: particle.position.y + particle.velocity.y * CELL_SIZE,
             },
             velocity: {
               x: particle.velocity.x * 0.98,
@@ -644,10 +644,10 @@ function App() {
     const projectileLoop = setInterval(() => {
       setProjectiles(prev => {
         return prev.map(proj => {
-          const currentGridX = proj.start.x + (proj.target.x - proj.start.x) * proj.progress
-          const currentGridY = proj.start.y + (proj.target.y - proj.start.y) * proj.progress
+          const currentX = proj.start.x + (proj.target.x - proj.start.x) * proj.progress
+          const currentY = proj.start.y + (proj.target.y - proj.start.y) * proj.progress
           
-          const newTrail = [...proj.trail, { x: currentGridX, y: currentGridY }]
+          const newTrail = [...proj.trail, { x: currentX, y: currentY }]
           if (newTrail.length > 20) {
             newTrail.shift()
           }
@@ -714,10 +714,14 @@ function App() {
 
           if (target) {
             const towerCenter = getCellCenter(tower.position)
+            const targetCenter = {
+              x: target.position.x * CELL_SIZE,
+              y: target.position.y * CELL_SIZE
+            }
             const projectile: Projectile = {
               id: `proj-${now}-${Math.random()}`,
               start: towerCenter,
-              target: { ...target.position },
+              target: targetCenter,
               towerId: tower.id,
               damage: stats.damage,
               towerType: tower.type,
@@ -764,6 +768,11 @@ function App() {
                   }
                   setExplosions(prev => [...prev, explosion])
                   
+                  const monsterPixelPos = {
+                    x: m.position.x * CELL_SIZE,
+                    y: m.position.y * CELL_SIZE
+                  }
+                  
                   const newParticles: Particle[] = []
                   
                   if (tower.type === 'spark') {
@@ -772,7 +781,7 @@ function App() {
                       const speed = 0.025 + Math.random() * 0.04
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
                         color: i % 2 === 0 ? config.color : '#FFFFFF',
                         size: 4 + Math.random() * 3,
@@ -788,7 +797,7 @@ function App() {
                       const speed = 0.03 + Math.random() * 0.05
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
                         color: i % 3 === 0 ? '#FFA500' : i % 3 === 1 ? '#FF4500' : config.color,
                         size: 5 + Math.random() * 4,
@@ -805,7 +814,7 @@ function App() {
                       const baseAngle = Math.random() * Math.PI * 2
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { 
                           x: Math.cos(baseAngle + spiralAngle) * (0.02 + spiralRadius),
                           y: Math.sin(baseAngle + spiralAngle) * (0.02 + spiralRadius)
@@ -824,7 +833,7 @@ function App() {
                       const speed = 0.015 + Math.random() * 0.025
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
                         color: i % 3 === 0 ? '#FF00FF' : i % 3 === 1 ? '#FFFFFF' : config.color,
                         size: 4 + Math.random() * 2,
@@ -840,7 +849,7 @@ function App() {
                       const speed = 0.018 + Math.random() * 0.03
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
                         color: i % 2 === 0 ? '#A0D0FF' : '#FFFFFF',
                         size: 5 + Math.random() * 3,
@@ -857,7 +866,7 @@ function App() {
                       const colors = ['#FF4500', '#FF6347', '#FFD700', '#FFA500', config.color]
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { 
                           x: Math.cos(angle) * speed,
                           y: Math.sin(angle) * speed - 0.01
@@ -876,7 +885,7 @@ function App() {
                       const speed = 0.035 + Math.random() * 0.045
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
                         color: i % 2 === 0 ? config.color : '#000000',
                         size: 7 + Math.random() * 4,
@@ -893,7 +902,7 @@ function App() {
                       const colors = ['#00FF00', '#32CD32', '#ADFF2F', config.color]
                       newParticles.push({
                         id: `particle-${Date.now()}-${i}-${Math.random()}`,
-                        position: { ...m.position },
+                        position: { ...monsterPixelPos },
                         velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
                         color: colors[Math.floor(Math.random() * colors.length)],
                         size: 6 + Math.random() * 4,
@@ -910,18 +919,18 @@ function App() {
                   if (newHealth <= 0) {
                     const now = Date.now()
                     const timeSinceLastKill = now - lastKillTime
-                    const newCombo = timeSinceLastKill < 2000 ? comboCount + 1 : 1
+                    const newCombo = timeSinceLastKill < 1000 ? comboCount + 1 : 1
                     setComboCount(newCombo)
                     setLastKillTime(now)
                     
-                    const comboMultiplier = Math.min(1 + (newCombo - 1) * 0.1, 3.0)
+                    const comboMultiplier = 1 + (newCombo - 1) * 0.1
                     const bonusReward = Math.floor(m.reward * comboMultiplier)
                     
                     setCoins(c => c + bonusReward)
                     setScore(s => s + bonusReward * wave)
                     
                     if (newCombo > 1) {
-                      toast.success(`${newCombo}x COMBO! +${bonusReward} coins!`, {
+                      toast.success(`x${newCombo} COMBO! +${bonusReward} coins!`, {
                         description: `${comboMultiplier.toFixed(1)}x multiplier`
                       })
                     } else {
@@ -952,13 +961,18 @@ function App() {
                           }
                           setLevelUpEffects(prev => [...prev, levelUpEffect])
                           
+                          const towerPixelPos = {
+                            x: (t.position.x + 0.5) * CELL_SIZE,
+                            y: (t.position.y + 0.5) * CELL_SIZE
+                          }
+                          
                           const burstParticles: Particle[] = []
                           for (let i = 0; i < 30; i++) {
                             const angle = (Math.PI * 2 * i) / 30
                             const speed = 0.04 + Math.random() * 0.04
                             burstParticles.push({
                               id: `lvlup-particle-${Date.now()}-${i}-${Math.random()}`,
-                              position: { ...t.position },
+                              position: { ...towerPixelPos },
                               velocity: {
                                 x: Math.cos(angle) * speed,
                                 y: Math.sin(angle) * speed - 0.02,
@@ -1296,15 +1310,15 @@ function App() {
                 </Badge>
                 
                 <AnimatePresence>
-                  {comboCount > 1 && Date.now() - lastKillTime < 2000 && (
+                  {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
                     <motion.div
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     >
-                      <Badge className="text-base px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-300 shadow-lg shadow-orange-900/50 animate-pulse">
-                        🔥 {comboCount}x COMBO
+                      <Badge className="text-sm px-2.5 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-300 shadow-lg shadow-orange-900/50 animate-pulse">
+                        🔥 x{comboCount}
                       </Badge>
                     </motion.div>
                   )}
@@ -1692,10 +1706,10 @@ function App() {
                           </filter>
                         </defs>
                         {projectiles.map(proj => {
-                          const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
-                          const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
-                          const targetX = proj.target.x * CELL_SIZE + CELL_SIZE / 2
-                          const targetY = proj.target.y * CELL_SIZE + CELL_SIZE / 2
+                          const startX = proj.start.x
+                          const startY = proj.start.y
+                          const targetX = proj.target.x
+                          const targetY = proj.target.y
                           
                           const currentX = startX + (targetX - startX) * proj.progress
                           const currentY = startY + (targetY - startY) * proj.progress
@@ -1838,8 +1852,8 @@ function App() {
                                   {proj.trail.slice(-5).map((p, i) => (
                                     <circle
                                       key={i}
-                                      cx={p.x * CELL_SIZE + CELL_SIZE / 2}
-                                      cy={p.y * CELL_SIZE + CELL_SIZE / 2}
+                                      cx={p.x}
+                                      cy={p.y}
                                       r={18 - i * 2}
                                       fill="#FFA500"
                                       opacity={0.3 + (i / 5) * 0.4}
@@ -1875,8 +1889,8 @@ function App() {
                                   {proj.trail.slice(-15).map((p, i) => {
                                     const spiralAngle = (i / 15) * Math.PI * 6 + proj.progress * Math.PI * 4
                                     const spiralRadius = 15 * (1 - i / 15)
-                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
-                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    const px = p.x
+                                    const py = p.y
                                     return (
                                       <circle
                                         key={i}
@@ -2020,8 +2034,8 @@ function App() {
                               {proj.towerType === 'frost' && (
                                 <>
                                   {proj.trail.slice(-10).map((p, i) => {
-                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
-                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    const px = p.x
+                                    const py = p.y
                                     return (
                                       <g key={i}>
                                         <circle
@@ -2129,8 +2143,8 @@ function App() {
                                   {proj.trail.slice(-12).map((p, i) => {
                                     if (i % 2 === 0) {
                                       const colors = ['#FF4500', '#FF6347', '#FFD700']
-                                      const px = p.x * CELL_SIZE + CELL_SIZE / 2
-                                      const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                      const px = p.x
+                                      const py = p.y
                                       return (
                                         <circle
                                           key={i}
@@ -2300,8 +2314,8 @@ function App() {
                                     opacity="1"
                                   />
                                   {proj.trail.slice(-8).map((p, i) => {
-                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
-                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    const px = p.x
+                                    const py = p.y
                                     return (
                                       <circle
                                         key={i}
@@ -2356,8 +2370,8 @@ function App() {
                               {proj.towerType === 'storm' && (
                                 <>
                                   {proj.trail.slice(-15).map((p, i) => {
-                                    const px = p.x * CELL_SIZE + CELL_SIZE / 2
-                                    const py = p.y * CELL_SIZE + CELL_SIZE / 2
+                                    const px = p.x
+                                    const py = p.y
                                     return (
                                       <circle
                                         key={i}
@@ -2902,8 +2916,8 @@ function App() {
                         {particles.map(particle => {
                           const age = Date.now() - particle.timestamp
                           const opacity = Math.max(0, 1 - age / particle.lifetime)
-                          const x = particle.position.x * CELL_SIZE
-                          const y = particle.position.y * CELL_SIZE
+                          const x = particle.position.x
+                          const y = particle.position.y
                           const size = particle.size
                           
                           return (
