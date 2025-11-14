@@ -36,8 +36,9 @@ type Projectile = {
   target: Position
   towerId: string
   damage: number
-  type?: string
+  towerType: keyof typeof TOWER_TYPES
   progress: number
+  trail: Position[]
 }
 type DamageNumber = {
   id: string
@@ -366,10 +367,26 @@ function App() {
 
     const projectileLoop = setInterval(() => {
       setProjectiles(prev => {
-        return prev.map(proj => ({
-          ...proj,
-          progress: Math.min(proj.progress + 0.1, 1)
-        }))
+        return prev.map(proj => {
+          const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
+          const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
+          const targetX = proj.target.x * CELL_SIZE + CELL_SIZE / 2
+          const targetY = proj.target.y * CELL_SIZE + CELL_SIZE / 2
+          
+          const currentX = startX + (targetX - startX) * proj.progress
+          const currentY = startY + (targetY - startY) * proj.progress
+          
+          const newTrail = [...proj.trail, { x: currentX / CELL_SIZE, y: currentY / CELL_SIZE }]
+          if (newTrail.length > 8) {
+            newTrail.shift()
+          }
+          
+          return {
+            ...proj,
+            progress: Math.min(proj.progress + 0.15, 1),
+            trail: newTrail
+          }
+        })
       })
     }, 16)
 
@@ -427,7 +444,9 @@ function App() {
               target: { ...target.position },
               towerId: tower.id,
               damage: config.damage,
+              towerType: tower.type,
               progress: 0,
+              trail: [],
             }
             setProjectiles(p => [...p, projectile])
 
@@ -816,6 +835,39 @@ function App() {
                       </svg>
                       
                       <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 6 }}>
+                        <defs>
+                          <linearGradient id="fast-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="oklch(0.75 0.20 180)" stopOpacity="0" />
+                            <stop offset="100%" stopColor="oklch(0.75 0.20 180)" stopOpacity="1" />
+                          </linearGradient>
+                          <linearGradient id="strong-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="oklch(0.70 0.25 20)" stopOpacity="0" />
+                            <stop offset="100%" stopColor="oklch(0.70 0.25 20)" stopOpacity="1" />
+                          </linearGradient>
+                          <linearGradient id="area-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="oklch(0.65 0.25 300)" stopOpacity="0" />
+                            <stop offset="100%" stopColor="oklch(0.65 0.25 300)" stopOpacity="1" />
+                          </linearGradient>
+                          <linearGradient id="sniper-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="oklch(0.68 0.22 340)" stopOpacity="0" />
+                            <stop offset="100%" stopColor="oklch(0.68 0.22 340)" stopOpacity="1" />
+                          </linearGradient>
+                          <linearGradient id="freeze-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="oklch(0.72 0.18 240)" stopOpacity="0" />
+                            <stop offset="100%" stopColor="oklch(0.72 0.18 240)" stopOpacity="1" />
+                          </linearGradient>
+                          <linearGradient id="bomb-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="oklch(0.62 0.24 40)" stopOpacity="0" />
+                            <stop offset="100%" stopColor="oklch(0.62 0.24 40)" stopOpacity="1" />
+                          </linearGradient>
+                          <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                              <feMergeNode in="coloredBlur"/>
+                              <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                          </filter>
+                        </defs>
                         {projectiles.map(proj => {
                           const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
                           const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
@@ -825,23 +877,161 @@ function App() {
                           const currentX = startX + (targetX - startX) * proj.progress
                           const currentY = startY + (targetY - startY) * proj.progress
                           
+                          const towerConfig = TOWER_TYPES[proj.towerType]
+                          const color = towerConfig.color
+                          
+                          const trailPoints = proj.trail.map(p => `${p.x * CELL_SIZE},${p.y * CELL_SIZE}`).join(' ')
+                          
                           return (
                             <g key={proj.id}>
-                              <line
-                                x1={startX}
-                                y1={startY}
-                                x2={currentX}
-                                y2={currentY}
-                                stroke="oklch(0.80 0.20 130)"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                opacity={0.6}
+                              {proj.towerType === 'fast' && proj.trail.length > 1 && (
+                                <polyline
+                                  points={trailPoints}
+                                  fill="none"
+                                  stroke={color}
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  opacity="0.6"
+                                  filter="url(#glow)"
+                                />
+                              )}
+                              
+                              {proj.towerType === 'strong' && proj.trail.length > 1 && (
+                                <>
+                                  <polyline
+                                    points={trailPoints}
+                                    fill="none"
+                                    stroke={color}
+                                    strokeWidth="4"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    opacity="0.8"
+                                    filter="url(#glow)"
+                                  />
+                                  <polyline
+                                    points={trailPoints}
+                                    fill="none"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    opacity="0.9"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'area' && proj.trail.length > 0 && (
+                                <>
+                                  {proj.trail.map((p, i) => (
+                                    <circle
+                                      key={i}
+                                      cx={p.x * CELL_SIZE}
+                                      cy={p.y * CELL_SIZE}
+                                      r={6 - i * 0.5}
+                                      fill={color}
+                                      opacity={0.3 + (i / proj.trail.length) * 0.4}
+                                      filter="url(#glow)"
+                                    />
+                                  ))}
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'sniper' && (
+                                <>
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    opacity="0.9"
+                                    filter="url(#glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="white"
+                                    strokeWidth="1"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'freeze' && proj.trail.length > 0 && (
+                                <>
+                                  {proj.trail.map((p, i) => (
+                                    <g key={i}>
+                                      <circle
+                                        cx={p.x * CELL_SIZE}
+                                        cy={p.y * CELL_SIZE}
+                                        r={4}
+                                        fill={color}
+                                        opacity={0.4 + (i / proj.trail.length) * 0.3}
+                                      />
+                                      {i % 2 === 0 && (
+                                        <text
+                                          x={p.x * CELL_SIZE}
+                                          y={p.y * CELL_SIZE}
+                                          textAnchor="middle"
+                                          dominantBaseline="middle"
+                                          fontSize="8"
+                                          opacity={0.6}
+                                        >
+                                          ❄️
+                                        </text>
+                                      )}
+                                    </g>
+                                  ))}
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'bomb' && proj.trail.length > 1 && (
+                                <>
+                                  <polyline
+                                    points={trailPoints}
+                                    fill="none"
+                                    stroke={color}
+                                    strokeWidth="5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    opacity="0.5"
+                                    strokeDasharray="8,4"
+                                    filter="url(#glow)"
+                                  />
+                                  {proj.trail.map((p, i) => (
+                                    i % 2 === 0 && (
+                                      <circle
+                                        key={i}
+                                        cx={p.x * CELL_SIZE}
+                                        cy={p.y * CELL_SIZE}
+                                        r={3}
+                                        fill="oklch(0.85 0.25 50)"
+                                        opacity={0.6 + (i / proj.trail.length) * 0.3}
+                                      />
+                                    )
+                                  ))}
+                                </>
+                              )}
+                              
+                              <circle
+                                cx={currentX}
+                                cy={currentY}
+                                r={proj.towerType === 'bomb' ? 6 : proj.towerType === 'strong' ? 5 : 4}
+                                fill={color}
+                                filter="url(#glow)"
                               />
                               <circle
                                 cx={currentX}
                                 cy={currentY}
-                                r="4"
-                                fill="oklch(0.80 0.20 130)"
+                                r={proj.towerType === 'bomb' ? 4 : proj.towerType === 'strong' ? 3 : 2}
+                                fill="white"
+                                opacity="0.8"
                               />
                             </g>
                           )
