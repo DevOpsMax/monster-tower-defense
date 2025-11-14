@@ -377,13 +377,13 @@ function App() {
           const currentY = startY + (targetY - startY) * proj.progress
           
           const newTrail = [...proj.trail, { x: currentX / CELL_SIZE, y: currentY / CELL_SIZE }]
-          if (newTrail.length > 8) {
+          if (newTrail.length > 15) {
             newTrail.shift()
           }
           
           return {
             ...proj,
-            progress: Math.min(proj.progress + 0.15, 1),
+            progress: Math.min(proj.progress + 0.08, 1),
             trail: newTrail
           }
         })
@@ -486,7 +486,7 @@ function App() {
                 return m
               }).filter(Boolean) as Monster[])
               setProjectiles(p => p.filter(p => p.id !== projectile.id))
-            }, 200)
+            }, 400)
 
             return { ...tower, lastShot: now, target: target.id }
           }
@@ -836,32 +836,15 @@ function App() {
                       
                       <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 6 }}>
                         <defs>
-                          <linearGradient id="fast-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="oklch(0.75 0.20 180)" stopOpacity="0" />
-                            <stop offset="100%" stopColor="oklch(0.75 0.20 180)" stopOpacity="1" />
-                          </linearGradient>
-                          <linearGradient id="strong-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="oklch(0.70 0.25 20)" stopOpacity="0" />
-                            <stop offset="100%" stopColor="oklch(0.70 0.25 20)" stopOpacity="1" />
-                          </linearGradient>
-                          <linearGradient id="area-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="oklch(0.65 0.25 300)" stopOpacity="0" />
-                            <stop offset="100%" stopColor="oklch(0.65 0.25 300)" stopOpacity="1" />
-                          </linearGradient>
-                          <linearGradient id="sniper-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="oklch(0.68 0.22 340)" stopOpacity="0" />
-                            <stop offset="100%" stopColor="oklch(0.68 0.22 340)" stopOpacity="1" />
-                          </linearGradient>
-                          <linearGradient id="freeze-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="oklch(0.72 0.18 240)" stopOpacity="0" />
-                            <stop offset="100%" stopColor="oklch(0.72 0.18 240)" stopOpacity="1" />
-                          </linearGradient>
-                          <linearGradient id="bomb-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="oklch(0.62 0.24 40)" stopOpacity="0" />
-                            <stop offset="100%" stopColor="oklch(0.62 0.24 40)" stopOpacity="1" />
-                          </linearGradient>
                           <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                              <feMergeNode in="coloredBlur"/>
+                              <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                          </filter>
+                          <filter id="strong-glow">
+                            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
                             <feMerge>
                               <feMergeNode in="coloredBlur"/>
                               <feMergeNode in="SourceGraphic"/>
@@ -880,60 +863,136 @@ function App() {
                           const towerConfig = TOWER_TYPES[proj.towerType]
                           const color = towerConfig.color
                           
-                          const trailPoints = proj.trail.map(p => `${p.x * CELL_SIZE},${p.y * CELL_SIZE}`).join(' ')
-                          
                           return (
                             <g key={proj.id}>
-                              {proj.towerType === 'fast' && proj.trail.length > 1 && (
-                                <polyline
-                                  points={trailPoints}
-                                  fill="none"
-                                  stroke={color}
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  opacity="0.6"
-                                  filter="url(#glow)"
-                                />
-                              )}
-                              
-                              {proj.towerType === 'strong' && proj.trail.length > 1 && (
+                              {proj.towerType === 'fast' && (
                                 <>
-                                  <polyline
-                                    points={trailPoints}
-                                    fill="none"
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
                                     stroke={color}
-                                    strokeWidth="4"
+                                    strokeWidth="6"
                                     strokeLinecap="round"
-                                    strokeLinejoin="round"
                                     opacity="0.8"
                                     filter="url(#glow)"
                                   />
-                                  <polyline
-                                    points={trailPoints}
-                                    fill="none"
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
                                     stroke="white"
-                                    strokeWidth="2"
+                                    strokeWidth="3"
                                     strokeLinecap="round"
-                                    strokeLinejoin="round"
+                                    opacity="0.9"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={8}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={5}
+                                    fill="white"
                                     opacity="0.9"
                                   />
                                 </>
                               )}
                               
-                              {proj.towerType === 'area' && proj.trail.length > 0 && (
+                              {proj.towerType === 'strong' && (
                                 <>
-                                  {proj.trail.map((p, i) => (
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="10"
+                                    strokeLinecap="round"
+                                    opacity="0.9"
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="white"
+                                    strokeWidth="5"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={10}
+                                    fill={color}
+                                    filter="url(#strong-glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={6}
+                                    fill="white"
+                                    opacity="0.95"
+                                  />
+                                </>
+                              )}
+                              
+                              {proj.towerType === 'area' && (
+                                <>
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    opacity="0.7"
+                                    filter="url(#glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="white"
+                                    strokeWidth="4"
+                                    strokeLinecap="round"
+                                    opacity="0.8"
+                                  />
+                                  {proj.trail.slice(-8).map((p, i) => (
                                     <circle
                                       key={i}
                                       cx={p.x * CELL_SIZE}
                                       cy={p.y * CELL_SIZE}
-                                      r={6 - i * 0.5}
+                                      r={8 - i * 0.8}
                                       fill={color}
-                                      opacity={0.3 + (i / proj.trail.length) * 0.4}
+                                      opacity={0.4 + (i / 8) * 0.5}
                                       filter="url(#glow)"
                                     />
                                   ))}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={12}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={7}
+                                    fill="white"
+                                    opacity="0.85"
+                                  />
                                 </>
                               )}
                               
@@ -945,9 +1004,9 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke={color}
-                                    strokeWidth="2"
+                                    strokeWidth="4"
                                     strokeLinecap="round"
-                                    opacity="0.9"
+                                    opacity="1"
                                     filter="url(#glow)"
                                   />
                                   <line
@@ -956,83 +1015,155 @@ function App() {
                                     x2={currentX}
                                     y2={currentY}
                                     stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="#ffff00"
                                     strokeWidth="1"
                                     strokeLinecap="round"
+                                    opacity="1"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={6}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={3}
+                                    fill="white"
                                     opacity="1"
                                   />
                                 </>
                               )}
                               
-                              {proj.towerType === 'freeze' && proj.trail.length > 0 && (
+                              {proj.towerType === 'freeze' && (
                                 <>
-                                  {proj.trail.map((p, i) => (
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke={color}
+                                    strokeWidth="7"
+                                    strokeLinecap="round"
+                                    opacity="0.8"
+                                    filter="url(#glow)"
+                                  />
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="#a0d0ff"
+                                    strokeWidth="4"
+                                    strokeLinecap="round"
+                                    opacity="0.9"
+                                  />
+                                  {proj.trail.slice(-6).map((p, i) => (
                                     <g key={i}>
                                       <circle
                                         cx={p.x * CELL_SIZE}
                                         cy={p.y * CELL_SIZE}
-                                        r={4}
+                                        r={6}
                                         fill={color}
-                                        opacity={0.4 + (i / proj.trail.length) * 0.3}
+                                        opacity={0.5 + (i / 6) * 0.4}
+                                        filter="url(#glow)"
                                       />
                                       {i % 2 === 0 && (
                                         <text
                                           x={p.x * CELL_SIZE}
-                                          y={p.y * CELL_SIZE}
+                                          y={p.y * CELL_SIZE + 1}
                                           textAnchor="middle"
                                           dominantBaseline="middle"
-                                          fontSize="8"
-                                          opacity={0.6}
+                                          fontSize="12"
+                                          opacity={0.8}
                                         >
                                           ❄️
                                         </text>
                                       )}
                                     </g>
                                   ))}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={9}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={6}
+                                    fill="white"
+                                    opacity="0.8"
+                                  />
                                 </>
                               )}
                               
-                              {proj.towerType === 'bomb' && proj.trail.length > 1 && (
+                              {proj.towerType === 'bomb' && (
                                 <>
-                                  <polyline
-                                    points={trailPoints}
-                                    fill="none"
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
                                     stroke={color}
-                                    strokeWidth="5"
+                                    strokeWidth="9"
                                     strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    opacity="0.5"
-                                    strokeDasharray="8,4"
+                                    strokeDasharray="12,6"
+                                    opacity="0.8"
                                     filter="url(#glow)"
                                   />
-                                  {proj.trail.map((p, i) => (
+                                  <line
+                                    x1={startX}
+                                    y1={startY}
+                                    x2={currentX}
+                                    y2={currentY}
+                                    stroke="oklch(0.85 0.25 50)"
+                                    strokeWidth="5"
+                                    strokeLinecap="round"
+                                    strokeDasharray="12,6"
+                                    opacity="0.9"
+                                  />
+                                  {proj.trail.slice(-6).map((p, i) => (
                                     i % 2 === 0 && (
                                       <circle
                                         key={i}
                                         cx={p.x * CELL_SIZE}
                                         cy={p.y * CELL_SIZE}
-                                        r={3}
+                                        r={5}
                                         fill="oklch(0.85 0.25 50)"
-                                        opacity={0.6 + (i / proj.trail.length) * 0.3}
+                                        opacity={0.6 + (i / 6) * 0.3}
+                                        filter="url(#glow)"
                                       />
                                     )
                                   ))}
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={11}
+                                    fill={color}
+                                    filter="url(#glow)"
+                                  />
+                                  <circle
+                                    cx={currentX}
+                                    cy={currentY}
+                                    r={7}
+                                    fill="oklch(0.85 0.25 50)"
+                                    opacity="0.9"
+                                  />
                                 </>
                               )}
-                              
-                              <circle
-                                cx={currentX}
-                                cy={currentY}
-                                r={proj.towerType === 'bomb' ? 6 : proj.towerType === 'strong' ? 5 : 4}
-                                fill={color}
-                                filter="url(#glow)"
-                              />
-                              <circle
-                                cx={currentX}
-                                cy={currentY}
-                                r={proj.towerType === 'bomb' ? 4 : proj.towerType === 'strong' ? 3 : 2}
-                                fill="white"
-                                opacity="0.8"
-                              />
                             </g>
                           )
                         })}
