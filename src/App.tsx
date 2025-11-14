@@ -261,7 +261,7 @@ const TOWER_TYPES = {
     damage: 12, 
     range: 2.0, 
     fireRate: 500, 
-    color: 'oklch(0.75 0.28 200)', 
+    color: 'oklch(0.65 0.25 220)', 
     icon: Lightning, 
     name: 'Arc Spark', 
     desc: 'Chain lightning',
@@ -275,7 +275,7 @@ const TOWER_TYPES = {
     damage: 40, 
     range: 2.5, 
     fireRate: 1400, 
-    color: 'oklch(0.65 0.28 25)', 
+    color: 'oklch(0.55 0.22 30)', 
     icon: Crosshair, 
     name: 'Rail Cannon', 
     desc: 'Armor piercing',
@@ -289,7 +289,7 @@ const TOWER_TYPES = {
     damage: 8, 
     range: 2.2, 
     fireRate: 600, 
-    color: 'oklch(0.72 0.22 230)', 
+    color: 'oklch(0.60 0.18 240)', 
     icon: Snowflake, 
     name: 'Frost Shard', 
     desc: 'Slows enemies',
@@ -303,7 +303,7 @@ const TOWER_TYPES = {
     damage: 18, 
     range: 2.0, 
     fireRate: 800, 
-    color: 'oklch(0.68 0.32 35)', 
+    color: 'oklch(0.60 0.28 15)', 
     icon: Fire, 
     name: 'Flame Caster', 
     desc: 'Burning DOT',
@@ -317,7 +317,7 @@ const TOWER_TYPES = {
     damage: 6, 
     range: 2.8, 
     fireRate: 300, 
-    color: 'oklch(0.70 0.30 280)', 
+    color: 'oklch(0.55 0.25 290)', 
     icon: CloudRain, 
     name: 'Void Vortex', 
     desc: 'Area control',
@@ -331,7 +331,7 @@ const TOWER_TYPES = {
     damage: 4, 
     range: 3.5, 
     fireRate: 80, 
-    color: 'oklch(0.75 0.30 340)', 
+    color: 'oklch(0.65 0.28 340)', 
     icon: Target, 
     name: 'Beam Laser', 
     desc: 'Rapid continuous',
@@ -345,7 +345,7 @@ const TOWER_TYPES = {
     damage: 55, 
     range: 2.3, 
     fireRate: 2000, 
-    color: 'oklch(0.45 0.25 290)', 
+    color: 'oklch(0.38 0.20 280)', 
     icon: Skull, 
     name: 'Void Reaper', 
     desc: 'Pure damage',
@@ -359,7 +359,7 @@ const TOWER_TYPES = {
     damage: 32, 
     range: 3.2, 
     fireRate: 1600, 
-    color: 'oklch(0.72 0.28 120)', 
+    color: 'oklch(0.58 0.22 140)', 
     icon: CloudRain, 
     name: 'Storm Caller', 
     desc: 'Area strikes',
@@ -2458,7 +2458,7 @@ function App() {
                   </div>
                 </Card>
 
-                <div className="flex gap-2 justify-start overflow-x-auto overflow-y-hidden items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
+                <div className="flex gap-2 justify-center overflow-x-auto overflow-y-hidden items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>)
                     .sort((a, b) => TOWER_TYPES[a].cost - TOWER_TYPES[b].cost)
                     .map(type => {
@@ -2476,76 +2476,75 @@ function App() {
                       >
                         <Button
                           variant="outline"
-                          className={`h-auto p-0 flex flex-col items-center relative overflow-hidden transition-all duration-300 ${
-                            affordable ? 'min-w-[90px] w-[90px]' : 'min-w-[90px] w-[90px]'
-                          } ${
-                            selected 
-                              ? 'bg-gradient-to-br from-blue-600 to-purple-700 border-blue-400 shadow-lg shadow-blue-500/50 ring-2 ring-blue-400/50' 
-                              : affordable
-                                ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 hover:border-slate-500 hover:shadow-lg'
-                                : 'bg-slate-900/80 border-slate-800 cursor-not-allowed'
+                          className={`h-auto p-0 flex flex-col items-center relative overflow-hidden transition-all duration-300 min-w-[90px] w-[90px] border-2 ${
+                            affordable
+                              ? selected
+                                ? 'ring-4 ring-yellow-400/60 shadow-2xl'
+                                : 'shadow-lg hover:shadow-xl'
+                              : 'cursor-not-allowed opacity-60'
                           }`}
+                          style={{
+                            backgroundColor: affordable 
+                              ? config.color
+                              : 'oklch(0.25 0.05 0)',
+                            borderColor: affordable
+                              ? selected
+                                ? 'oklch(0.95 0.05 90)'
+                                : `color-mix(in oklch, ${config.color} 80%, white 20%)`
+                              : 'oklch(0.35 0.03 0)',
+                            boxShadow: affordable && !selected
+                              ? `0 4px 12px ${config.color}40`
+                              : affordable && selected
+                                ? `0 8px 24px ${config.color}80, 0 0 40px ${config.color}60`
+                                : 'none'
+                          }}
                           onClick={() => affordable && setSelectedTowerType(selected ? null : type)}
                           disabled={!affordable}
                         >
                           {affordable && selected && (
-                            <motion.div
-                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                              animate={{ x: ['-100%', '200%'] }}
-                              transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
-                            />
+                            <>
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                animate={{ x: ['-100%', '200%'] }}
+                                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
+                              />
+                              <motion.div
+                                className="absolute -top-1 -right-1 bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-yellow-200 z-10"
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                              >
+                                <span className="text-sm font-bold text-slate-900">✓</span>
+                              </motion.div>
+                            </>
                           )}
                           
                           {affordable ? (
                             <>
                               <div className="relative pt-3 pb-2">
-                                <motion.div
-                                  className="w-12 h-12 rounded-lg flex items-center justify-center shadow-lg relative"
-                                  style={{ 
-                                    backgroundColor: config.color,
-                                    boxShadow: selected ? `0 0 20px ${config.color}` : `0 2px 8px rgba(0,0,0,0.4)`
-                                  }}
-                                  animate={selected ? { 
-                                    boxShadow: [
-                                      `0 0 20px ${config.color}`,
-                                      `0 0 35px ${config.color}`,
-                                      `0 0 20px ${config.color}`
-                                    ]
-                                  } : {}}
-                                  transition={{ duration: 1.5, repeat: Infinity }}
-                                >
-                                  <Icon size={22} weight="fill" color="white" />
-                                </motion.div>
-                                {selected && (
-                                  <motion.div
-                                    className="absolute -top-1 -right-1 bg-yellow-400 rounded-full w-5 h-5 flex items-center justify-center shadow-lg"
-                                    initial={{ scale: 0, rotate: -180 }}
-                                    animate={{ scale: 1, rotate: 0 }}
-                                    transition={{ type: 'spring', stiffness: 500, damping: 15 }}
-                                  >
-                                    <span className="text-xs font-bold">✓</span>
-                                  </motion.div>
-                                )}
+                                <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg bg-white/20 backdrop-blur-sm border-2 border-white/30">
+                                  <Icon size={24} weight="fill" color="white" />
+                                </div>
                               </div>
                               
                               <div className="flex flex-col items-center gap-0.5 pb-2 px-2 w-full">
-                                <div className="flex items-center gap-1 bg-slate-900/80 px-2 py-0.5 rounded-full border border-slate-700">
-                                  <Coin size={10} weight="fill" className="text-amber-400" />
-                                  <span className="text-xs font-bold text-amber-300">{config.cost}</span>
+                                <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/20">
+                                  <Coin size={10} weight="fill" className="text-yellow-300" />
+                                  <span className="text-xs font-bold text-white">{config.cost}</span>
                                 </div>
                                 
                                 <div className="grid grid-cols-3 gap-1 w-full mt-1">
                                   <div className="flex flex-col items-center">
-                                    <Sword size={10} weight="fill" className="text-red-400" />
-                                    <span className="text-[9px] font-semibold text-slate-300">{config.damage}</span>
+                                    <Sword size={10} weight="fill" className="text-white/90" />
+                                    <span className="text-[9px] font-semibold text-white/90">{config.damage}</span>
                                   </div>
                                   <div className="flex flex-col items-center">
-                                    <Target size={10} weight="fill" className="text-blue-400" />
-                                    <span className="text-[9px] font-semibold text-slate-300">{config.range}</span>
+                                    <Target size={10} weight="fill" className="text-white/90" />
+                                    <span className="text-[9px] font-semibold text-white/90">{config.range}</span>
                                   </div>
                                   <div className="flex flex-col items-center">
-                                    <Lightning size={10} weight="fill" className="text-yellow-400" />
-                                    <span className="text-[9px] font-semibold text-slate-300">{Math.round(1000/config.fireRate * 10)/10}</span>
+                                    <Lightning size={10} weight="fill" className="text-white/90" />
+                                    <span className="text-[9px] font-semibold text-white/90">{Math.round(1000/config.fireRate * 10)/10}</span>
                                   </div>
                                 </div>
                               </div>
@@ -2553,24 +2552,19 @@ function App() {
                           ) : (
                             <div className="flex flex-col items-center justify-center py-3 px-2 gap-2 w-full">
                               <div className="relative">
-                                <div
-                                  className="w-12 h-12 rounded-lg flex items-center justify-center shadow-inner relative opacity-40"
-                                  style={{ 
-                                    backgroundColor: config.color,
-                                  }}
-                                >
-                                  <Icon size={22} weight="fill" color="white" />
+                                <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-inner bg-slate-950/80 border-2 border-red-900/50">
+                                  <Icon size={22} weight="fill" color="oklch(0.40 0.08 0)" />
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                  <div className="bg-slate-900/95 backdrop-blur-sm rounded-full p-1.5 border-2 border-slate-700">
-                                    <span className="text-lg">🔒</span>
+                                  <div className="bg-red-900/90 backdrop-blur-sm rounded-full p-1.5 border-2 border-red-700">
+                                    <span className="text-base">🔒</span>
                                   </div>
                                 </div>
                               </div>
                               
-                              <div className="flex items-center gap-1 bg-slate-950/90 px-2 py-1 rounded-full border border-slate-700">
-                                <Coin size={12} weight="fill" className="text-slate-500" />
-                                <span className="text-xs font-bold text-slate-400">{config.cost}</span>
+                              <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full border border-red-900/50">
+                                <Coin size={12} weight="fill" className="text-red-700" />
+                                <span className="text-xs font-bold text-red-300">{config.cost}</span>
                               </div>
                             </div>
                           )}
