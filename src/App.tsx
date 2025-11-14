@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target, Crown, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target, Crown, CaretLeft, CaretRight, Question, MapPin } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 type Position = { x: number; y: number }
@@ -280,7 +282,8 @@ function App() {
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
   const [particles, setParticles] = useState<Particle[]>([])
   const [explosions, setExplosions] = useState<Explosion[]>([])
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [helpModalOpen, setHelpModalOpen] = useState(false)
+  const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
   const gameContainerRef = useRef<HTMLDivElement>(null)
 
   const currentMap = MAPS[selectedMap]
@@ -849,7 +852,7 @@ function App() {
           <div className="h-full flex flex-col gap-2">
             <Card className="p-2 shrink-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Badge variant="destructive" className="text-sm px-2 py-0.5">
                     <Heart className="mr-1" weight="fill" size={16} />
                     {health}
@@ -859,6 +862,7 @@ function App() {
                     {coins}
                   </Badge>
                   <Badge variant="secondary" className="text-sm px-2 py-0.5">
+                    <Crown className="mr-1" weight="fill" size={14} />
                     Wave {wave}/10
                   </Badge>
                   <Badge variant="outline" className="text-sm px-2 py-0.5" style={{ backgroundColor: WEATHER_EFFECTS[weather].color }}>
@@ -868,26 +872,226 @@ function App() {
                     Score: {score.toLocaleString()}
                   </Badge>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 flex-wrap">
+                  <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline" title="Help & Tips">
+                        <Question weight="fill" size={16} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl">Game Help & Tips</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-6">
+                        <div>
+                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                            👾 Enemy Types
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">👾</span>
+                                <span className="font-semibold">Normal</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Balanced health and speed</p>
+                            </Card>
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">🐰</span>
+                                <span className="font-semibold">Fast</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Quick but weak, hard to catch</p>
+                            </Card>
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">🦏</span>
+                                <span className="font-semibold">Tank</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Slow but very tough</p>
+                            </Card>
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">👹</span>
+                                <span className="font-semibold">Boss</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Massive health, defeat to advance wave</p>
+                            </Card>
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">🦅</span>
+                                <span className="font-semibold">Flying</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Fast airborne enemy</p>
+                            </Card>
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">🛡️</span>
+                                <span className="font-semibold">Armored</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Reduces incoming damage significantly</p>
+                            </Card>
+                            <Card className="p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">🐜</span>
+                                <span className="font-semibold">Swarm</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Weak but comes in large numbers</p>
+                            </Card>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                            🗼 Tower Types
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
+                              const config = TOWER_TYPES[type]
+                              const Icon = config.icon
+                              return (
+                                <Card key={type} className="p-3">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div
+                                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                                      style={{ backgroundColor: config.color }}
+                                    >
+                                      <Icon size={18} weight="fill" color="white" />
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold">{config.name}</div>
+                                      <Badge variant="secondary" className="text-xs">
+                                        <Coin size={10} weight="fill" className="mr-0.5" />
+                                        {config.cost}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mb-1">{config.desc}</p>
+                                  <div className="text-xs space-y-0.5 text-muted-foreground">
+                                    <div>Damage: {config.damage}</div>
+                                    <div>Range: {config.range} cells</div>
+                                    <div>Fire Rate: {config.fireRate}ms</div>
+                                  </div>
+                                </Card>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                            💡 Strategy Tips
+                          </h3>
+                          <Card className="p-4">
+                            <ul className="text-sm space-y-2">
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Defeat the boss</strong> at the end of each wave to advance</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Complete all 10 waves</strong> to win the adventure</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Place towers at curves</strong> in the path for maximum coverage</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Sniper towers</strong> have the longest range but slowest fire rate</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Bomber towers</strong> deal massive area damage, great for groups</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Weather changes</strong> affect enemy movement speed</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Armored enemies</strong> reduce damage, use high-damage towers</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Fast enemies</strong> are best countered with rapid-fire towers</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span><strong>Earn coins passively</strong> over time, plus rewards for kills</span>
+                              </li>
+                            </ul>
+                          </Card>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={mapSelectModalOpen} onOpenChange={setMapSelectModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline" title="Change Map">
+                        <MapPin weight="fill" size={16} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl">Change Map</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                          Select a new map. Your current game will restart.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {Object.entries(MAPS).map(([key, map]) => (
+                            <Button
+                              key={key}
+                              variant={selectedMap === key ? 'default' : 'outline'}
+                              className="h-auto p-4 flex flex-col items-start gap-2"
+                              onClick={() => {
+                                setSelectedMap(key)
+                                setMapSelectModalOpen(false)
+                                setTimeout(startGame, 100)
+                              }}
+                            >
+                              <div className="flex items-center gap-2 w-full">
+                                <span className="text-3xl">{map.emoji}</span>
+                                <div className="flex-1 text-left">
+                                  <div className="text-lg font-bold">{map.name}</div>
+                                  <div className="text-xs opacity-75">{map.description}</div>
+                                </div>
+                              </div>
+                              <Badge variant="secondary" className="self-start text-xs">
+                                {map.difficulty} • {map.gridWidth}x{map.gridHeight}
+                              </Badge>
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
                   {gameState === 'playing' && (
-                    <Button size="sm" variant="outline" onClick={() => setGameState('paused')}>
+                    <Button size="sm" variant="outline" onClick={() => setGameState('paused')} title="Pause">
                       <Pause weight="fill" size={16} />
                     </Button>
                   )}
                   {gameState === 'paused' && (
-                    <Button size="sm" variant="outline" onClick={() => setGameState('playing')}>
+                    <Button size="sm" variant="outline" onClick={() => setGameState('playing')} title="Resume">
                       <Play weight="fill" size={16} />
                     </Button>
                   )}
-                  <Button size="sm" variant="outline" onClick={startGame}>
+                  <Button size="sm" variant="outline" onClick={startGame} title="Restart">
                     <ArrowClockwise weight="fill" size={16} />
                   </Button>
                 </div>
               </div>
             </Card>
 
-            <div className="flex-1 flex gap-2 overflow-hidden">
-              <div className="flex-1 flex flex-col gap-2 min-w-0">
+            <div className="flex-1 flex flex-col gap-2 overflow-hidden">
                 <Card ref={gameContainerRef} className="flex-1 p-3 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-x-auto overflow-y-hidden">
                   <div className="relative flex items-center justify-center h-full">
                     <div 
@@ -1619,135 +1823,6 @@ function App() {
                     )
                   })}
                 </div>
-              </div>
-
-              <div className={`flex flex-col gap-2 overflow-y-auto shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-64'}`}>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="shrink-0"
-                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                >
-                  {sidebarCollapsed ? <CaretLeft size={16} weight="bold" /> : <CaretRight size={16} weight="bold" />}
-                </Button>
-
-                {sidebarCollapsed && (
-                  <>
-                    <div className="flex flex-col gap-1.5">
-                      <Badge variant="secondary" className="text-xs px-1 py-1 flex flex-col items-center justify-center h-auto" title={`Wave ${wave}/10`}>
-                        <Crown size={14} weight="fill" />
-                        <span className="text-[10px] leading-none">{wave}</span>
-                      </Badge>
-                      <Badge variant="destructive" className="text-xs px-1 py-1 flex flex-col items-center justify-center h-auto" title={`${health} Hearts`}>
-                        <Heart size={14} weight="fill" />
-                        <span className="text-[10px] leading-none">{health}</span>
-                      </Badge>
-                      <Badge variant="default" className="text-xs px-1 py-1 flex flex-col items-center justify-center h-auto" title={`${coins} Coins`}>
-                        <Coin size={14} weight="fill" />
-                        <span className="text-[10px] leading-none">{coins}</span>
-                      </Badge>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex flex-col gap-1.5">
-                      <div className="text-lg cursor-help" title="Normal - Balanced monster">👾</div>
-                      <div className="text-lg cursor-help" title="Fast - Quick but weak">🐰</div>
-                      <div className="text-lg cursor-help" title="Tank - Slow but tough">🦏</div>
-                      <div className="text-lg cursor-help" title="Boss - Wave boss!">👹</div>
-                      <div className="text-lg cursor-help" title="Flying - Fast flyer">🦅</div>
-                      <div className="text-lg cursor-help" title="Armored - Damage resistant">🛡️</div>
-                      <div className="text-lg cursor-help" title="Swarm - Weak but numerous">🐜</div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex flex-col gap-1.5">
-                      <div className="text-sm cursor-help" title="Defeat boss to advance">💡</div>
-                      <div className="text-sm cursor-help" title="10 waves per adventure">🎯</div>
-                      <div className="text-sm cursor-help" title="Place towers at curves">📍</div>
-                      <div className="text-sm cursor-help" title="Snipers have long range">🎯</div>
-                      <div className="text-sm cursor-help" title="Bombers deal area damage">💣</div>
-                      <div className="text-sm cursor-help" title="Weather affects speed">🌦️</div>
-                      <div className="text-sm cursor-help" title="Armor reduces damage">🛡️</div>
-                    </div>
-                  </>
-                )}
-
-                {!sidebarCollapsed && (
-                  <>
-                    <Card className="p-3 bg-secondary/20">
-                      <h3 className="text-sm font-bold mb-2">Wave {wave}/10</h3>
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Monsters: {monstersSpawnedThisWave} / {8 + wave * 3}
-                      </p>
-                      {!bossSpawned && (
-                        <Badge variant="outline" className="mt-1 text-xs">
-                          Boss incoming...
-                        </Badge>
-                      )}
-                      {bossSpawned && !bossDefeated && (
-                        <Badge variant="destructive" className="mt-1 animate-pulse text-xs">
-                          👹 BOSS ACTIVE!
-                        </Badge>
-                      )}
-                      {bossDefeated && (
-                        <Badge variant="default" className="mt-1 text-xs">
-                          ✓ Boss Defeated!
-                        </Badge>
-                      )}
-                    </Card>
-
-                    <Card className="p-3 bg-accent/10">
-                      <h3 className="text-sm font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
-                      <div className="text-xs space-y-0.5 text-accent-foreground/90">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">👾</span>
-                          <span>Normal</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">🐰</span>
-                          <span>Fast</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">🦏</span>
-                          <span>Tank</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">👹</span>
-                          <span>Boss</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">🦅</span>
-                          <span>Flying</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">🛡️</span>
-                          <span>Armored</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-base">🐜</span>
-                          <span>Swarm</span>
-                        </div>
-                      </div>
-                    </Card>
-
-                    <Card className="p-3 bg-muted/50">
-                      <h3 className="text-sm font-bold mb-2">💡 Tips</h3>
-                      <ul className="text-xs space-y-0.5 text-muted-foreground">
-                        <li>• Defeat boss to advance</li>
-                        <li>• 10 waves per adventure</li>
-                        <li>• Place at curves</li>
-                        <li>• Snipers = long range</li>
-                        <li>• Bombers = area damage</li>
-                        <li>• Weather affects speed</li>
-                        <li>• Armor reduces damage</li>
-                      </ul>
-                    </Card>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         )}
