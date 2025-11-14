@@ -1272,8 +1272,8 @@ function App() {
         )}
 
         {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="h-full flex flex-col gap-2" style={{ position: 'relative', overflow: 'visible' }}>
-            <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10 }}>
+          <div className="h-full flex flex-col gap-2">
+            <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl" style={{ zIndex: 10, position: 'relative' }}>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
                   key={`health-${health}`}
@@ -1658,8 +1658,8 @@ function App() {
               </div>
             </Card>
 
-            <div className="flex-1 flex flex-col gap-2 relative" style={{ overflow: 'visible' }}>
-                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border" style={{ zIndex: 1 }}>
+            <div className="flex-1 flex flex-col gap-2 relative min-h-0">
+                <Card ref={gameContainerRef} className="flex-1 p-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-x-auto overflow-y-hidden border-border" style={{ zIndex: 1, position: 'relative' }}>
                   <div className="relative flex items-center justify-center h-full">
                     <div 
                       className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50"
@@ -3155,8 +3155,8 @@ function App() {
                   </div>
                 </Card>
 
-                <div className="shrink-0 relative" style={{ zIndex: 20 }}>
-                  <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-4 py-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 relative" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+                <Card className="shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-2" style={{ zIndex: 20, position: 'relative' }}>
+                  <div className="flex gap-2 justify-center overflow-x-auto items-stretch px-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>)
                     .sort((a, b) => TOWER_TYPES[a].cost - TOWER_TYPES[b].cost)
                     .map(type => {
@@ -3167,22 +3167,20 @@ function App() {
                     const isHovered = hoveredTowerType === type
 
                     return (
-                      <motion.div
+                      <div
                         key={type}
-                        whileHover={affordable ? { scale: 1.08, y: -4 } : { scale: 1.02 }}
-                        whileTap={affordable ? { scale: 0.92 } : {}}
-                        transition={{ duration: 0.2 }}
                         className="relative"
-                        style={{ zIndex: isHovered ? 300 : 1 }}
+                        onMouseEnter={() => setHoveredTowerType(type)}
+                        onMouseLeave={() => setHoveredTowerType(null)}
                       >
                         {isHovered && (
                           <div
-                            className="fixed bg-slate-900/98 rounded-lg px-4 py-3 pointer-events-none shadow-2xl border-2 border-primary/60 backdrop-blur-sm min-w-[280px]"
+                            className="absolute bg-slate-900/98 rounded-lg px-4 py-3 shadow-2xl border-2 border-primary/60 backdrop-blur-sm min-w-[280px] pointer-events-none"
                             style={{ 
-                              zIndex: 99999,
+                              zIndex: 999,
                               left: '50%',
-                              bottom: '140px',
-                              transform: 'translateX(-50%)'
+                              bottom: '100%',
+                              transform: 'translateX(-50%) translateY(-8px)',
                             }}
                           >
                             <div className="space-y-2">
@@ -3286,8 +3284,6 @@ function App() {
                                 : 'none'
                           }}
                           onClick={() => affordable && setSelectedTowerType(selected ? null : type)}
-                          onMouseEnter={() => setHoveredTowerType(type)}
-                          onMouseLeave={() => setHoveredTowerType(null)}
                           disabled={!affordable}
                         >
                           {affordable && selected && (
@@ -3375,11 +3371,11 @@ function App() {
                             </div>
                           )}
                         </Button>
-                      </motion.div>
+                      </div>
                     )
                   })}
                   </div>
-                </div>
+                </Card>
             </div>
           </div>
         )}
