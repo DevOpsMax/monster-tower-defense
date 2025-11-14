@@ -2004,8 +2004,7 @@ function App() {
                         const towerLevel = tower.level
                         
                         const baseTowerSize = CELL_SIZE * 0.5
-                        const sizeMultiplier = Math.min(1.4, 1 + (towerLevel - 1) * 0.02)
-                        const finalTowerSize = baseTowerSize * sizeMultiplier
+                        const finalTowerSize = baseTowerSize
                         const glowIntensity = Math.min(50, 10 + towerLevel * 2)
                         
                         const expNeeded = getExpNeededForLevel(towerLevel + 1)
@@ -2014,6 +2013,10 @@ function App() {
                         
                         const towerCenterX = tower.position.x * CELL_SIZE + CELL_SIZE / 2
                         const towerCenterY = tower.position.y * CELL_SIZE + CELL_SIZE / 2
+                        
+                        const expBarWidth = 48
+                        const expBarHeight = 12
+                        const levelCircleSize = 20
                         
                         return (
                           <div key={tower.id}>
@@ -2073,7 +2076,7 @@ function App() {
                                 </div>
                               </>
                             )}
-                            <motion.div
+                            <div
                               className="absolute flex items-center justify-center rounded-full shadow-lg cursor-pointer"
                               style={{
                                 left: `${towerCenterX}px`,
@@ -2087,62 +2090,53 @@ function App() {
                               }}
                               onMouseEnter={() => setHoveredTower(tower.id)}
                               onMouseLeave={() => setHoveredTower(null)}
-                              whileHover={{ scale: 1.15 }}
-                              animate={{
-                                boxShadow: [
-                                  `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
-                                  `0 0 ${glowIntensity + 10}px ${config.color}, 0 4px 25px rgba(0,0,0,0.6)`,
-                                  `0 0 ${glowIntensity}px ${config.color}, 0 4px 20px rgba(0,0,0,0.5)`,
-                                ]
-                              }}
-                              transition={{ duration: 2, repeat: Infinity }}
                             >
                               <Icon size={Math.floor(finalTowerSize * 0.6)} weight="fill" color="white" />
-                            </motion.div>
+                            </div>
                             
                             <div
-                              className="absolute pointer-events-none"
+                              className="absolute pointer-events-none flex items-center"
                               style={{
                                 left: `${towerCenterX}px`,
-                                top: `${towerCenterY + finalTowerSize / 2 + 4}px`,
+                                top: `${towerCenterY + finalTowerSize / 2 + 6}px`,
                                 transform: 'translate(-50%, 0)',
                                 zIndex: 5,
-                                width: `${Math.max(finalTowerSize * 1.3, 42)}px`,
+                                height: `${expBarHeight}px`,
                               }}
                             >
-                              <div className="relative">
-                                <div className="h-3 bg-slate-900/90 rounded-full overflow-hidden border-2 border-slate-700/80 shadow-lg backdrop-blur-sm">
-                                  <motion.div
-                                    className="h-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 relative"
-                                    style={{ width: `${expPercent}%` }}
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${expPercent}%` }}
-                                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                                  >
-                                    <motion.div 
-                                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                                      animate={{ x: ['-100%', '200%'] }}
-                                      transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                                    />
-                                  </motion.div>
-                                </div>
-                                
-                                <motion.div 
-                                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white font-bold rounded-full flex items-center justify-center border-2 border-amber-500/80 shadow-lg"
-                                  style={{ 
-                                    fontSize: towerLevel >= 10 ? '8px' : '9px',
-                                    width: towerLevel >= 10 ? '20px' : '18px',
-                                    height: towerLevel >= 10 ? '20px' : '18px',
-                                    fontFamily: 'var(--font-heading)',
-                                    textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-                                    boxShadow: `0 0 12px rgba(251, 191, 36, 0.5), inset 0 1px 2px rgba(255,255,255,0.2)`,
-                                  }}
-                                  initial={{ scale: 0, rotate: -180 }}
-                                  animate={{ scale: 1, rotate: 0 }}
-                                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                                  whileHover={{ scale: 1.1 }}
+                              <motion.div 
+                                className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white font-bold rounded-full flex items-center justify-center border-2 border-amber-500/80 shadow-lg shrink-0"
+                                style={{ 
+                                  fontSize: towerLevel >= 10 ? '8px' : '9px',
+                                  width: `${levelCircleSize}px`,
+                                  height: `${levelCircleSize}px`,
+                                  fontFamily: 'var(--font-heading)',
+                                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                                  boxShadow: `0 0 12px rgba(251, 191, 36, 0.5), inset 0 1px 2px rgba(255,255,255,0.2)`,
+                                }}
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                              >
+                                {towerLevel}
+                              </motion.div>
+                              
+                              <div 
+                                className="h-full bg-slate-900/90 rounded-r-full overflow-hidden border-2 border-l-0 border-slate-700/80 shadow-lg backdrop-blur-sm"
+                                style={{ width: `${expBarWidth}px` }}
+                              >
+                                <motion.div
+                                  className="h-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 relative"
+                                  style={{ width: `${expPercent}%` }}
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${expPercent}%` }}
+                                  transition={{ duration: 0.5, ease: 'easeOut' }}
                                 >
-                                  {towerLevel}
+                                  <motion.div 
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                                    animate={{ x: ['-100%', '200%'] }}
+                                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                                  />
                                 </motion.div>
                               </div>
                             </div>
