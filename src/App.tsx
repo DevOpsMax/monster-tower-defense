@@ -41,6 +41,7 @@ type Projectile = {
   start: Position
   target: Position
   towerId: string
+  targetMonsterId: string
   damage: number
   towerType: keyof typeof TOWER_TYPES
   progress: number
@@ -706,14 +707,18 @@ function App() {
           
           if (now - tower.lastShot < stats.fireRate) return tower
 
+          const towerCenter = getCellCenter(tower.position)
+          
           const target = monsters.find(m => {
-            const towerCenter = getCellCenter(tower.position)
-            const d = distance(towerCenter, m.position)
-            return d <= stats.range && m.health > 0
+            const monsterPixelPos = {
+              x: m.position.x * CELL_SIZE,
+              y: m.position.y * CELL_SIZE
+            }
+            const d = distance(towerCenter, monsterPixelPos)
+            return d <= stats.range * CELL_SIZE && m.health > 0
           })
 
           if (target) {
-            const towerCenter = getCellCenter(tower.position)
             const targetCenter = {
               x: target.position.x * CELL_SIZE,
               y: target.position.y * CELL_SIZE
@@ -723,6 +728,7 @@ function App() {
               start: towerCenter,
               target: targetCenter,
               towerId: tower.id,
+              targetMonsterId: target.id,
               damage: stats.damage,
               towerType: tower.type,
               progress: 0,
@@ -732,7 +738,7 @@ function App() {
 
             setTimeout(() => {
               setMonsters(prev => prev.map(m => {
-                if (m.id === target.id) {
+                if (m.id === projectile.targetMonsterId) {
                   const isCritical = Math.random() < 0.15
                   const critMultiplier = isCritical ? 2.0 : 1.0
                   
@@ -1317,7 +1323,7 @@ function App() {
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     >
-                      <Badge className="text-sm px-2.5 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-300 shadow-lg shadow-orange-900/50 animate-pulse">
+                      <Badge className="text-xs px-2 py-0.5 bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-300 shadow-lg shadow-orange-900/50 animate-pulse">
                         🔥 x{comboCount}
                       </Badge>
                     </motion.div>
