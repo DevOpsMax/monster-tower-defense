@@ -1306,21 +1306,6 @@ function App() {
                   Wave {wave}/10
                 </Badge>
                 
-                <motion.div
-                  key={`score-flash-${Math.floor(score / 200)}`}
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-blue-600 hover:bg-blue-700 text-white border-blue-500 shadow-lg shadow-blue-900/50">
-                    <Target className="mr-1.5" weight="fill" size={16} />
-                    {Math.floor(displayScore).toLocaleString()}
-                  </Badge>
-                </motion.div>
-                
-                <Separator orientation="vertical" className="h-7 bg-slate-600" />
-                
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border-2 border-slate-600 rounded-md shadow-inner">
                   <motion.div 
                     className="flex items-center gap-1"
@@ -1657,6 +1642,21 @@ function App() {
                             className="text-5xl font-black"
                             style={{ fontFamily: 'var(--font-heading)' }}
                             animate={{ 
+                <AnimatePresence>
+                  {comboCount > 1 && Date.now() - lastKillTime < 1000 && (
+                    <motion.div
+                      className="absolute top-4 right-4 z-50"
+                      initial={{ scale: 0, rotate: -180, x: 100 }}
+                      animate={{ scale: 1, rotate: 0, x: 0 }}
+                      exit={{ scale: 0, opacity: 0, y: -50 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
+                      <div className="bg-gradient-to-br from-orange-600 via-red-600 to-red-700 text-white border-4 border-yellow-400 shadow-2xl shadow-orange-900/80 rounded-2xl px-6 py-4 backdrop-blur-sm">
+                        <div className="flex flex-col items-center gap-1">
+                          <motion.div 
+                            className="text-5xl font-black"
+                            style={{ fontFamily: 'var(--font-heading)' }}
+                            animate={{ 
                               scale: [1, 1.2, 1],
                               rotate: [0, -5, 5, 0]
                             }}
@@ -1683,21 +1683,6 @@ function App() {
                   )}
                 </AnimatePresence>
                 
-                <Card ref={gameContainerRef} className="absolute inset-0 p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-auto border-border" style={{ zIndex: 1 }}>
-                  <div className="relative" style={{ minHeight: 'fit-content', minWidth: 'fit-content' }}>
-                    <div 
-                      className="relative bg-slate-800/50 rounded-lg shadow-inner border border-slate-700/50 mx-auto"
-                      style={{
-                        width: `${GRID_WIDTH * CELL_SIZE}px`,
-                        height: `${GRID_HEIGHT * CELL_SIZE}px`,
-                      }}
-                    >
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
-                        <path
-                          d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
-                          stroke="oklch(0.25 0.02 260)"
-                          strokeWidth="24"
-                          fill="none"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
