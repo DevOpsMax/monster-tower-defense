@@ -962,7 +962,7 @@ function App() {
                                 <Crown size={24} weight="fill" color="gold" />
                               </div>
                             )}
-                            {monster.armor && monster.armor > 0 && (
+                            {monster.armor !== undefined && monster.armor > 0 && (
                               <div className="absolute -bottom-1 -right-1 text-xs">🛡️</div>
                             )}
                           </div>
