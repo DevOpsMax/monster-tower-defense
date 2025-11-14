@@ -910,7 +910,7 @@ function App() {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="h-full flex flex-col gap-2">
-            <Card className="p-3 shrink-0 bg-card/95 border-border backdrop-blur-sm">
+            <Card className="p-3 shrink-0 bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl">
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <motion.div
                   key={`health-${health}`}
@@ -920,7 +920,7 @@ function App() {
                   } : {}}
                   transition={{ duration: 0.4 }}
                 >
-                  <Badge className="text-base px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white border-red-600">
+                  <Badge className="text-base px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white border-red-500 shadow-lg shadow-red-900/50">
                     <Heart className="mr-1.5" weight="fill" size={18} />
                     {health}
                   </Badge>
@@ -934,13 +934,13 @@ function App() {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-amber-500 hover:bg-amber-600 text-white border-amber-600">
+                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-amber-600 hover:bg-amber-700 text-white border-amber-500 shadow-lg shadow-amber-900/50">
                     <Coin className="mr-1.5" weight="fill" size={18} />
                     {Math.floor(displayCoins)}
                   </Badge>
                 </motion.div>
                 
-                <Badge className="text-base px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white border-purple-600">
+                <Badge className="text-base px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white border-purple-500 shadow-lg shadow-purple-900/50">
                   <Crown className="mr-1.5" weight="fill" size={16} />
                   Wave {wave}/10
                 </Badge>
@@ -952,15 +952,15 @@ function App() {
                   }}
                   transition={{ duration: 0.25 }}
                 >
-                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-blue-500 hover:bg-blue-600 text-white border-blue-600">
+                  <Badge className="text-base px-3 py-1.5 tabular-nums bg-blue-600 hover:bg-blue-700 text-white border-blue-500 shadow-lg shadow-blue-900/50">
                     <Target className="mr-1.5" weight="fill" size={16} />
                     {Math.floor(displayScore).toLocaleString()}
                   </Badge>
                 </motion.div>
                 
-                <Separator orientation="vertical" className="h-7" />
+                <Separator orientation="vertical" className="h-7 bg-slate-600" />
                 
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 border-2 border-orange-300 rounded-md">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 border-2 border-slate-600 rounded-md shadow-inner">
                   <motion.div 
                     className="flex items-center gap-1"
                     animate={monsters.length < prevMonsterCount && monsters.length > 0 ? {
@@ -969,8 +969,8 @@ function App() {
                     } : {}}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className="text-xs font-medium text-orange-700">Enemies:</span>
-                    <span className="text-base font-bold tabular-nums text-orange-900">
+                    <span className="text-xs font-medium text-slate-300">Enemies:</span>
+                    <span className="text-base font-bold tabular-nums text-white">
                       {bossDefeated 
                         ? monsters.length 
                         : bossSpawned 
@@ -979,7 +979,7 @@ function App() {
                       }
                     </span>
                   </motion.div>
-                  <Separator orientation="vertical" className="h-5 bg-orange-300" />
+                  <Separator orientation="vertical" className="h-5 bg-slate-600" />
                   <div className="flex items-center gap-1">
                     <AnimatePresence mode="wait">
                       {bossSpawned ? (
@@ -995,7 +995,7 @@ function App() {
                             exit={{ scale: 0.8, opacity: 0 }}
                             transition={{ duration: 0.5 }}
                           >
-                            <Badge className="text-sm px-2 py-1 bg-gray-500 text-white border-gray-600">
+                            <Badge className="text-sm px-2 py-1 bg-slate-600 text-white border-slate-500">
                               <Skull className="mr-1" size={14} weight="fill" />
                               Defeated
                             </Badge>
@@ -1012,7 +1012,7 @@ function App() {
                             exit={{ scale: 0.8, opacity: 0 }}
                             transition={{ duration: 0.6 }}
                           >
-                            <Badge className="text-sm px-2 py-1 animate-pulse bg-red-600 text-white border-red-700">
+                            <Badge className="text-sm px-2 py-1 animate-pulse bg-red-700 text-white border-red-600">
                               <Crown className="mr-1" size={14} weight="fill" />
                               BOSS
                             </Badge>
@@ -1025,7 +1025,7 @@ function App() {
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0.8, opacity: 0 }}
                         >
-                          <Badge className="text-sm px-2 py-1 bg-yellow-500 text-white border-yellow-600">
+                          <Badge className="text-sm px-2 py-1 bg-yellow-600 text-white border-yellow-500">
                             <Crown className="mr-1" size={14} weight="fill" />
                             Boss Soon
                           </Badge>
@@ -1035,12 +1035,12 @@ function App() {
                   </div>
                 </div>
                 
-                <Separator orientation="vertical" className="h-7" />
+                <Separator orientation="vertical" className="h-7 bg-slate-600" />
                 
                 <div className="flex gap-1.5">
                   <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white border-green-600 px-2 py-1.5" title="Help & Tips">
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white border-green-500 px-2 py-1.5 shadow-lg shadow-green-900/50" title="Help & Tips">
                         <Question weight="fill" size={18} />
                       </Button>
                     </DialogTrigger>
@@ -1198,7 +1198,7 @@ function App() {
 
                   <Dialog open={mapSelectModalOpen} onOpenChange={setMapSelectModalOpen}>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="bg-teal-500 hover:bg-teal-600 text-white border-teal-600 px-2 py-1.5" title="Change Map">
+                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white border-teal-500 px-2 py-1.5 shadow-lg shadow-teal-900/50" title="Change Map">
                         <MapPin weight="fill" size={18} />
                       </Button>
                     </DialogTrigger>
@@ -1240,16 +1240,16 @@ function App() {
                   </Dialog>
 
                   {gameState === 'playing' && (
-                    <Button size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-2 py-1.5" onClick={() => setGameState('paused')} title="Pause">
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500 px-2 py-1.5 shadow-lg shadow-indigo-900/50" onClick={() => setGameState('paused')} title="Pause">
                       <Pause weight="fill" size={18} />
                     </Button>
                   )}
                   {gameState === 'paused' && (
-                    <Button size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-600 px-2 py-1.5" onClick={() => setGameState('playing')} title="Resume">
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500 px-2 py-1.5 shadow-lg shadow-indigo-900/50" onClick={() => setGameState('playing')} title="Resume">
                       <Play weight="fill" size={18} />
                     </Button>
                   )}
-                  <Button size="sm" className="bg-slate-500 hover:bg-slate-600 text-white border-slate-600 px-2 py-1.5" onClick={startGame} title="Restart">
+                  <Button size="sm" className="bg-slate-600 hover:bg-slate-700 text-white border-slate-500 px-2 py-1.5 shadow-lg shadow-slate-900/50" onClick={startGame} title="Restart">
                     <ArrowClockwise weight="fill" size={18} />
                   </Button>
                 </div>
