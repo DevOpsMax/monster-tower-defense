@@ -46,6 +46,22 @@ type DamageNumber = {
   damage: number
   timestamp: number
 }
+type Particle = {
+  id: string
+  position: Position
+  velocity: { x: number; y: number }
+  color: string
+  size: number
+  timestamp: number
+  lifetime: number
+}
+type Explosion = {
+  id: string
+  position: Position
+  color: string
+  timestamp: number
+  towerType: keyof typeof TOWER_TYPES
+}
 type GameState = 'menu' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'mapSelect'
 type WeatherType = 'clear' | 'storm' | 'snow' | 'volcano' | 'rain'
 type LeaderboardEntry = {
@@ -222,6 +238,8 @@ function App() {
   const [bossDefeated, setBossDefeated] = useState(false)
   const [leaderboard, setLeaderboard] = useKV<LeaderboardEntry[]>('monster-defenders-leaderboard', [])
   const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
+  const [particles, setParticles] = useState<Particle[]>([])
+  const [explosions, setExplosions] = useState<Explosion[]>([])
 
   const currentMap = MAPS[selectedMap]
   const PATH = currentMap.path
@@ -288,6 +306,9 @@ function App() {
     setNextWeatherChange(3)
     setBossSpawned(false)
     setBossDefeated(false)
+    setDamageNumbers([])
+    setParticles([])
+    setExplosions([])
   }
 
   const addToLeaderboard = (finalScore: number, finalWave: number) => {
@@ -329,6 +350,44 @@ function App() {
     setSelectedTowerType(null)
     toast.success(`${towerConfig.name} placed!`)
   }
+
+  useEffect(() => {
+    if (gameState !== 'playing') return
+
+    const particleLoop = setInterval(() => {
+      setParticles(prev => {
+        return prev.map(particle => {
+          const age = Date.now() - particle.timestamp
+          if (age > particle.lifetime) return null
+          
+          return {
+            ...particle,
+            position: {
+              x: particle.position.x + particle.velocity.x,
+              y: particle.position.y + particle.velocity.y,
+            },
+            velocity: {
+              x: particle.velocity.x * 0.98,
+              y: particle.velocity.y + 0.002,
+            },
+          }
+        }).filter(Boolean) as Particle[]
+      })
+    }, 16)
+
+    return () => clearInterval(particleLoop)
+  }, [gameState])
+
+  useEffect(() => {
+    if (gameState !== 'playing') return
+
+    const explosionLoop = setInterval(() => {
+      const now = Date.now()
+      setExplosions(prev => prev.filter(exp => now - exp.timestamp < 500))
+    }, 50)
+
+    return () => clearInterval(explosionLoop)
+  }, [gameState])
 
   useEffect(() => {
     if (gameState !== 'playing') return
@@ -468,6 +527,35 @@ function App() {
                   setTimeout(() => {
                     setDamageNumbers(prev => prev.filter(d => d.id !== damageNum.id))
                   }, 1500)
+                  
+                  const explosion: Explosion = {
+                    id: `exp-${Date.now()}-${Math.random()}`,
+                    position: { ...m.position },
+                    color: config.color,
+                    timestamp: Date.now(),
+                    towerType: tower.type,
+                  }
+                  setExplosions(prev => [...prev, explosion])
+                  
+                  const particleCount = tower.type === 'area' || tower.type === 'bomb' ? 20 : 12
+                  const newParticles: Particle[] = []
+                  for (let i = 0; i < particleCount; i++) {
+                    const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5
+                    const speed = 0.02 + Math.random() * 0.03
+                    newParticles.push({
+                      id: `particle-${Date.now()}-${i}-${Math.random()}`,
+                      position: { ...m.position },
+                      velocity: {
+                        x: Math.cos(angle) * speed,
+                        y: Math.sin(angle) * speed,
+                      },
+                      color: config.color,
+                      size: tower.type === 'bomb' || tower.type === 'area' ? 8 : 5,
+                      timestamp: Date.now(),
+                      lifetime: 800 + Math.random() * 400,
+                    })
+                  }
+                  setParticles(prev => [...prev, ...newParticles])
                   
                   if (newHealth <= 0) {
                     setCoins(c => c + m.reward)
@@ -1319,6 +1407,125 @@ function App() {
                             }}
                           >
                             -{dmg.damage}
+                          </div>
+                        )
+                      })}
+                      
+                      {particles.map(particle => {
+                        const age = Date.now() - particle.timestamp
+                        const opacity = Math.max(0, 1 - age / particle.lifetime)
+                        
+                        return (
+                          <div
+                            key={particle.id}
+                            className="absolute pointer-events-none rounded-full"
+                            style={{
+                              left: particle.position.x * CELL_SIZE + CELL_SIZE / 2,
+                              top: particle.position.y * CELL_SIZE + CELL_SIZE / 2,
+                              width: particle.size,
+                              height: particle.size,
+                              backgroundColor: particle.color,
+                              opacity: opacity,
+                              transform: 'translate(-50%, -50%)',
+                              zIndex: 9,
+                              boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
+                            }}
+                          />
+                        )
+                      })}
+                      
+                      {explosions.map(exp => {
+                        const age = Date.now() - exp.timestamp
+                        const progress = age / 500
+                        const scale = 0.5 + progress * 2
+                        const opacity = Math.max(0, 1 - progress)
+                        
+                        return (
+                          <div
+                            key={exp.id}
+                            className="absolute pointer-events-none"
+                            style={{
+                              left: exp.position.x * CELL_SIZE + CELL_SIZE / 2,
+                              top: exp.position.y * CELL_SIZE + CELL_SIZE / 2,
+                              transform: `translate(-50%, -50%) scale(${scale})`,
+                              zIndex: 8,
+                            }}
+                          >
+                            {exp.towerType === 'bomb' && (
+                              <>
+                                <div
+                                  className="absolute rounded-full"
+                                  style={{
+                                    width: 60,
+                                    height: 60,
+                                    backgroundColor: 'oklch(0.85 0.25 50)',
+                                    opacity: opacity * 0.8,
+                                    transform: 'translate(-50%, -50%)',
+                                    boxShadow: `0 0 40px oklch(0.85 0.25 50)`,
+                                  }}
+                                />
+                                <div
+                                  className="absolute rounded-full"
+                                  style={{
+                                    width: 40,
+                                    height: 40,
+                                    backgroundColor: 'oklch(0.75 0.28 40)',
+                                    opacity: opacity,
+                                    transform: 'translate(-50%, -50%)',
+                                  }}
+                                />
+                              </>
+                            )}
+                            {exp.towerType === 'area' && (
+                              <>
+                                <div
+                                  className="absolute rounded-full"
+                                  style={{
+                                    width: 50,
+                                    height: 50,
+                                    backgroundColor: exp.color,
+                                    opacity: opacity * 0.6,
+                                    transform: 'translate(-50%, -50%)',
+                                    boxShadow: `0 0 30px ${exp.color}`,
+                                  }}
+                                />
+                                <div
+                                  className="absolute rounded-full"
+                                  style={{
+                                    width: 30,
+                                    height: 30,
+                                    backgroundColor: 'white',
+                                    opacity: opacity * 0.9,
+                                    transform: 'translate(-50%, -50%)',
+                                  }}
+                                />
+                              </>
+                            )}
+                            {(exp.towerType === 'fast' || exp.towerType === 'strong' || exp.towerType === 'sniper' || exp.towerType === 'freeze') && (
+                              <>
+                                <div
+                                  className="absolute rounded-full"
+                                  style={{
+                                    width: 30,
+                                    height: 30,
+                                    backgroundColor: exp.color,
+                                    opacity: opacity * 0.7,
+                                    transform: 'translate(-50%, -50%)',
+                                    boxShadow: `0 0 20px ${exp.color}`,
+                                  }}
+                                />
+                                <div
+                                  className="absolute rounded-full"
+                                  style={{
+                                    width: 15,
+                                    height: 15,
+                                    backgroundColor: 'white',
+                                    opacity: opacity,
+                                    transform: 'translate(-50%, -50%)',
+                                  }}
+                                />
+                              </>
+                            )}
                           </div>
                         )
                       })}
