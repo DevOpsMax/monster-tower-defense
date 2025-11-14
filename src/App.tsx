@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Heart, Coin, Play, Pause, ArrowClockwise, Lightning, Crosshair, Shield, Fire, Snowflake, CloudRain, Bomb, Skull, Sword, Target, Crown, CaretLeft, CaretRight, Question, MapPin } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type Position = { x: number; y: number }
 type MonsterType = 'normal' | 'fast' | 'tank' | 'boss' | 'flying' | 'armored' | 'swarm'
@@ -285,6 +286,12 @@ function App() {
   const [helpModalOpen, setHelpModalOpen] = useState(false)
   const [mapSelectModalOpen, setMapSelectModalOpen] = useState(false)
   const gameContainerRef = useRef<HTMLDivElement>(null)
+  
+  const [displayCoins, setDisplayCoins] = useState(coins)
+  const [displayScore, setDisplayScore] = useState(score)
+  const [prevHealth, setPrevHealth] = useState(health)
+  const [prevMonsterCount, setPrevMonsterCount] = useState(0)
+  const [prevBossStatus, setPrevBossStatus] = useState({ spawned: false, defeated: false })
 
   const currentMap = MAPS[selectedMap]
   const PATH = currentMap.path
@@ -355,6 +362,11 @@ function App() {
     setDamageNumbers([])
     setParticles([])
     setExplosions([])
+    setDisplayCoins(500)
+    setDisplayScore(0)
+    setPrevHealth(10)
+    setPrevMonsterCount(0)
+    setPrevBossStatus({ spawned: false, defeated: false })
   }
 
   const addToLeaderboard = (finalScore: number, finalWave: number) => {
@@ -690,6 +702,52 @@ function App() {
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setDisplayCoins(current => {
+        if (current < coins) {
+          const diff = coins - current
+          const increment = Math.max(1, Math.ceil(diff / 5))
+          return Math.min(current + increment, coins)
+        } else if (current > coins) {
+          return coins
+        }
+        return current
+      })
+    }, 30)
+    
+    return () => clearInterval(interval)
+  }, [coins])
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDisplayScore(current => {
+        if (current < score) {
+          const diff = score - current
+          const increment = Math.max(1, Math.ceil(diff / 8))
+          return Math.min(current + increment, score)
+        } else if (current > score) {
+          return score
+        }
+        return current
+      })
+    }, 40)
+    
+    return () => clearInterval(interval)
+  }, [score])
+  
+  useEffect(() => {
+    setPrevHealth(health)
+  }, [health])
+  
+  useEffect(() => {
+    setPrevMonsterCount(monsters.length)
+  }, [monsters.length])
+  
+  useEffect(() => {
+    setPrevBossStatus({ spawned: bossSpawned, defeated: bossDefeated })
+  }, [bossSpawned, bossDefeated])
+
+  useEffect(() => {
     if (gameState === 'playing' && gameContainerRef.current) {
       const pathMidX = (PATH[Math.floor(PATH.length / 2)]?.x || PATH[0].x) * CELL_SIZE
       const pathMidY = (PATH[Math.floor(PATH.length / 2)]?.y || PATH[0].y) * CELL_SIZE
@@ -853,49 +911,116 @@ function App() {
             <Card className="p-2 shrink-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="destructive" className="text-sm px-2 py-0.5">
-                    <Heart className="mr-1" weight="fill" size={16} />
-                    {health}
-                  </Badge>
-                  <Badge variant="default" className="text-sm px-2 py-0.5">
-                    <Coin className="mr-1" weight="fill" size={16} />
-                    {coins}
-                  </Badge>
+                  <motion.div
+                    key={`health-${health}`}
+                    animate={health < prevHealth ? {
+                      scale: [1, 1.3, 1],
+                      filter: ['brightness(1)', 'brightness(2)', 'brightness(1)']
+                    } : {}}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <Badge variant="destructive" className="text-sm px-2 py-0.5">
+                      <Heart className="mr-1" weight="fill" size={16} />
+                      {health}
+                    </Badge>
+                  </motion.div>
+                  
+                  <motion.div
+                    key={`coins-flash-${Math.floor(coins / 50)}`}
+                    animate={{
+                      scale: [1, 1.15, 1],
+                      filter: ['brightness(1)', 'brightness(1.5)', 'brightness(1)']
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Badge variant="default" className="text-sm px-2 py-0.5 tabular-nums">
+                      <Coin className="mr-1" weight="fill" size={16} />
+                      {Math.floor(displayCoins)}
+                    </Badge>
+                  </motion.div>
+                  
                   <Badge variant="secondary" className="text-sm px-2 py-0.5">
                     <Crown className="mr-1" weight="fill" size={14} />
                     Wave {wave}/10
                   </Badge>
-                  <Badge variant="outline" className="text-sm px-2 py-0.5" style={{ backgroundColor: WEATHER_EFFECTS[weather].color }}>
-                    {WEATHER_EFFECTS[weather].emoji} {WEATHER_EFFECTS[weather].name}
-                  </Badge>
-                  <Badge variant="outline" className="text-sm px-2 py-0.5">
-                    Score: {score.toLocaleString()}
-                  </Badge>
+                  
+                  <motion.div
+                    key={`score-flash-${Math.floor(score / 200)}`}
+                    animate={{
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Badge variant="outline" className="text-sm px-2 py-0.5 tabular-nums">
+                      Score: {Math.floor(displayScore).toLocaleString()}
+                    </Badge>
+                  </motion.div>
+                  
                   <div className="flex items-center gap-1.5 px-2 py-0.5 bg-card border rounded-md">
-                    <div className="flex items-center gap-1">
+                    <motion.div 
+                      className="flex items-center gap-1"
+                      animate={monsters.length < prevMonsterCount && monsters.length > 0 ? {
+                        scale: [1, 1.2, 1],
+                        filter: ['brightness(1)', 'brightness(1.8)', 'brightness(1)']
+                      } : {}}
+                      transition={{ duration: 0.3 }}
+                    >
                       <span className="text-xs text-muted-foreground">Enemies:</span>
-                      <span className="text-xs font-semibold">{monsters.length}</span>
-                    </div>
+                      <span className="text-xs font-semibold tabular-nums">{monsters.length}</span>
+                    </motion.div>
                     <Separator orientation="vertical" className="h-4" />
                     <div className="flex items-center gap-1">
-                      {bossSpawned ? (
-                        bossDefeated ? (
-                          <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                            <Skull className="mr-0.5" size={12} weight="fill" />
-                            Boss Defeated
-                          </Badge>
+                      <AnimatePresence mode="wait">
+                        {bossSpawned ? (
+                          bossDefeated ? (
+                            <motion.div
+                              key="defeated"
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ 
+                                scale: [0.8, 1.3, 1], 
+                                opacity: 1,
+                                filter: ['brightness(1)', 'brightness(2)', 'brightness(1)']
+                              }}
+                              exit={{ scale: 0.8, opacity: 0 }}
+                              transition={{ duration: 0.5 }}
+                            >
+                              <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                                <Skull className="mr-0.5" size={12} weight="fill" />
+                                Boss Defeated
+                              </Badge>
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="active"
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ 
+                                scale: [0.8, 1.2, 1],
+                                opacity: 1,
+                                filter: ['brightness(1)', 'brightness(2)', 'brightness(1)']
+                              }}
+                              exit={{ scale: 0.8, opacity: 0 }}
+                              transition={{ duration: 0.6 }}
+                            >
+                              <Badge variant="destructive" className="text-xs px-1.5 py-0 animate-pulse">
+                                <Crown className="mr-0.5" size={12} weight="fill" />
+                                Boss Active
+                              </Badge>
+                            </motion.div>
+                          )
                         ) : (
-                          <Badge variant="destructive" className="text-xs px-1.5 py-0 animate-pulse">
-                            <Crown className="mr-0.5" size={12} weight="fill" />
-                            Boss Active
-                          </Badge>
-                        )
-                      ) : (
-                        <Badge variant="outline" className="text-xs px-1.5 py-0">
-                          <Crown className="mr-0.5" size={12} weight="fill" />
-                          Boss Incoming
-                        </Badge>
-                      )}
+                          <motion.div
+                            key="incoming"
+                            initial={{ scale: 1, opacity: 1 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                          >
+                            <Badge variant="outline" className="text-xs px-1.5 py-0">
+                              <Crown className="mr-0.5" size={12} weight="fill" />
+                              Boss Incoming
+                            </Badge>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
                 </div>
