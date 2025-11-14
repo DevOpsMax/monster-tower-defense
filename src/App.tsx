@@ -37,6 +37,13 @@ type Projectile = {
   towerId: string
   damage: number
   type?: string
+  progress: number
+}
+type DamageNumber = {
+  id: string
+  position: Position
+  damage: number
+  timestamp: number
 }
 type GameState = 'menu' | 'playing' | 'paused' | 'gameOver' | 'leaderboard' | 'mapSelect'
 type WeatherType = 'clear' | 'storm' | 'snow' | 'volcano' | 'rain'
@@ -213,6 +220,7 @@ function App() {
   const [bossSpawned, setBossSpawned] = useState(false)
   const [bossDefeated, setBossDefeated] = useState(false)
   const [leaderboard, setLeaderboard] = useKV<LeaderboardEntry[]>('monster-defenders-leaderboard', [])
+  const [damageNumbers, setDamageNumbers] = useState<DamageNumber[]>([])
 
   const currentMap = MAPS[selectedMap]
   const PATH = currentMap.path
@@ -356,6 +364,21 @@ function App() {
   useEffect(() => {
     if (gameState !== 'playing') return
 
+    const projectileLoop = setInterval(() => {
+      setProjectiles(prev => {
+        return prev.map(proj => ({
+          ...proj,
+          progress: Math.min(proj.progress + 0.1, 1)
+        }))
+      })
+    }, 16)
+
+    return () => clearInterval(projectileLoop)
+  }, [gameState])
+
+  useEffect(() => {
+    if (gameState !== 'playing') return
+
     const gameLoop = setInterval(() => {
       const now = Date.now()
 
@@ -404,6 +427,7 @@ function App() {
               target: { ...target.position },
               towerId: tower.id,
               damage: config.damage,
+              progress: 0,
             }
             setProjectiles(p => [...p, projectile])
 
@@ -413,6 +437,19 @@ function App() {
                   const armorReduction = m.armor ? config.damage * m.armor : 0
                   const actualDamage = config.damage - armorReduction
                   const newHealth = m.health - actualDamage
+                  
+                  const damageNum: DamageNumber = {
+                    id: `dmg-${Date.now()}-${Math.random()}`,
+                    position: { ...m.position },
+                    damage: Math.floor(actualDamage),
+                    timestamp: Date.now(),
+                  }
+                  setDamageNumbers(prev => [...prev, damageNum])
+                  
+                  setTimeout(() => {
+                    setDamageNumbers(prev => prev.filter(d => d.id !== damageNum.id))
+                  }, 1000)
+                  
                   if (newHealth <= 0) {
                     setCoins(c => c + m.reward)
                     setScore(s => s + m.reward * wave)
@@ -777,6 +814,63 @@ function App() {
                           strokeLinejoin="round"
                         />
                       </svg>
+                      
+                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 6 }}>
+                        {projectiles.map(proj => {
+                          const startX = proj.start.x * CELL_SIZE + CELL_SIZE / 2
+                          const startY = proj.start.y * CELL_SIZE + CELL_SIZE / 2
+                          const targetX = proj.target.x * CELL_SIZE + CELL_SIZE / 2
+                          const targetY = proj.target.y * CELL_SIZE + CELL_SIZE / 2
+                          
+                          const currentX = startX + (targetX - startX) * proj.progress
+                          const currentY = startY + (targetY - startY) * proj.progress
+                          
+                          return (
+                            <g key={proj.id}>
+                              <line
+                                x1={startX}
+                                y1={startY}
+                                x2={currentX}
+                                y2={currentY}
+                                stroke="oklch(0.80 0.20 130)"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                opacity={0.6}
+                              />
+                              <circle
+                                cx={currentX}
+                                cy={currentY}
+                                r="4"
+                                fill="oklch(0.80 0.20 130)"
+                              />
+                            </g>
+                          )
+                        })}
+                        
+                        {damageNumbers.map(dmg => {
+                          const age = Date.now() - dmg.timestamp
+                          const opacity = Math.max(0, 1 - age / 1000)
+                          const yOffset = (age / 1000) * 30
+                          
+                          return (
+                            <text
+                              key={dmg.id}
+                              x={dmg.position.x * CELL_SIZE + CELL_SIZE / 2}
+                              y={dmg.position.y * CELL_SIZE + CELL_SIZE / 2 - yOffset}
+                              fill="oklch(0.60 0.22 20)"
+                              fontSize="18"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              opacity={opacity}
+                              stroke="oklch(0.99 0 0)"
+                              strokeWidth="3"
+                              paintOrder="stroke"
+                            >
+                              -{dmg.damage}
+                            </text>
+                          )
+                        })}
+                      </svg>
 
                       <div
                         className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
@@ -903,18 +997,6 @@ function App() {
                             />
                           </div>
                         </div>
-                      ))}
-
-                      {projectiles.map(proj => (
-                        <div
-                          key={proj.id}
-                          className="absolute w-2 h-2 bg-accent rounded-full animate-in zoom-in duration-200"
-                          style={{
-                            left: proj.target.x * CELL_SIZE + CELL_SIZE / 2,
-                            top: proj.target.y * CELL_SIZE + CELL_SIZE / 2,
-                            zIndex: 6,
-                          }}
-                        />
                       ))}
                     </div>
                   </div>
