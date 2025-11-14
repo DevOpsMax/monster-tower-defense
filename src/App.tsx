@@ -1629,7 +1629,7 @@ function App() {
             <Card className="flex-1 relative overflow-hidden bg-slate-900/98 border-slate-700 backdrop-blur-sm shadow-xl p-0">
               <div
                 ref={gameContainerRef}
-                className="h-full overflow-auto relative"
+                className="h-full overflow-auto relative flex items-center justify-center"
                 style={{ 
                   backgroundColor: WEATHER_EFFECTS[weather].color,
                 }}
@@ -2924,7 +2924,16 @@ function App() {
                         )
                       })}
                       
-                      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 9, overflow: 'visible' }} width={GRID_WIDTH * CELL_SIZE} height={GRID_HEIGHT * CELL_SIZE}>
+                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 9, overflow: 'visible', width: '100%', height: '100%' }}>
+                        <defs>
+                          <filter id="particle-glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                              <feMergeNode in="coloredBlur"/>
+                              <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                          </filter>
+                        </defs>
                         {particles.map(particle => {
                           const age = Date.now() - particle.timestamp
                           const opacity = Math.max(0, 1 - age / particle.lifetime)
@@ -2934,21 +2943,13 @@ function App() {
                           
                           return (
                             <g key={particle.id} opacity={opacity}>
-                              <filter id={`particle-glow-${particle.id}`}>
-                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                                <feMerge>
-                                  <feMergeNode in="coloredBlur"/>
-                                  <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                              </filter>
-                              
                               {particle.shape === 'circle' && (
                                 <circle
                                   cx={x}
                                   cy={y}
                                   r={size / 2}
                                   fill={particle.color}
-                                  filter={`url(#particle-glow-${particle.id})`}
+                                  filter="url(#particle-glow)"
                                 />
                               )}
                               
@@ -2957,7 +2958,7 @@ function App() {
                                   d={`M ${x} ${y - size} L ${x + size * 0.3} ${y - size * 0.3} L ${x + size} ${y} L ${x + size * 0.3} ${y + size * 0.3} L ${x} ${y + size} L ${x - size * 0.3} ${y + size * 0.3} L ${x - size} ${y} L ${x - size * 0.3} ${y - size * 0.3} Z`}
                                   fill={particle.color}
                                   transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
-                                  filter={`url(#particle-glow-${particle.id})`}
+                                  filter="url(#particle-glow)"
                                 />
                               )}
                               
@@ -2969,7 +2970,7 @@ function App() {
                                   height={size}
                                   fill={particle.color}
                                   transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
-                                  filter={`url(#particle-glow-${particle.id})`}
+                                  filter="url(#particle-glow)"
                                 />
                               )}
                               
@@ -2978,7 +2979,7 @@ function App() {
                                   d={`M ${x} ${y - size} L ${x + size} ${y + size / 2} L ${x - size} ${y + size / 2} Z`}
                                   fill={particle.color}
                                   transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
-                                  filter={`url(#particle-glow-${particle.id})`}
+                                  filter="url(#particle-glow)"
                                 />
                               )}
                               
@@ -2987,7 +2988,7 @@ function App() {
                                   d={`M ${x} ${y - size} L ${x + size} ${y} L ${x} ${y + size} L ${x - size} ${y} Z`}
                                   fill={particle.color}
                                   transform={`rotate(${particle.rotation * 180 / Math.PI} ${x} ${y})`}
-                                  filter={`url(#particle-glow-${particle.id})`}
+                                  filter="url(#particle-glow)"
                                 />
                               )}
                               
@@ -3002,9 +3003,9 @@ function App() {
                               
                               {particle.shape === 'spark' && (
                                 <g transform={`translate(${x} ${y}) rotate(${particle.rotation * 180 / Math.PI})`}>
-                                  <line x1="0" y1={-size} x2="0" y2={size} stroke={particle.color} strokeWidth="2.5" strokeLinecap="round" filter={`url(#particle-glow-${particle.id})`} />
-                                  <line x1={-size} y1="0" x2={size} y2="0" stroke={particle.color} strokeWidth="2.5" strokeLinecap="round" filter={`url(#particle-glow-${particle.id})`} />
-                                  <circle cx="0" cy="0" r={size / 3} fill={particle.color} filter={`url(#particle-glow-${particle.id})`} />
+                                  <line x1="0" y1={-size} x2="0" y2={size} stroke={particle.color} strokeWidth="2.5" strokeLinecap="round" filter="url(#particle-glow)" />
+                                  <line x1={-size} y1="0" x2={size} y2="0" stroke={particle.color} strokeWidth="2.5" strokeLinecap="round" filter="url(#particle-glow)" />
+                                  <circle cx="0" cy="0" r={size / 3} fill={particle.color} filter="url(#particle-glow)" />
                                 </g>
                               )}
                             </g>
