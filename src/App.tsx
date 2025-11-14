@@ -323,16 +323,18 @@ function App() {
 
   useEffect(() => {
     if (gameState !== 'playing' || wave > 10) return
+    if (bossSpawned) return
 
     const monstersPerWave = 8 + wave * 3
     
-    if (bossSpawned || monstersSpawnedThisWave >= monstersPerWave) return
+    if (monstersSpawnedThisWave >= monstersPerWave) {
+      spawnMonster(true)
+      return
+    }
 
     const spawnInterval = setInterval(() => {
-      if (monstersSpawnedThisWave < monstersPerWave && !bossSpawned) {
+      if (monstersSpawnedThisWave < monstersPerWave) {
         spawnMonster(false)
-      } else if (monstersSpawnedThisWave >= monstersPerWave && !bossSpawned) {
-        spawnMonster(true)
       }
     }, 1800 - wave * 80)
 
@@ -440,34 +442,36 @@ function App() {
   }, [health, gameState, score, wave, leaderboard])
 
   useEffect(() => {
-    if (gameState === 'playing' && bossDefeated && monsters.length === 0) {
-      const checkComplete = setTimeout(() => {
-        if (monsters.length === 0 && bossDefeated) {
-          if (wave >= 10) {
-            setGameState('gameOver')
-            addToLeaderboard(score, wave)
-            toast.success('🎉 Adventure Complete! You conquered all 10 waves! 🎉')
-            return
-          }
-          
-          setWave(w => w + 1)
-          setMonstersSpawnedThisWave(0)
-          setBossSpawned(false)
-          setBossDefeated(false)
-          toast.success(`Wave ${wave} Complete! 🎉`)
-          
-          if (wave >= nextWeatherChange) {
-            const weatherTypes: WeatherType[] = ['clear', 'storm', 'snow', 'volcano', 'rain']
-            const newWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)]
-            setWeather(newWeather)
-            setNextWeatherChange(wave + 2 + Math.floor(Math.random() * 2))
-            toast(`Weather changed to ${WEATHER_EFFECTS[newWeather].name}! ${WEATHER_EFFECTS[newWeather].emoji}`)
-          }
-        }
-      }, 2000)
-      return () => clearTimeout(checkComplete)
-    }
-  }, [gameState, monsters.length, bossDefeated, wave, nextWeatherChange, score])
+    if (gameState !== 'playing') return
+    if (!bossDefeated) return
+    if (monsters.length > 0) return
+    
+    const checkComplete = setTimeout(() => {
+      if (wave >= 10) {
+        setGameState('gameOver')
+        addToLeaderboard(score, wave)
+        toast.success('🎉 Adventure Complete! You conquered all 10 waves! 🎉')
+        return
+      }
+      
+      const currentWave = wave
+      setWave(w => w + 1)
+      setMonstersSpawnedThisWave(0)
+      setBossSpawned(false)
+      setBossDefeated(false)
+      toast.success(`Wave ${currentWave} Complete! 🎉`)
+      
+      if (currentWave >= nextWeatherChange) {
+        const weatherTypes: WeatherType[] = ['clear', 'storm', 'snow', 'volcano', 'rain']
+        const newWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)]
+        setWeather(newWeather)
+        setNextWeatherChange(currentWave + 2 + Math.floor(Math.random() * 2))
+        toast(`Weather changed to ${WEATHER_EFFECTS[newWeather].name}! ${WEATHER_EFFECTS[newWeather].emoji}`)
+      }
+    }, 1500)
+    
+    return () => clearTimeout(checkComplete)
+  }, [gameState, monsters.length, bossDefeated, wave, nextWeatherChange, score, addToLeaderboard])
 
   const canAfford = (type: keyof typeof TOWER_TYPES) => coins >= TOWER_TYPES[type].cost
 
