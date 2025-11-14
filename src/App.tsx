@@ -179,12 +179,12 @@ const MONSTER_TYPES = {
 }
 
 const TOWER_TYPES = {
-  fast: { cost: 50, damage: 10, range: 1.5, fireRate: 500, color: 'oklch(0.75 0.20 180)', icon: Lightning, name: 'Zapper', desc: 'Rapid fire' },
-  strong: { cost: 100, damage: 40, range: 2, fireRate: 1500, color: 'oklch(0.70 0.25 20)', icon: Crosshair, name: 'Blaster', desc: 'High damage' },
-  area: { cost: 150, damage: 15, range: 2.5, fireRate: 1000, color: 'oklch(0.65 0.25 300)', icon: Shield, name: 'Guardian', desc: 'Area damage' },
-  sniper: { cost: 200, damage: 100, range: 4, fireRate: 2500, color: 'oklch(0.68 0.22 340)', icon: Target, name: 'Sniper', desc: 'Long range' },
-  freeze: { cost: 120, damage: 5, range: 2, fireRate: 800, color: 'oklch(0.72 0.18 240)', icon: Snowflake, name: 'Freezer', desc: 'Slows enemies' },
-  bomb: { cost: 250, damage: 80, range: 2, fireRate: 3000, color: 'oklch(0.62 0.24 40)', icon: Bomb, name: 'Bomber', desc: 'Explosive' },
+  fast: { cost: 150, damage: 10, range: 1.5, fireRate: 500, color: 'oklch(0.75 0.20 180)', icon: Lightning, name: 'Zapper', desc: 'Rapid fire' },
+  strong: { cost: 300, damage: 40, range: 2, fireRate: 1500, color: 'oklch(0.70 0.25 20)', icon: Crosshair, name: 'Blaster', desc: 'High damage' },
+  area: { cost: 450, damage: 15, range: 2.5, fireRate: 1000, color: 'oklch(0.65 0.25 300)', icon: Shield, name: 'Guardian', desc: 'Area damage' },
+  sniper: { cost: 600, damage: 100, range: 4, fireRate: 2500, color: 'oklch(0.68 0.22 340)', icon: Target, name: 'Sniper', desc: 'Long range' },
+  freeze: { cost: 360, damage: 5, range: 2, fireRate: 800, color: 'oklch(0.72 0.18 240)', icon: Snowflake, name: 'Freezer', desc: 'Slows enemies' },
+  bomb: { cost: 750, damage: 80, range: 2, fireRate: 3000, color: 'oklch(0.62 0.24 40)', icon: Bomb, name: 'Bomber', desc: 'Explosive' },
 }
 
 const WEATHER_EFFECTS = {
@@ -202,7 +202,7 @@ function App() {
   const [towers, setTowers] = useState<Tower[]>([])
   const [projectiles, setProjectiles] = useState<Projectile[]>([])
   const [health, setHealth] = useState(10)
-  const [coins, setCoins] = useState(200)
+  const [coins, setCoins] = useState(500)
   const [score, setScore] = useState(0)
   const [wave, setWave] = useState(1)
   const [monstersSpawnedThisWave, setMonstersSpawnedThisWave] = useState(0)
@@ -270,7 +270,7 @@ function App() {
     setTowers([])
     setProjectiles([])
     setHealth(10)
-    setCoins(200)
+    setCoins(500)
     setScore(0)
     setWave(1)
     setMonstersSpawnedThisWave(0)
@@ -320,6 +320,16 @@ function App() {
     setSelectedTowerType(null)
     toast.success(`${towerConfig.name} placed!`)
   }
+
+  useEffect(() => {
+    if (gameState !== 'playing') return
+
+    const coinInterval = setInterval(() => {
+      setCoins(prev => prev + 1)
+    }, 1000)
+
+    return () => clearInterval(coinInterval)
+  }, [gameState])
 
   useEffect(() => {
     if (gameState !== 'playing' || wave > 10) return
@@ -610,295 +620,293 @@ function App() {
         )}
 
         {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
-            <div>
-              <Card className="p-4 mb-4">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <Badge variant="destructive" className="text-lg px-3 py-1">
-                      <Heart className="mr-1" weight="fill" size={20} />
-                      {health}
-                    </Badge>
-                    <Badge variant="default" className="text-lg px-3 py-1">
-                      <Coin className="mr-1" weight="fill" size={20} />
-                      {coins}
-                    </Badge>
-                    <Badge variant="secondary" className="text-lg px-3 py-1">
-                      Wave {wave}
-                    </Badge>
-                    <Badge variant="outline" className="text-lg px-3 py-1" style={{ backgroundColor: WEATHER_EFFECTS[weather].color }}>
-                      {WEATHER_EFFECTS[weather].emoji} {WEATHER_EFFECTS[weather].name}
-                    </Badge>
-                    <Badge variant="outline" className="text-lg px-3 py-1">
-                      Score: {score.toLocaleString()}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    {gameState === 'playing' && (
-                      <Button size="sm" variant="outline" onClick={() => setGameState('paused')}>
-                        <Pause weight="fill" />
-                      </Button>
-                    )}
-                    {gameState === 'paused' && (
-                      <Button size="sm" variant="outline" onClick={() => setGameState('playing')}>
-                        <Play weight="fill" />
-                      </Button>
-                    )}
-                    <Button size="sm" variant="outline" onClick={startGame}>
-                      <ArrowClockwise weight="fill" />
-                    </Button>
-                  </div>
+          <div>
+            <Card className="p-4 mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <Badge variant="destructive" className="text-lg px-3 py-1">
+                    <Heart className="mr-1" weight="fill" size={20} />
+                    {health}
+                  </Badge>
+                  <Badge variant="default" className="text-lg px-3 py-1">
+                    <Coin className="mr-1" weight="fill" size={20} />
+                    {coins}
+                  </Badge>
+                  <Badge variant="secondary" className="text-lg px-3 py-1">
+                    Wave {wave}
+                  </Badge>
+                  <Badge variant="outline" className="text-lg px-3 py-1" style={{ backgroundColor: WEATHER_EFFECTS[weather].color }}>
+                    {WEATHER_EFFECTS[weather].emoji} {WEATHER_EFFECTS[weather].name}
+                  </Badge>
+                  <Badge variant="outline" className="text-lg px-3 py-1">
+                    Score: {score.toLocaleString()}
+                  </Badge>
                 </div>
-              </Card>
-
-              <Card className="p-6 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-hidden">
-                {weather === 'rain' && (
-                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                    {Array.from({ length: 50 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-0.5 h-8 bg-blue-400/40"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          top: `-10%`,
-                          animation: `fall ${0.5 + Math.random() * 0.5}s linear infinite`,
-                          animationDelay: `${Math.random() * 2}s`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
-                {weather === 'snow' && (
-                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                    {Array.from({ length: 40 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute text-white text-xl opacity-80"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          top: `-10%`,
-                          animation: `fall ${2 + Math.random()}s linear infinite`,
-                          animationDelay: `${Math.random() * 3}s`,
-                        }}
-                      >
-                        ❄️
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {weather === 'storm' && (
-                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                    <div className="absolute inset-0 bg-gray-700/20" />
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute text-yellow-400 text-3xl animate-pulse"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          top: `${Math.random() * 100}%`,
-                          animationDuration: `${0.3 + Math.random() * 0.3}s`,
-                          animationDelay: `${Math.random() * 2}s`,
-                        }}
-                      >
-                        ⚡
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {weather === 'volcano' && (
-                  <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                    <div className="absolute inset-0 bg-orange-500/10" />
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-2 h-2 rounded-full bg-orange-500"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          bottom: `-5%`,
-                          animation: `rise ${1 + Math.random()}s ease-out infinite`,
-                          animationDelay: `${Math.random() * 2}s`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
-                
-                <style>
-                  {`
-                    @keyframes fall {
-                      to { transform: translateY(${GRID_SIZE * CELL_SIZE + 100}px); }
-                    }
-                    @keyframes rise {
-                      to { transform: translateY(-${GRID_SIZE * CELL_SIZE + 100}px); opacity: 0; }
-                    }
-                  `}
-                </style>
-                
-                <div
-                  className="relative mx-auto bg-card rounded-lg shadow-inner"
-                  style={{
-                    width: GRID_SIZE * CELL_SIZE,
-                    height: GRID_SIZE * CELL_SIZE,
-                  }}
-                >
-                  <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-                    <path
-                      d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
-                      stroke="oklch(0.85 0.02 90)"
-                      strokeWidth="24"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-
-                  <div
-                    className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
-                    style={{
-                      left: PATH[0].x * CELL_SIZE + CELL_SIZE / 4,
-                      top: PATH[0].y * CELL_SIZE + CELL_SIZE / 4,
-                      width: CELL_SIZE / 2,
-                      height: CELL_SIZE / 2,
-                      zIndex: 2,
-                    }}
-                  >
-                    ▶️
-                  </div>
-
-                  <div
-                    className="absolute flex items-center justify-center text-3xl bg-red-500 rounded-full shadow-lg border-4 border-red-600"
-                    style={{
-                      left: PATH[PATH.length - 1].x * CELL_SIZE + CELL_SIZE / 4,
-                      top: PATH[PATH.length - 1].y * CELL_SIZE + CELL_SIZE / 4,
-                      width: CELL_SIZE / 2,
-                      height: CELL_SIZE / 2,
-                      zIndex: 2,
-                    }}
-                  >
-                    🏠
-                  </div>
-
-                  {Array.from({ length: GRID_SIZE }).map((_, y) =>
-                    Array.from({ length: GRID_SIZE }).map((_, x) => {
-                      const isPath = isPathCell(x, y)
-                      const isHovered = hoveredCell?.x === x && hoveredCell?.y === y
-                      const canPlace = selectedTowerType && !isPath && !hasTower(x, y)
-
-                      return (
-                        <div
-                          key={`${x}-${y}`}
-                          className={`absolute border transition-all ${
-                            isPath ? 'bg-muted/30' : 'bg-card/50'
-                          } ${canPlace && isHovered ? 'bg-primary/20 ring-2 ring-primary' : ''} ${
-                            canPlace ? 'cursor-pointer hover:bg-primary/10' : ''
-                          }`}
-                          style={{
-                            left: x * CELL_SIZE,
-                            top: y * CELL_SIZE,
-                            width: CELL_SIZE,
-                            height: CELL_SIZE,
-                            zIndex: 2,
-                          }}
-                          onMouseEnter={() => setHoveredCell({ x, y })}
-                          onMouseLeave={() => setHoveredCell(null)}
-                          onClick={() => canPlace && placeTower(x, y)}
-                        />
-                      )
-                    })
+                <div className="flex gap-2">
+                  {gameState === 'playing' && (
+                    <Button size="sm" variant="outline" onClick={() => setGameState('paused')}>
+                      <Pause weight="fill" />
+                    </Button>
                   )}
+                  {gameState === 'paused' && (
+                    <Button size="sm" variant="outline" onClick={() => setGameState('playing')}>
+                      <Play weight="fill" />
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline" onClick={startGame}>
+                    <ArrowClockwise weight="fill" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
 
-                  {selectedTowerType && hoveredCell && !isPathCell(hoveredCell.x, hoveredCell.y) && !hasTower(hoveredCell.x, hoveredCell.y) && (
+            <Card className="p-6 bg-gradient-to-br from-blue-50 to-green-50 relative overflow-hidden mb-4">
+              {weather === 'rain' && (
+                <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                  {Array.from({ length: 50 }).map((_, i) => (
                     <div
-                      className="absolute rounded-full border-2 border-primary/30 bg-primary/5 pointer-events-none"
+                      key={i}
+                      className="absolute w-0.5 h-8 bg-blue-400/40"
                       style={{
-                        left: (hoveredCell.x + 0.5) * CELL_SIZE - TOWER_TYPES[selectedTowerType].range * CELL_SIZE,
-                        top: (hoveredCell.y + 0.5) * CELL_SIZE - TOWER_TYPES[selectedTowerType].range * CELL_SIZE,
-                        width: TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE,
-                        height: TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE,
-                        zIndex: 3,
+                        left: `${Math.random() * 100}%`,
+                        top: `-10%`,
+                        animation: `fall ${0.5 + Math.random() * 0.5}s linear infinite`,
+                        animationDelay: `${Math.random() * 2}s`,
                       }}
                     />
-                  )}
-
-                  {towers.map(tower => {
-                    const config = TOWER_TYPES[tower.type]
-                    const Icon = config.icon
-                    return (
-                      <div
-                        key={tower.id}
-                        className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300"
-                        style={{
-                          left: tower.position.x * CELL_SIZE + CELL_SIZE / 4,
-                          top: tower.position.y * CELL_SIZE + CELL_SIZE / 4,
-                          width: CELL_SIZE / 2,
-                          height: CELL_SIZE / 2,
-                          backgroundColor: config.color,
-                          zIndex: 4,
-                        }}
-                      >
-                        <Icon size={24} weight="fill" color="white" />
-                      </div>
-                    )
-                  })}
-
-                  {monsters.map(monster => (
+                  ))}
+                </div>
+              )}
+              {weather === 'snow' && (
+                <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                  {Array.from({ length: 40 }).map((_, i) => (
                     <div
-                      key={monster.id}
-                      className="absolute transition-all duration-75"
+                      key={i}
+                      className="absolute text-white text-xl opacity-80"
                       style={{
-                        left: monster.position.x * CELL_SIZE + CELL_SIZE / 4,
-                        top: monster.position.y * CELL_SIZE + CELL_SIZE / 4,
-                        width: CELL_SIZE / 2,
-                        height: CELL_SIZE / 2,
-                        zIndex: 5,
+                        left: `${Math.random() * 100}%`,
+                        top: `-10%`,
+                        animation: `fall ${2 + Math.random()}s linear infinite`,
+                        animationDelay: `${Math.random() * 3}s`,
                       }}
                     >
-                      <div
-                        className="w-full h-full rounded-full flex items-center justify-center text-2xl shadow-lg animate-in zoom-in duration-300 relative"
-                        style={{ 
-                          backgroundColor: monster.color,
-                          transform: monster.isBoss ? 'scale(1.5)' : 'scale(1)',
-                        }}
-                      >
-                        {monster.emoji}
-                        {monster.isBoss && (
-                          <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-                            <Crown size={24} weight="fill" color="gold" />
-                          </div>
-                        )}
-                        {monster.armor && monster.armor > 0 && (
-                          <div className="absolute -bottom-1 -right-1 text-xs">🛡️</div>
-                        )}
-                      </div>
-                      <div className="absolute -top-2 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-destructive transition-all duration-150"
-                          style={{ width: `${(monster.health / monster.maxHealth) * 100}%` }}
-                        />
-                      </div>
+                      ❄️
                     </div>
                   ))}
-
-                  {projectiles.map(proj => (
+                </div>
+              )}
+              {weather === 'storm' && (
+                <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                  <div className="absolute inset-0 bg-gray-700/20" />
+                  {Array.from({ length: 8 }).map((_, i) => (
                     <div
-                      key={proj.id}
-                      className="absolute w-2 h-2 bg-accent rounded-full animate-in zoom-in duration-200"
+                      key={i}
+                      className="absolute text-yellow-400 text-3xl animate-pulse"
                       style={{
-                        left: proj.target.x * CELL_SIZE + CELL_SIZE / 2,
-                        top: proj.target.y * CELL_SIZE + CELL_SIZE / 2,
-                        zIndex: 6,
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                        animationDuration: `${0.3 + Math.random() * 0.3}s`,
+                        animationDelay: `${Math.random() * 2}s`,
+                      }}
+                    >
+                      ⚡
+                    </div>
+                  ))}
+                </div>
+              )}
+              {weather === 'volcano' && (
+                <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                  <div className="absolute inset-0 bg-orange-500/10" />
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-2 h-2 rounded-full bg-orange-500"
+                      style={{
+                        left: `${Math.random() * 100}%`,
+                        bottom: `-5%`,
+                        animation: `rise ${1 + Math.random()}s ease-out infinite`,
+                        animationDelay: `${Math.random() * 2}s`,
                       }}
                     />
                   ))}
                 </div>
-              </Card>
-            </div>
+              )}
+              
+              <style>
+                {`
+                  @keyframes fall {
+                    to { transform: translateY(${GRID_SIZE * CELL_SIZE + 100}px); }
+                  }
+                  @keyframes rise {
+                    to { transform: translateY(-${GRID_SIZE * CELL_SIZE + 100}px); opacity: 0; }
+                  }
+                `}
+              </style>
+              
+              <div
+                className="relative mx-auto bg-card rounded-lg shadow-inner"
+                style={{
+                  width: GRID_SIZE * CELL_SIZE,
+                  height: GRID_SIZE * CELL_SIZE,
+                }}
+              >
+                <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+                  <path
+                    d={`M ${PATH.map((p, i) => `${p.x * CELL_SIZE + CELL_SIZE / 2} ${p.y * CELL_SIZE + CELL_SIZE / 2}`).join(' L ')}`}
+                    stroke="oklch(0.85 0.02 90)"
+                    strokeWidth="24"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
 
-            <div className="space-y-4">
+                <div
+                  className="absolute flex items-center justify-center text-3xl bg-green-500 rounded-full shadow-lg border-4 border-green-600 animate-pulse"
+                  style={{
+                    left: PATH[0].x * CELL_SIZE + CELL_SIZE / 4,
+                    top: PATH[0].y * CELL_SIZE + CELL_SIZE / 4,
+                    width: CELL_SIZE / 2,
+                    height: CELL_SIZE / 2,
+                    zIndex: 2,
+                  }}
+                >
+                  ▶️
+                </div>
+
+                <div
+                  className="absolute flex items-center justify-center text-3xl bg-red-500 rounded-full shadow-lg border-4 border-red-600"
+                  style={{
+                    left: PATH[PATH.length - 1].x * CELL_SIZE + CELL_SIZE / 4,
+                    top: PATH[PATH.length - 1].y * CELL_SIZE + CELL_SIZE / 4,
+                    width: CELL_SIZE / 2,
+                    height: CELL_SIZE / 2,
+                    zIndex: 2,
+                  }}
+                >
+                  🏠
+                </div>
+
+                {Array.from({ length: GRID_SIZE }).map((_, y) =>
+                  Array.from({ length: GRID_SIZE }).map((_, x) => {
+                    const isPath = isPathCell(x, y)
+                    const isHovered = hoveredCell?.x === x && hoveredCell?.y === y
+                    const canPlace = selectedTowerType && !isPath && !hasTower(x, y)
+
+                    return (
+                      <div
+                        key={`${x}-${y}`}
+                        className={`absolute border transition-all ${
+                          isPath ? 'bg-muted/30' : 'bg-card/50'
+                        } ${canPlace && isHovered ? 'bg-primary/20 ring-2 ring-primary' : ''} ${
+                          canPlace ? 'cursor-pointer hover:bg-primary/10' : ''
+                        }`}
+                        style={{
+                          left: x * CELL_SIZE,
+                          top: y * CELL_SIZE,
+                          width: CELL_SIZE,
+                          height: CELL_SIZE,
+                          zIndex: 2,
+                        }}
+                        onMouseEnter={() => setHoveredCell({ x, y })}
+                        onMouseLeave={() => setHoveredCell(null)}
+                        onClick={() => canPlace && placeTower(x, y)}
+                      />
+                    )
+                  })
+                )}
+
+                {selectedTowerType && hoveredCell && !isPathCell(hoveredCell.x, hoveredCell.y) && !hasTower(hoveredCell.x, hoveredCell.y) && (
+                  <div
+                    className="absolute rounded-full border-2 border-primary/30 bg-primary/5 pointer-events-none"
+                    style={{
+                      left: (hoveredCell.x + 0.5) * CELL_SIZE - TOWER_TYPES[selectedTowerType].range * CELL_SIZE,
+                      top: (hoveredCell.y + 0.5) * CELL_SIZE - TOWER_TYPES[selectedTowerType].range * CELL_SIZE,
+                      width: TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE,
+                      height: TOWER_TYPES[selectedTowerType].range * 2 * CELL_SIZE,
+                      zIndex: 3,
+                    }}
+                  />
+                )}
+
+                {towers.map(tower => {
+                  const config = TOWER_TYPES[tower.type]
+                  const Icon = config.icon
+                  return (
+                    <div
+                      key={tower.id}
+                      className="absolute flex items-center justify-center rounded-full shadow-lg animate-in zoom-in duration-300"
+                      style={{
+                        left: tower.position.x * CELL_SIZE + CELL_SIZE / 4,
+                        top: tower.position.y * CELL_SIZE + CELL_SIZE / 4,
+                        width: CELL_SIZE / 2,
+                        height: CELL_SIZE / 2,
+                        backgroundColor: config.color,
+                        zIndex: 4,
+                      }}
+                    >
+                      <Icon size={24} weight="fill" color="white" />
+                    </div>
+                  )
+                })}
+
+                {monsters.map(monster => (
+                  <div
+                    key={monster.id}
+                    className="absolute transition-all duration-75"
+                    style={{
+                      left: monster.position.x * CELL_SIZE + CELL_SIZE / 4,
+                      top: monster.position.y * CELL_SIZE + CELL_SIZE / 4,
+                      width: CELL_SIZE / 2,
+                      height: CELL_SIZE / 2,
+                      zIndex: 5,
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-full flex items-center justify-center text-2xl shadow-lg animate-in zoom-in duration-300 relative"
+                      style={{ 
+                        backgroundColor: monster.color,
+                        transform: monster.isBoss ? 'scale(1.5)' : 'scale(1)',
+                      }}
+                    >
+                      {monster.emoji}
+                      {monster.isBoss && (
+                        <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
+                          <Crown size={24} weight="fill" color="gold" />
+                        </div>
+                      )}
+                      {monster.armor && monster.armor > 0 && (
+                        <div className="absolute -bottom-1 -right-1 text-xs">🛡️</div>
+                      )}
+                    </div>
+                    <div className="absolute -top-2 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-destructive transition-all duration-150"
+                        style={{ width: `${(monster.health / monster.maxHealth) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                {projectiles.map(proj => (
+                  <div
+                    key={proj.id}
+                    className="absolute w-2 h-2 bg-accent rounded-full animate-in zoom-in duration-200"
+                    style={{
+                      left: proj.target.x * CELL_SIZE + CELL_SIZE / 2,
+                      top: proj.target.y * CELL_SIZE + CELL_SIZE / 2,
+                      zIndex: 6,
+                    }}
+                  />
+                ))}
+              </div>
+            </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
               <Card className="p-4">
-                <h3 className="text-xl font-bold mb-3 text-primary">Defenders</h3>
+                <h3 className="text-xl font-bold mb-3 text-primary">🛡️ Place Defenders</h3>
                 <Separator className="mb-3" />
-                <div className="space-y-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(Object.keys(TOWER_TYPES) as Array<keyof typeof TOWER_TYPES>).map(type => {
                     const config = TOWER_TYPES[type]
                     const Icon = config.icon
@@ -909,102 +917,103 @@ function App() {
                       <Button
                         key={type}
                         variant={selected ? 'default' : 'outline'}
-                        className="w-full justify-start text-left h-auto py-3"
+                        className="h-auto py-4 flex flex-col items-center justify-center gap-2"
                         onClick={() => setSelectedTowerType(selected ? null : type)}
                         disabled={!affordable}
                       >
-                        <div className="flex items-center gap-3 w-full">
-                          <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: config.color }}
-                          >
-                            <Icon size={20} weight="fill" color="white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold">{config.name}</div>
-                            <div className="text-xs opacity-75">
-                              {config.desc}
-                            </div>
-                          </div>
-                          <Badge variant={affordable ? 'secondary' : 'outline'} className="flex-shrink-0">
-                            <Coin size={14} weight="fill" className="mr-1" />
-                            {config.cost}
-                          </Badge>
+                        <div
+                          className="w-12 h-12 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: config.color }}
+                        >
+                          <Icon size={24} weight="fill" color="white" />
                         </div>
+                        <div className="text-center">
+                          <div className="font-semibold text-sm">{config.name}</div>
+                          <div className="text-xs opacity-75">{config.desc}</div>
+                        </div>
+                        <Badge variant={affordable ? 'secondary' : 'outline'} className="text-xs">
+                          <Coin size={12} weight="fill" className="mr-1" />
+                          {config.cost}
+                        </Badge>
                       </Button>
                     )
                   })}
                 </div>
-              </Card>
-
-              <Card className="p-4 bg-secondary/20">
-                <h3 className="text-lg font-bold mb-2">Wave {wave}/10</h3>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Monsters: {monstersSpawnedThisWave} / {8 + wave * 3}
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  💰 Earning +1 coin/second • Click defender then click grid to place
                 </p>
-                {!bossSpawned && (
-                  <Badge variant="outline" className="mt-2">
-                    Boss incoming...
-                  </Badge>
-                )}
-                {bossSpawned && !bossDefeated && (
-                  <Badge variant="destructive" className="mt-2 animate-pulse">
-                    👹 BOSS ACTIVE! Defeat to advance!
-                  </Badge>
-                )}
-                {bossDefeated && (
-                  <Badge variant="default" className="mt-2">
-                    ✓ Boss Defeated!
-                  </Badge>
-                )}
               </Card>
 
-              <Card className="p-4 bg-accent/10">
-                <h3 className="text-lg font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
-                <div className="text-sm space-y-1 text-accent-foreground/90">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">👾</span>
-                    <span>Normal - Balanced</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🐰</span>
-                    <span>Fast - Quick</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🦏</span>
-                    <span>Tank - Tough</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">👹</span>
-                    <span>Boss - Wave 5</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🦅</span>
-                    <span>Flying - Agile</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🛡️</span>
-                    <span>Armored</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🐜</span>
-                    <span>Swarm - Many</span>
-                  </div>
-                </div>
-              </Card>
+              <div className="space-y-4">
+                <Card className="p-4 bg-secondary/20">
+                  <h3 className="text-lg font-bold mb-2">Wave {wave}/10</h3>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Monsters: {monstersSpawnedThisWave} / {8 + wave * 3}
+                  </p>
+                  {!bossSpawned && (
+                    <Badge variant="outline" className="mt-2">
+                      Boss incoming...
+                    </Badge>
+                  )}
+                  {bossSpawned && !bossDefeated && (
+                    <Badge variant="destructive" className="mt-2 animate-pulse">
+                      👹 BOSS ACTIVE! Defeat to advance!
+                    </Badge>
+                  )}
+                  {bossDefeated && (
+                    <Badge variant="default" className="mt-2">
+                      ✓ Boss Defeated!
+                    </Badge>
+                  )}
+                </Card>
 
-              <Card className="p-4 bg-muted/50">
-                <h3 className="text-lg font-bold mb-2">💡 Tips</h3>
-                <ul className="text-sm space-y-1 text-muted-foreground">
-                  <li>• Must defeat boss to advance wave</li>
-                  <li>• 10 waves per adventure</li>
-                  <li>• Place defenders near curves</li>
-                  <li>• Use snipers for long range</li>
-                  <li>• Bombers deal area damage</li>
-                  <li>• Weather affects monster speed</li>
-                  <li>• Armor reduces damage taken</li>
-                </ul>
-              </Card>
+                <Card className="p-4 bg-accent/10">
+                  <h3 className="text-lg font-bold mb-2 text-accent-foreground">👾 Enemies</h3>
+                  <div className="text-sm space-y-1 text-accent-foreground/90">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">👾</span>
+                      <span>Normal - Balanced</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🐰</span>
+                      <span>Fast - Quick</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🦏</span>
+                      <span>Tank - Tough</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">👹</span>
+                      <span>Boss - Wave 5</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🦅</span>
+                      <span>Flying - Agile</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🛡️</span>
+                      <span>Armored</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🐜</span>
+                      <span>Swarm - Many</span>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-muted/50">
+                  <h3 className="text-lg font-bold mb-2">💡 Tips</h3>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• Must defeat boss to advance wave</li>
+                    <li>• 10 waves per adventure</li>
+                    <li>• Place defenders near curves</li>
+                    <li>• Use snipers for long range</li>
+                    <li>• Bombers deal area damage</li>
+                    <li>• Weather affects monster speed</li>
+                    <li>• Armor reduces damage taken</li>
+                  </ul>
+                </Card>
+              </div>
             </div>
           </div>
         )}
