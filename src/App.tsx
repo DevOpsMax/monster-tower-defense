@@ -2963,26 +2963,23 @@ function App() {
                                 }}
                               >
                                 {(isBoss || isMiniBoss) && (
-                                  <div
                                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                                     style={{
-                                      animation: 'shimmer 1.5s infinite linear',
+                                    style={{
                                     }}
-                                  />
+                                    }}
                                 )}
-                              </div>
+                                )}
                             </div>
-                            {isBoss && (
-                              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
                                 <div 
                                   className="text-xs font-bold px-2 py-0.5 rounded-full border-2 border-red-500"
+                                  style={{
+                                <div 1b 100%)',
+                                    color: '#FFD700',
                                   style={{
                                     background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)',
                                     color: '#FFD700',
                                     textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.5)',
-                                    boxShadow: '0 0 15px rgba(239, 68, 68, 0.6)',
-                                    fontFamily: 'var(--font-heading)',
-                                  }}
                                 >
                                   👹 BOSS 👹
                                 </div>
@@ -2996,23 +2993,19 @@ function App() {
                                     background: 'linear-gradient(135deg, #581c87 0%, #6b21a8 100%)',
                                     color: '#C0C0C0',
                                     textShadow: '0 1px 2px rgba(0,0,0,0.8), 0 0 8px rgba(192,192,192,0.5)',
-                                    boxShadow: '0 0 15px rgba(168, 85, 247, 0.6)',
+                                    background: 'linear-gradient(135deg, #581c87 0%, #6b21a8 100%)',
                                     fontFamily: 'var(--font-heading)',
-                                  }}
-                                >
-                                  💀 MINI-BOSS
                                 </div>
+                            )}
+                                    fontFamily: 'var(--font-heading)',
+                        )
+                      })}
+                                  💀 MINI-BOSS
+                      {damageNumbers.map(dmg => {
                               </div>
                             )}
                           </div>
                         )
-                      })}
-                      
-                      {damageNumbers.map(dmg => {
-                        const age = Date.now() - dmg.timestamp
-                        const opacity = Math.max(0, 1 - age / 1500)
-                        const yOffset = (age / 1500) * (dmg.isCritical ? 80 : 60)
-                        const scale = dmg.isCritical 
                           ? Math.min(1.5, 1 + (age / 300))
                           : Math.min(1.3, 1 + (age / 500))
                         
