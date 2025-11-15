@@ -2863,14 +2863,16 @@ function App() {
                               height: `${monsterSize}px`,
                               zIndex: isBoss ? 6 : isMiniBoss ? 6 : 5,
                             }}
-                            {(isBoss || isMiniBoss) && (
                           >
+                            {(isBoss || isMiniBoss) && (
+                              <>
                                 <div
                                   className="absolute inset-0 rounded-full animate-pulse"
                                   style={{
                                     transform: isBoss ? 'scale(1.4)' : 'scale(1.25)',
                                     zIndex: -2,
                                   }}
+                                />
                                 <div
                                   className="absolute inset-0 rounded-full"
                                   style={{
@@ -2878,6 +2880,7 @@ function App() {
                                     transform: isBoss ? 'scale(1.15)' : 'scale(1.1)',
                                     animation: 'pulse 2s infinite',
                                     zIndex: -1,
+                                  }}
                                 />
                               </>
                             )}
@@ -2889,11 +2892,13 @@ function App() {
                                   ? `0 0 35px ${monster.color}, 0 8px 25px rgba(0,0,0,0.6), inset 0 4px 10px rgba(255,255,255,0.3)`
                                   : isMiniBoss
                                     ? `0 0 25px ${monster.color}, 0 6px 20px rgba(0,0,0,0.5), inset 0 3px 8px rgba(255,255,255,0.25)`
+                                    : `0 0 15px ${monster.color}, 0 4px 15px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2)`,
                                 fontSize: emojiSize,
-                                  ? `0 0 35px ${monster.color}, 0 8px 25px rgba(0,0,0,0.6), inset 0 4px 10px rgba(255,255,255,0.3)`
+                              }}
                             >
                               {monster.emoji}
                               {isBoss && (
+                                <>
                                   <div className="absolute -top-3 -right-3 animate-bounce" style={{ animationDuration: '1s' }}>
                                     <div className="relative">
                                       <div className="absolute inset-0 blur-md bg-yellow-400 rounded-full" />
@@ -2920,7 +2925,7 @@ function App() {
                                   <div className="absolute -top-2 -right-2 animate-bounce" style={{ animationDuration: '1.2s' }}>
                                     <div className="relative">
                                       <div className="absolute inset-0 blur-sm bg-purple-400 rounded-full" />
-                              )}
+                                      <Skull size={24} weight="fill" color="#9333ea" className="relative drop-shadow-lg" />
                                     </div>
                                   </div>
                                   <div 
@@ -2938,6 +2943,7 @@ function App() {
                                 </div>
                               )}
                             </div>
+                            <div
                               className="absolute left-0 right-0 bg-slate-900/90 rounded-full overflow-hidden border-2 border-slate-700 shadow-lg"
                               style={{
                                 top: isBoss ? '-6px' : isMiniBoss ? '-5px' : '-4px',
