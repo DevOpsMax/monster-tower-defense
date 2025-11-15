@@ -2952,9 +2952,10 @@ function App() {
                             >
                               <div
                                 className="h-full transition-all duration-150 relative overflow-hidden"
-                              style={{
+                                style={{
                                   width: `${(monster.health / monster.maxHealth) * 100}%`,
                                   background: isBoss
+                                    ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'
                                     : isMiniBoss
                                       ? 'linear-gradient(90deg, #a855f7 0%, #9333ea 50%, #7e22ce 100%)'
                                       : 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)',
@@ -2962,13 +2963,14 @@ function App() {
                                 }}
                               >
                                 {(isBoss || isMiniBoss) && (
-                                    ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'
+                                  <div
                                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                                     style={{
                                       animation: 'shimmer 1.5s infinite linear',
                                     }}
+                                  />
                                 )}
-                              >
+                              </div>
                             </div>
                             {isBoss && (
                               <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
@@ -2991,10 +2993,10 @@ function App() {
                                 <div 
                                   className="text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-purple-500"
                                   style={{
-                                  👹 BOSS 👹a8 100%)',
+                                    background: 'linear-gradient(135deg, #581c87 0%, #6b21a8 100%)',
                                     color: '#C0C0C0',
                                     textShadow: '0 1px 2px rgba(0,0,0,0.8), 0 0 8px rgba(192,192,192,0.5)',
-                            )}
+                                    boxShadow: '0 0 15px rgba(168, 85, 247, 0.6)',
                                     fontFamily: 'var(--font-heading)',
                                   }}
                                 >
@@ -3011,6 +3013,7 @@ function App() {
                         const opacity = Math.max(0, 1 - age / 1500)
                         const yOffset = (age / 1500) * (dmg.isCritical ? 80 : 60)
                         const scale = dmg.isCritical 
+                          ? Math.min(1.5, 1 + (age / 300))
                           : Math.min(1.3, 1 + (age / 500))
                         
                         return (
@@ -3024,7 +3027,7 @@ function App() {
                               opacity: opacity,
                               zIndex: 10,
                             }}
->
+                          >
                             <div
                               style={{
                                 textShadow: dmg.isCritical
