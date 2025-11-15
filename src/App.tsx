@@ -2858,14 +2858,13 @@ function App() {
                             key={monster.id}
                             className="absolute transition-all duration-75"
                             style={{
-                              left: `${monster.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
                               top: `${monster.position.y * CELL_SIZE + CELL_SIZE / 2}px`,
                               width: `${monsterSize}px`,
-                              height: `${monsterSize}px`,
+                              width: `${monsterSize}px`,
                               transform: 'translate(-50%, -50%)',
-                              zIndex: isBoss ? 6 : isMiniBoss ? 6 : 5,
+                              transform: 'translate(-50%, -50%)',
                             }}
-                          >
+                            }}
                             {(isBoss || isMiniBoss) && (
                               <>
                                 <div
@@ -3020,12 +3019,10 @@ function App() {
                             className="absolute pointer-events-none font-black"
                             style={{
                               left: `${dmg.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
-                              top: `calc(${dmg.position.y * CELL_SIZE + CELL_SIZE / 2}px - ${yOffset}px)`,
-                              transform: `translate(-50%, -50%) scale(${scale}) ${dmg.isCritical ? `rotate(${Math.sin(age / 100) * 5}deg)` : ''}`,
                               opacity: opacity,
                               zIndex: 10,
-                            }}
-                          >
+                              transform: `translate(-50%, -50%) scale(${scale}) ${dmg.isCritical ? `rotate(${Math.sin(age / 100) * 5}deg)` : ''}`,
+                              opacity: opacity,
                             <div
                               style={{
                                 textShadow: dmg.isCritical
