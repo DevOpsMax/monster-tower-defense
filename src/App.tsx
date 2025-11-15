@@ -2998,24 +2998,21 @@ function App() {
                                     fontFamily: 'var(--font-heading)',
                                   }}
                                 >
-                                  💀 MINI-BOSS
-                                </div>
-                              </div>
                             )}
-                          </div>
+                                </div>
+                        )
+                            )}
+
                         )
                       })}
-
+             const opacity = Math.max(0, 1 - age / 1500)
                       {damageNumbers.map(dmg => {
-                        const age = Date.now() - dmg.timestamp
-                        const opacity = Math.max(0, 1 - age / 1500)
-                        const yOffset = (age / 1500) * 60
                         const scale = dmg.isCritical ? 1.3 : 1.0
                         
                         return (
-                          <div
-                            key={dmg.id}
-                            className="absolute pointer-events-none font-bold flex flex-col items-center"
+                        const scale = dmg.isCritical ? 1.3 : 1.0
+                        
+                        return (
                             style={{
                               left: `${dmg.position.x * CELL_SIZE}px`,
                               top: `calc(${dmg.position.y * CELL_SIZE}px - ${yOffset}px)`,
