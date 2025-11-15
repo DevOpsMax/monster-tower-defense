@@ -484,7 +484,7 @@ function App() {
     
     const newMonster: Monster = {
       id,
-      position: { x: PATH[0].x + 0.5, y: PATH[0].y + 0.5 },
+      position: { x: PATH[0].x, y: PATH[0].y },
       health: baseHealth * monsterConfig.healthMult,
       maxHealth: baseHealth * monsterConfig.healthMult,
       speed: baseSpeed * monsterConfig.speedMult * weatherMult * speedVariation,
@@ -695,6 +695,7 @@ function App() {
             setHealth(h => h - healthLoss)
             if (monster.isBoss) {
               toast.error('👹 Boss reached the base! -5 HP!')
+              setBossDefeated(true)
             } else if (monster.type === 'miniboss') {
               toast.error('💀 Mini-Boss reached the base! -3 HP!')
             } else {
@@ -704,7 +705,7 @@ function App() {
           }
 
           const targetNode = PATH[monster.pathIndex + 1]
-          const target = { x: targetNode.x + 0.5, y: targetNode.y + 0.5 }
+          const target = { x: targetNode.x, y: targetNode.y }
           const current = monster.position
           const dx = target.x - current.x
           const dy = target.y - current.y
@@ -735,8 +736,8 @@ function App() {
           
           const target = monsters.find(m => {
             const monsterPixelPos = {
-              x: m.position.x * CELL_SIZE,
-              y: m.position.y * CELL_SIZE
+              x: m.position.x * CELL_SIZE + CELL_SIZE / 2,
+              y: m.position.y * CELL_SIZE + CELL_SIZE / 2
             }
             const d = distance(towerCenter, monsterPixelPos)
             return d <= stats.range * CELL_SIZE && m.health > 0
@@ -744,8 +745,8 @@ function App() {
 
           if (target) {
             const targetCenter = {
-              x: target.position.x * CELL_SIZE,
-              y: target.position.y * CELL_SIZE
+              x: target.position.x * CELL_SIZE + CELL_SIZE / 2,
+              y: target.position.y * CELL_SIZE + CELL_SIZE / 2
             }
             const projectile: Projectile = {
               id: `proj-${now}-${Math.random()}`,
@@ -794,8 +795,8 @@ function App() {
                   setExplosions(prev => [...prev, explosion])
                   
                   const monsterPixelPos = {
-                    x: m.position.x * CELL_SIZE,
-                    y: m.position.y * CELL_SIZE
+                    x: m.position.x * CELL_SIZE + CELL_SIZE / 2,
+                    y: m.position.y * CELL_SIZE + CELL_SIZE / 2
                   }
                   
                   const newParticles: Particle[] = []
@@ -2857,10 +2858,11 @@ function App() {
                             key={monster.id}
                             className="absolute transition-all duration-75"
                             style={{
-                              left: `${monster.position.x * CELL_SIZE}px`,
-                              top: `${monster.position.y * CELL_SIZE}px`,
+                              left: `${monster.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
+                              top: `${monster.position.y * CELL_SIZE + CELL_SIZE / 2}px`,
                               width: `${monsterSize}px`,
                               height: `${monsterSize}px`,
+                              transform: 'translate(-50%, -50%)',
                               zIndex: isBoss ? 6 : isMiniBoss ? 6 : 5,
                             }}
                           >
@@ -3017,8 +3019,8 @@ function App() {
                             key={dmg.id}
                             className="absolute pointer-events-none font-black"
                             style={{
-                              left: `${dmg.position.x * CELL_SIZE}px`,
-                              top: `calc(${dmg.position.y * CELL_SIZE}px - ${yOffset}px)`,
+                              left: `${dmg.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
+                              top: `calc(${dmg.position.y * CELL_SIZE + CELL_SIZE / 2}px - ${yOffset}px)`,
                               transform: `translate(-50%, -50%) scale(${scale}) ${dmg.isCritical ? `rotate(${Math.sin(age / 100) * 5}deg)` : ''}`,
                               opacity: opacity,
                               zIndex: 10,
@@ -3051,8 +3053,8 @@ function App() {
                             key={combo.id}
                             className="absolute pointer-events-none flex items-center gap-1"
                             style={{
-                              left: `${combo.position.x * CELL_SIZE}px`,
-                              top: `calc(${combo.position.y * CELL_SIZE}px - ${yOffset}px)`,
+                              left: `${combo.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
+                              top: `calc(${combo.position.y * CELL_SIZE + CELL_SIZE / 2}px - ${yOffset}px)`,
                               transform: `translate(-50%, -50%) scale(${scale})`,
                               opacity: opacity,
                               zIndex: 10,
@@ -3095,8 +3097,8 @@ function App() {
                             key={exp.id}
                             className="absolute pointer-events-none"
                             style={{
-                              left: `${exp.position.x * CELL_SIZE}px`,
-                              top: `${exp.position.y * CELL_SIZE}px`,
+                              left: `${exp.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
+                              top: `${exp.position.y * CELL_SIZE + CELL_SIZE / 2}px`,
                               transform: `translate(-50%, -50%) scale(${scale})`,
                               zIndex: 8,
                             }}
