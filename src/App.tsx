@@ -2848,9 +2848,9 @@ function App() {
                       })}
 
                       {monsters.map(monster => {
+                        const isBoss = monster.isBoss
                         const isMiniBoss = monster.type === 'miniboss'
                         const monsterSize = isBoss ? CELL_SIZE * 0.95 : isMiniBoss ? CELL_SIZE * 0.82 : CELL_SIZE * 0.70
-                        const emojiSize = isBoss ? '48px' : isMiniBoss ? '40px' : '32px'
                         const emojiSize = isBoss ? '48px' : isMiniBoss ? '40px' : '32px'
                         
                         return (
@@ -2863,15 +2863,13 @@ function App() {
                               width: `${monsterSize}px`,
                               height: `${monsterSize}px`,
                               zIndex: isBoss ? 6 : isMiniBoss ? 6 : 5,
-                              zIndex: isBoss ? 6 : isMiniBoss ? 6 : 5,
                             }}
-                            {(isBoss || isMiniBoss) && (
+                          >
                             {(isBoss || isMiniBoss) && (
                               <>
                                 <div
                                   className="absolute inset-0 rounded-full animate-pulse"
                                   style={{
-                                    transform: isBoss ? 'scale(1.4)' : 'scale(1.25)',
                                     transform: isBoss ? 'scale(1.4)' : 'scale(1.25)',
                                     zIndex: -2,
                                   }}
@@ -2880,7 +2878,6 @@ function App() {
                                   className="absolute inset-0 rounded-full"
                                   style={{
                                     boxShadow: `0 0 ${isBoss ? '30' : '20'}px ${monster.color}, inset 0 0 ${isBoss ? '20' : '15'}px ${monster.color}40`,
-                                    transform: isBoss ? 'scale(1.15)' : 'scale(1.1)',r}40`,
                                     transform: isBoss ? 'scale(1.15)' : 'scale(1.1)',
                                     animation: 'pulse 2s infinite',
                                     zIndex: -1,
@@ -2892,11 +2889,10 @@ function App() {
                               className="w-full h-full rounded-full flex items-center justify-center shadow-2xl animate-in zoom-in duration-300 relative border-4"
                               style={{ 
                                 borderColor: isBoss ? '#FFD700' : isMiniBoss ? '#C0C0C0' : `color-mix(in oklch, ${monster.color} 70%, white 30%)`,
-                                borderColor: isBoss ? '#FFD700' : isMiniBoss ? '#C0C0C0' : `color-mix(in oklch, ${monster.color} 70%, white 30%)`,
                                 boxShadow: isBoss 
+                                  ? `0 0 35px ${monster.color}, 0 8px 25px rgba(0,0,0,0.6), inset 0 4px 10px rgba(255,255,255,0.3)`
                                   : isMiniBoss
                                     ? `0 0 25px ${monster.color}, 0 6px 20px rgba(0,0,0,0.5), inset 0 3px 8px rgba(255,255,255,0.25)`
-                                    : `0 0 15px ${monster.color}50, 0 4px 15px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2)`,
                                     : `0 0 15px ${monster.color}50, 0 4px 15px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2)`,
                                 fontSize: emojiSize,
                               }}
@@ -2924,6 +2920,7 @@ function App() {
                                     }}
                                   />
                                 </>
+                              )}
                               {isMiniBoss && (
                                 <>
                                   <div className="absolute -top-2 -right-2 animate-bounce" style={{ animationDuration: '1.2s' }}>
@@ -2941,7 +2938,6 @@ function App() {
                                   />
                                 </>
                               )}
-                              )}
                               {monster.armor !== undefined && monster.armor > 0 && (
                                 <div className="absolute -bottom-2 -right-2 text-xl drop-shadow-lg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }}>
                                   🛡️
@@ -2950,8 +2946,8 @@ function App() {
                             </div>
                             <div 
                               className="absolute left-0 right-0 bg-slate-900/90 rounded-full overflow-hidden border-2 border-slate-700 shadow-lg"
+                              style={{
                                 top: isBoss ? '-6px' : isMiniBoss ? '-5px' : '-4px',
-                                height: isBoss ? '8px' : isMiniBoss ? '7px' : '6px',
                                 height: isBoss ? '8px' : isMiniBoss ? '7px' : '6px',
                               }}
                             >
@@ -2960,13 +2956,13 @@ function App() {
                                 style={{ 
                                   width: `${(monster.health / monster.maxHealth) * 100}%`,
                                   background: isBoss
+                                    ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'
                                     : isMiniBoss
                                       ? 'linear-gradient(90deg, #a855f7 0%, #9333ea 50%, #7e22ce 100%)'
                                       : 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)',
                                   boxShadow: isBoss ? '0 0 10px #ef4444' : isMiniBoss ? '0 0 8px #a855f7' : 'none',
-                                  boxShadow: isBoss ? '0 0 10px #ef4444' : isMiniBoss ? '0 0 8px #a855f7' : 'none',
                                 }}
-                                {(isBoss || isMiniBoss) && (
+                              >
                                 {(isBoss || isMiniBoss) && (
                                   <div 
                                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
@@ -2992,6 +2988,7 @@ function App() {
                                   👹 BOSS 👹
                                 </div>
                               </div>
+                            )}
                             {isMiniBoss && (
                               <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
                                 <div 
@@ -3007,7 +3004,6 @@ function App() {
                                   💀 MINI-BOSS
                                 </div>
                               </div>
-                            )}
                             )}
                           </div>
                         )
