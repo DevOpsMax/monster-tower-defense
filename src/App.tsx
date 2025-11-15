@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type Position = { x: number; y: number }
-type MonsterType = 'normal' | 'fast' | 'tank' | 'boss' | 'flying' | 'armored' | 'swarm'
+type MonsterType = 'normal' | 'fast' | 'tank' | 'boss' | 'flying' | 'armored' | 'swarm' | 'miniboss'
 type Monster = {
   id: string
   position: Position
@@ -254,13 +254,14 @@ const MAPS: Record<string, MapConfig> = {
 const CELL_SIZE = 56
 
 const MONSTER_TYPES = {
-  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1.4, speedMult: 1.2, rewardMult: 1, armorMult: 0 },
-  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.75, speedMult: 2.4, rewardMult: 1.3, armorMult: 0 },
-  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 3.8, speedMult: 0.75, rewardMult: 1.8, armorMult: 0.15 },
-  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 18, speedMult: 0.48, rewardMult: 6, armorMult: 0.5 },
-  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.9, speedMult: 2.2, rewardMult: 1.5, armorMult: 0 },
-  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 2.6, speedMult: 0.95, rewardMult: 2.2, armorMult: 0.4 },
-  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.5, speedMult: 1.75, rewardMult: 0.9, armorMult: 0 },
+  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1.4, speedMult: 1.35, rewardMult: 1, armorMult: 0 },
+  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.75, speedMult: 2.6, rewardMult: 1.3, armorMult: 0 },
+  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 3.8, speedMult: 0.85, rewardMult: 1.8, armorMult: 0.15 },
+  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 18, speedMult: 0.58, rewardMult: 6, armorMult: 0.5 },
+  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.9, speedMult: 2.4, rewardMult: 1.5, armorMult: 0 },
+  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 2.6, speedMult: 1.05, rewardMult: 2.2, armorMult: 0.4 },
+  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.5, speedMult: 1.9, rewardMult: 0.9, armorMult: 0 },
+  miniboss: { emoji: '💀', color: 'oklch(0.58 0.22 280)', healthMult: 8, speedMult: 0.75, rewardMult: 3.5, armorMult: 0.3 },
 }
 
 const TOWER_TYPES = {
@@ -392,7 +393,7 @@ function App() {
   const [monsters, setMonsters] = useState<Monster[]>([])
   const [towers, setTowers] = useState<Tower[]>([])
   const [projectiles, setProjectiles] = useState<Projectile[]>([])
-  const [health, setHealth] = useState(10)
+  const [health, setHealth] = useState(20)
   const [coins, setCoins] = useState(500)
   const [score, setScore] = useState(0)
   const [wave, setWave] = useState(1)
@@ -455,6 +456,12 @@ function App() {
   }
 
   const getRandomMonsterType = (): MonsterType => {
+    const rand = Math.random()
+    
+    if (wave >= 3 && rand < 0.12) {
+      return 'miniboss'
+    }
+    
     const types: MonsterType[] = ['normal', 'fast', 'tank', 'flying', 'armored', 'swarm']
     return types[Math.floor(Math.random() * types.length)]
   }
@@ -472,6 +479,8 @@ function App() {
     const weatherMult = WEATHER_EFFECTS[weather].speedMult
     
     const speedVariation = 0.85 + Math.random() * 0.3
+    
+    const isMiniBoss = type === 'miniboss'
     
     const newMonster: Monster = {
       id,
@@ -494,6 +503,8 @@ function App() {
     if (forceBoss) {
       setBossSpawned(true)
       toast(`Boss incoming! 👹`, { description: 'Defeat the boss to complete the wave!' })
+    } else if (isMiniBoss) {
+      toast(`Mini-Boss appears! 💀`, { description: 'Tougher enemy with great rewards!' })
     }
   }, [wave, weather, PATH])
 
@@ -502,7 +513,7 @@ function App() {
     setMonsters([])
     setTowers([])
     setProjectiles([])
-    setHealth(10)
+    setHealth(20)
     setCoins(450)
     setScore(0)
     setWave(1)
@@ -519,7 +530,7 @@ function App() {
     setLevelUpEffects([])
     setDisplayCoins(450)
     setDisplayScore(0)
-    setPrevHealth(10)
+    setPrevHealth(20)
     setPrevMonsterCount(0)
     setPrevBossStatus({ spawned: false, defeated: false })
   }
@@ -617,7 +628,7 @@ function App() {
     return () => clearInterval(coinInterval)
   }, [gameState])
 
-  const getMonstersPerWave = (waveNum: number) => 12 + waveNum * 6
+  const getMonstersPerWave = (waveNum: number) => 18 + waveNum * 8
 
   useEffect(() => {
     if (gameState !== 'playing' || wave > 10) return
@@ -680,9 +691,15 @@ function App() {
       setMonsters(prev => {
         return prev.map(monster => {
           if (monster.pathIndex >= PATH.length - 1) {
-            const healthLoss = monster.isBoss ? 5 : 1
+            const healthLoss = monster.isBoss ? 5 : monster.type === 'miniboss' ? 3 : 1
             setHealth(h => h - healthLoss)
-            toast.error(monster.isBoss ? '👹 Boss reached the base! -5 HP!' : 'Monster reached the base! -1 HP!')
+            if (monster.isBoss) {
+              toast.error('👹 Boss reached the base! -5 HP!')
+            } else if (monster.type === 'miniboss') {
+              toast.error('💀 Mini-Boss reached the base! -3 HP!')
+            } else {
+              toast.error('Monster reached the base! -1 HP!')
+            }
             return null
           }
 
@@ -960,7 +977,7 @@ function App() {
                     setTowers(prevTowers => prevTowers.map(t => {
                       if (t.id === tower.id) {
                         const newKills = t.kills + 1
-                        const expGain = m.isBoss ? 10 : 1
+                        const expGain = m.isBoss ? 10 : m.type === 'miniboss' ? 5 : 1
                         const newExp = t.experience + expGain
                         const expNeeded = getExpNeededForLevel(t.level + 1)
                         
@@ -1168,8 +1185,9 @@ function App() {
               <div className="space-y-1.5 text-left mb-4 text-sm text-foreground/90">
                 <p>🎯 Click on empty cells to place defenders that stop monsters</p>
                 <p>💰 Earn coins by defeating monsters and use them to buy more defenders</p>
-                <p>❤️ Don't let monsters reach your base or you'll lose hearts</p>
-                <p>👹 Each wave ends with a BOSS - defeat it to advance!</p>
+                <p>❤️ Don't let monsters reach your base or you'll lose hearts (20 HP total)</p>
+                <p>💀 Watch out for Mini-Bosses that appear randomly (-3 HP if they reach base)</p>
+                <p>👹 Each wave ends with a BOSS - defeat it to advance! (-5 HP if reaches base)</p>
                 <p>🗺️ Complete all 10 waves to conquer the adventure!</p>
                 <p>⚡ Watch out for weather events that change gameplay!</p>
               </div>
@@ -1471,6 +1489,13 @@ function App() {
                                 <span className="font-semibold text-foreground">Swarm</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Weak but comes in large numbers</p>
+                            </Card>
+                            <Card className="p-3 bg-slate-800/50 border-slate-700/50">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-2xl">💀</span>
+                                <span className="font-semibold text-foreground">Mini-Boss</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Powerful elite enemy, -3 HP if reaches base</p>
                             </Card>
                           </div>
                         </div>
@@ -2824,8 +2849,9 @@ function App() {
 
                       {monsters.map(monster => {
                         const isBoss = monster.isBoss
-                        const monsterSize = isBoss ? CELL_SIZE * 0.95 : CELL_SIZE * 0.70
-                        const emojiSize = isBoss ? '48px' : '32px'
+                        const isMiniBoss = monster.type === 'miniboss'
+                        const monsterSize = isBoss ? CELL_SIZE * 0.95 : isMiniBoss ? CELL_SIZE * 0.82 : CELL_SIZE * 0.70
+                        const emojiSize = isBoss ? '48px' : isMiniBoss ? '40px' : '32px'
                         
                         return (
                           <div
@@ -2837,16 +2863,16 @@ function App() {
                               width: `${monsterSize}px`,
                               height: `${monsterSize}px`,
                               transform: 'translate(-50%, -50%)',
-                              zIndex: isBoss ? 6 : 5,
+                              zIndex: isBoss ? 6 : isMiniBoss ? 6 : 5,
                             }}
                           >
-                            {isBoss && (
+                            {(isBoss || isMiniBoss) && (
                               <>
                                 <div
                                   className="absolute inset-0 rounded-full animate-pulse"
                                   style={{
                                     background: `radial-gradient(circle, ${monster.color}80 0%, transparent 70%)`,
-                                    transform: 'scale(1.4)',
+                                    transform: isBoss ? 'scale(1.4)' : 'scale(1.25)',
                                     zIndex: -2,
                                   }}
                                 />
@@ -2854,8 +2880,8 @@ function App() {
                                   className="absolute inset-0 rounded-full"
                                   style={{
                                     border: `3px solid ${monster.color}`,
-                                    boxShadow: `0 0 30px ${monster.color}, inset 0 0 20px ${monster.color}40`,
-                                    transform: 'scale(1.15)',
+                                    boxShadow: `0 0 ${isBoss ? '30' : '20'}px ${monster.color}, inset 0 0 ${isBoss ? '20' : '15'}px ${monster.color}40`,
+                                    transform: isBoss ? 'scale(1.15)' : 'scale(1.1)',
                                     animation: 'pulse 2s infinite',
                                     zIndex: -1,
                                   }}
@@ -2866,10 +2892,12 @@ function App() {
                               className="w-full h-full rounded-full flex items-center justify-center shadow-2xl animate-in zoom-in duration-300 relative border-4"
                               style={{ 
                                 backgroundColor: monster.color,
-                                borderColor: isBoss ? '#FFD700' : `color-mix(in oklch, ${monster.color} 70%, white 30%)`,
+                                borderColor: isBoss ? '#FFD700' : isMiniBoss ? '#C0C0C0' : `color-mix(in oklch, ${monster.color} 70%, white 30%)`,
                                 boxShadow: isBoss 
                                   ? `0 0 40px ${monster.color}, 0 8px 30px rgba(0,0,0,0.6), inset 0 4px 12px rgba(255,255,255,0.3)`
-                                  : `0 0 15px ${monster.color}50, 0 4px 15px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2)`,
+                                  : isMiniBoss
+                                    ? `0 0 25px ${monster.color}, 0 6px 20px rgba(0,0,0,0.5), inset 0 3px 8px rgba(255,255,255,0.25)`
+                                    : `0 0 15px ${monster.color}50, 0 4px 15px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2)`,
                                 fontSize: emojiSize,
                               }}
                             >
@@ -2897,6 +2925,23 @@ function App() {
                                   />
                                 </>
                               )}
+                              {isMiniBoss && (
+                                <>
+                                  <div className="absolute -top-2 -right-2 animate-bounce" style={{ animationDuration: '1.2s' }}>
+                                    <div className="relative">
+                                      <div className="absolute inset-0 blur-sm bg-purple-400 rounded-full" />
+                                      <Skull size={24} weight="fill" color="#C0C0C0" className="relative drop-shadow-lg" />
+                                    </div>
+                                  </div>
+                                  <div 
+                                    className="absolute inset-0 rounded-full"
+                                    style={{
+                                      background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(192,192,192,0.2) 100%)',
+                                      mixBlendMode: 'overlay',
+                                    }}
+                                  />
+                                </>
+                              )}
                               {monster.armor !== undefined && monster.armor > 0 && (
                                 <div className="absolute -bottom-2 -right-2 text-xl drop-shadow-lg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }}>
                                   🛡️
@@ -2906,8 +2951,8 @@ function App() {
                             <div 
                               className="absolute left-0 right-0 bg-slate-900/90 rounded-full overflow-hidden border-2 border-slate-700 shadow-lg"
                               style={{
-                                top: isBoss ? '-6px' : '-4px',
-                                height: isBoss ? '8px' : '6px',
+                                top: isBoss ? '-6px' : isMiniBoss ? '-5px' : '-4px',
+                                height: isBoss ? '8px' : isMiniBoss ? '7px' : '6px',
                               }}
                             >
                               <div
@@ -2916,11 +2961,13 @@ function App() {
                                   width: `${(monster.health / monster.maxHealth) * 100}%`,
                                   background: isBoss
                                     ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'
-                                    : 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)',
-                                  boxShadow: isBoss ? '0 0 10px #ef4444' : 'none',
+                                    : isMiniBoss
+                                      ? 'linear-gradient(90deg, #a855f7 0%, #9333ea 50%, #7e22ce 100%)'
+                                      : 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)',
+                                  boxShadow: isBoss ? '0 0 10px #ef4444' : isMiniBoss ? '0 0 8px #a855f7' : 'none',
                                 }}
                               >
-                                {isBoss && (
+                                {(isBoss || isMiniBoss) && (
                                   <div 
                                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                                     style={{
@@ -2943,6 +2990,22 @@ function App() {
                                   }}
                                 >
                                   👹 BOSS 👹
+                                </div>
+                              </div>
+                            )}
+                            {isMiniBoss && (
+                              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                                <div 
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-purple-500"
+                                  style={{
+                                    background: 'linear-gradient(135deg, #581c87 0%, #6b21a8 100%)',
+                                    color: '#C0C0C0',
+                                    textShadow: '0 1px 2px rgba(0,0,0,0.8), 0 0 8px rgba(192,192,192,0.5)',
+                                    boxShadow: '0 0 12px rgba(168, 85, 247, 0.6)',
+                                    fontFamily: 'var(--font-heading)',
+                                  }}
+                                >
+                                  💀 MINI-BOSS
                                 </div>
                               </div>
                             )}
