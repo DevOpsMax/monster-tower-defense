@@ -2858,13 +2858,14 @@ function App() {
                             key={monster.id}
                             className="absolute transition-all duration-75"
                             style={{
+                              left: `${monster.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
                               top: `${monster.position.y * CELL_SIZE + CELL_SIZE / 2}px`,
                               width: `${monsterSize}px`,
-                              width: `${monsterSize}px`,
+                              height: `${monsterSize}px`,
                               transform: 'translate(-50%, -50%)',
-                              transform: 'translate(-50%, -50%)',
+                              zIndex: 6,
                             }}
-                            }}
+                          >
                             {(isBoss || isMiniBoss) && (
                               <>
                                 <div
