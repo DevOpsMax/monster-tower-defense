@@ -2977,11 +2977,14 @@ function App() {
                                 <div 
                                   className="text-xs font-bold px-2 py-0.5 rounded-full border-2 border-red-500"
                                   style={{
+                                    background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)',
+                                    color: '#FFD700',
+                                    textShadow: '0 1px 2px rgba(0,0,0,0.8), 0 0 8px rgba(255,215,0,0.5)',
                                     fontFamily: 'var(--font-heading)',
                                   }}
                                 >
-                                    fontFamily: 'var(--font-heading)',
-                                  }}
+                                  👹 BOSS
+                                </div>
                               </div>
                             )}
                             {isMiniBoss && (
@@ -2995,22 +2998,21 @@ function App() {
                                     fontFamily: 'var(--font-heading)',
                                   }}
                                 >
-                                </div>
-                                  }}
-                                >
                                   💀 MINI-BOSS
-                        )
+                                </div>
                               </div>
-
+                            )}
                           </div>
-                        const age = Date.now() - dmg.timestamp
-                        const opacity = Math.max(0, 1 - age / 1500)
- 1500) * 60
-                        const scale = dmg.isCritical 
+                        )
+                      })}
+
+                      {damageNumbers.map(dmg => {
                         const age = Date.now() - dmg.timestamp
                         const opacity = Math.max(0, 1 - age / 1500)
                         const yOffset = (age / 1500) * 60
-                        const scale = dmg.isCritical 
+                        const scale = dmg.isCritical ? 1.3 : 1.0
+                        
+                        return (
                           <div
                             key={dmg.id}
                             className="absolute pointer-events-none font-bold flex flex-col items-center"
