@@ -3020,10 +3020,12 @@ function App() {
                             className="absolute pointer-events-none font-black"
                             style={{
                               left: `${dmg.position.x * CELL_SIZE + CELL_SIZE / 2}px`,
-                              opacity: opacity,
-                              zIndex: 10,
+                              top: `calc(${dmg.position.y * CELL_SIZE + CELL_SIZE / 2}px - ${yOffset}px)`,
                               transform: `translate(-50%, -50%) scale(${scale}) ${dmg.isCritical ? `rotate(${Math.sin(age / 100) * 5}deg)` : ''}`,
                               opacity: opacity,
+                              zIndex: 10,
+                            }}
+                          >
                             <div
                               style={{
                                 textShadow: dmg.isCritical
