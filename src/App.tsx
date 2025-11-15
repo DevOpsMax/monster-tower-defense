@@ -254,13 +254,13 @@ const MAPS: Record<string, MapConfig> = {
 const CELL_SIZE = 56
 
 const MONSTER_TYPES = {
-  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1.4, speedMult: 1.1, rewardMult: 1, armorMult: 0 },
-  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.75, speedMult: 2.2, rewardMult: 1.3, armorMult: 0 },
-  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 3.8, speedMult: 0.65, rewardMult: 1.8, armorMult: 0.15 },
-  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 18, speedMult: 0.35, rewardMult: 6, armorMult: 0.5 },
-  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.9, speedMult: 2.0, rewardMult: 1.5, armorMult: 0 },
-  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 2.6, speedMult: 0.85, rewardMult: 2.2, armorMult: 0.4 },
-  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.5, speedMult: 1.6, rewardMult: 0.9, armorMult: 0 },
+  normal: { emoji: '👾', color: 'oklch(0.75 0.18 60)', healthMult: 1.4, speedMult: 1.2, rewardMult: 1, armorMult: 0 },
+  fast: { emoji: '🐰', color: 'oklch(0.70 0.20 180)', healthMult: 0.75, speedMult: 2.4, rewardMult: 1.3, armorMult: 0 },
+  tank: { emoji: '🦏', color: 'oklch(0.65 0.15 280)', healthMult: 3.8, speedMult: 0.75, rewardMult: 1.8, armorMult: 0.15 },
+  boss: { emoji: '👹', color: 'oklch(0.55 0.25 20)', healthMult: 18, speedMult: 0.48, rewardMult: 6, armorMult: 0.5 },
+  flying: { emoji: '🦅', color: 'oklch(0.72 0.16 220)', healthMult: 0.9, speedMult: 2.2, rewardMult: 1.5, armorMult: 0 },
+  armored: { emoji: '🛡️', color: 'oklch(0.60 0.12 260)', healthMult: 2.6, speedMult: 0.95, rewardMult: 2.2, armorMult: 0.4 },
+  swarm: { emoji: '🐜', color: 'oklch(0.68 0.18 30)', healthMult: 0.5, speedMult: 1.75, rewardMult: 0.9, armorMult: 0 },
 }
 
 const TOWER_TYPES = {
@@ -680,8 +680,9 @@ function App() {
       setMonsters(prev => {
         return prev.map(monster => {
           if (monster.pathIndex >= PATH.length - 1) {
-            setHealth(h => h - 1)
-            toast.error('Monster reached the base!')
+            const healthLoss = monster.isBoss ? 5 : 1
+            setHealth(h => h - healthLoss)
+            toast.error(monster.isBoss ? '👹 Boss reached the base! -5 HP!' : 'Monster reached the base! -1 HP!')
             return null
           }
 
