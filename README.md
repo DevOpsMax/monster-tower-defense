@@ -16,7 +16,7 @@ npm install
 ```bash
 npm run dev -- --host --port 5173
 ```
-Open the URL printed in the terminal (defaults to http://localhost:5000/monster-tower-defens/ because `base` is set in vite.config.ts).
+Open the URL printed in the terminal (defaults to http://localhost:5000/monster-tower-defense/ because `base` is set in vite.config.ts).
 
 ### Build for production
 ```bash
@@ -35,4 +35,4 @@ npm run preview
 
 ### Notes
 - The project uses Vite 6, React 19, and Tailwind 4 via `@tailwindcss/vite`.
-- `base` is configured to `/monster-tower-defens/` for GitHub Pages; adjust in `vite.config.ts` if deploying elsewhere.
+- `base` is configured to `/monster-tower-defense/` for GitHub Pages; adjust in `vite.config.ts` if deploying elsewhere.
