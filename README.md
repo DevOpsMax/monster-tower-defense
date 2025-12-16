@@ -1,23 +1,38 @@
-# ✨ Welcome to Your Spark Template!
-You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
+## Monster Tower Defense
 
-This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
+Minimal steps to install and run the exported Spark Vite project locally.
 
-🚀 What's Inside?
-- A clean, minimal Spark environment
-- Pre-configured for local development
-- Ready to scale with your ideas
-  
-🧠 What Can You Do?
+### Prerequisites
+- Node.js 18+ (tested with Node 24)
+- npm 9+
+- VS Code with the official “JavaScript and TypeScript Nightly” and “ESLint” extensions recommended
 
-Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
+### Install
+```bash
+npm install
+```
 
-🧹 Just Exploring?
-No problem! If you were just checking things out and don’t need to keep this code:
+### Run the dev server
+```bash
+npm run dev -- --host --port 5173
+```
+Open the URL printed in the terminal (defaults to http://localhost:5000/monster-tower-defens/ because `base` is set in vite.config.ts).
 
-- Simply delete your Spark.
-- Everything will be cleaned up — no traces left behind.
+### Build for production
+```bash
+npm run build
+```
+The built assets emit to `dist/`.
 
-📄 License For Spark Template Resources 
+### Preview the production build
+```bash
+npm run preview
+```
 
-The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.
+### Common Windows gotchas
+- If Vite errors about missing Rollup or SWC native binaries, install the platform packages: `npm install -D @rollup/rollup-win32-x64-msvc @swc/core-win32-x64-msvc`.
+- If port 5000 is taken, pass `--port 5173` (or any free port) to `npm run dev`.
+
+### Notes
+- The project uses Vite 6, React 19, and Tailwind 4 via `@tailwindcss/vite`.
+- `base` is configured to `/monster-tower-defens/` for GitHub Pages; adjust in `vite.config.ts` if deploying elsewhere.
